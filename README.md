@@ -1,6 +1,10 @@
 # @appnest/web-router
 
-## Benefits
+## 🧐 What is this?
+
+This is a a simple router for the web.
+
+## 😃 Benefits
 - Async loading of routes
 - Web component friendly
 - Small and lightweight
