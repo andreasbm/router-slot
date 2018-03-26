@@ -5,17 +5,19 @@ const path = require("path");
 const fs = require("fs-extra");
 const npmBump = require("npm-bump");
 
+const outLib = "dist";
+
 async function deploy () {
 	await cleanLib();
 	await compile();
 	// bump();
-	copySync("./package.json", "./lib/package.json");
-	copySync("./README.md", "./lib/README.md");
+	copySync("./src/lib/package.json", `./${outLib}/package.json`);
+	copySync("./README.md", `./${outLib}/README.md`);
 }
 
 function cleanLib (callback) {
 	return new Promise((res, rej) => {
-		rimraf("lib", res);
+		rimraf(outLib, res);
 	});
 }
 
@@ -23,10 +25,10 @@ function compile (callback) {
 	return new Promise((res, rej) => {
 		tsc.compile(
 			Object.assign({}, tsconfig.json.compilerOptions, {
-				"outDir": "lib",
+				"outDir": outLib,
 				"declaration": true
 			}),
-			["src/lib/router.ts"]
+			["src/lib/index.ts"]
 		);
 		res();
 	});
@@ -35,7 +37,7 @@ function compile (callback) {
 function copyFiles (files) {
 	return new Promise((res, rej) => {
 		for (const file of files) {
-			copySync(`./src/${file}`, `./lib/${file}`);
+			copySync(`./src/${file}`, `./${outLib}/${file}`);
 		}
 		res();
 	});

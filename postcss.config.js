@@ -1,2 +1,2 @@
-const defaultConfig = require("./node_modules/web-components-config/lib/postcss.config");
+const defaultConfig = require("./node_modules/@appnest/web-config/postcss.config");
 module.exports = defaultConfig;

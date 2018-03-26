@@ -1,4 +1,5 @@
 import { IRoute, Router } from "../lib/router";
+export * from "./../lib/router-link";
 
 /**
  * Asserts that the user is authenticated.
@@ -28,14 +29,14 @@ customElements.whenDefined("router-component").then(async () => {
 		}
 	});
 
-	await router.createRoutes([
+	await router.setup([
 		{
 			path: new RegExp("/login.*"),
-			loader: import("./pages/login")
+			loader: import("./pages/login/login")
 		},
 		{
 			path: new RegExp("/home.*"),
-			loader: import("./pages/home"),
+			loader: import("./pages/home/home"),
 			guards: [sessionGuard]
 		},
 		{

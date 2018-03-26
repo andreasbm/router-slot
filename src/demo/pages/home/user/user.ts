@@ -1,4 +1,4 @@
-import { html, LitElement, TemplateResult } from "../base";
+import { html, LitElement, TemplateResult } from "../../../base";
 
 export default class UserComponent extends LitElement {
 

@@ -1,5 +1,5 @@
 const path = require("path");
-const CreateWebpackConfig = require("../../node_modules/web-components-config/lib/create-webpack-config");
+const CreateWebpackConfig = require("../../node_modules/@appnest/web-config/create-webpack-config");
 
 const folderPath = {
 	SRC: __dirname,

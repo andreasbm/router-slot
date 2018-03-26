@@ -3,6 +3,7 @@ export interface IPage {
 }
 
 export type IGuard = ((router: Router, route: IRoute) => boolean);
+
 export interface IRoute {
 	/* The path match */
 	path: RegExp;
@@ -28,8 +29,25 @@ export class Router extends HTMLElement {
 	/**
 	 * The parent router.
 	 * Is REQUIRED if this router is a child.
+	 * When set, the relevant listeners are added or teared down.
 	 */
-	parentRouter: Router | null;
+	_parentRouter: Router | null;
+	set parentRouter (value: Router | null) {
+		this.tearDownListeners();
+		this._parentRouter = value;
+		this.hookUpListeners();
+	}
+
+	get parentRouter () {
+		return this._parentRouter;
+	}
+
+	/**
+	 * Whether the router is a child router.
+	 */
+	get isChildRouter () {
+		return this.parentRouter != null;
+	}
 
 	/**
 	 * Contains the available routes.
@@ -46,15 +64,6 @@ export class Router extends HTMLElement {
 	 */
 	static get currentPath () {
 		return window.location.pathname;
-	}
-
-	/**
-	 * Determines whether the router or one of its parent routers is loading a new path.
-	 */
-	private _isLoading = false;
-	get isLoading () {
-		if (this.parentRouter && this.parentRouter.isLoading) return true;
-		return this._isLoading;
 	}
 
 	/**
@@ -78,39 +87,28 @@ export class Router extends HTMLElement {
 	}
 
 	/**
-	 * Hook up event listeners and create the routes.
-	 */
-	connectedCallback () {
-		window.addEventListener("popstate", this.onPathChanged);
-		window.addEventListener(Router.events.onPushState, this.onPathChanged);
-	}
-
-	/**
 	 * Remove event listeners and clean up.
 	 */
 	disconnectedCallback () {
-		window.removeEventListener("popstate", this.onPathChanged);
-		window.removeEventListener(Router.events.onPushState, this.onPathChanged);
+		this.tearDownListeners();
 	}
 
 	/**
 	 * Sets up the routes.
 	 * @param {IRoute[]} routes
-	 * @param {boolean} replaceRoutes
+	 * @param parentRouter
 	 * @param {boolean} navigate
 	 * @returns {Promise<void>}
 	 */
-	async createRoutes (routes: IRoute[], replaceRoutes = false, navigate = true) {
-
-		// Clear the routes if nessesary.
-		if (replaceRoutes) {
-			await this.clearRoutes();
-		}
+	async setup (routes: IRoute[], parentRouter?: Router | null, navigate = true) {
 
 		// Add the routes to the array
+		await this.clearRoutes();
 		for (const route of routes) {
 			this.routes.push(route);
 		}
+
+		this.parentRouter = parentRouter;
 
 		// Register that the path has changed so the correct route can be loaded.
 		if (navigate) {
@@ -126,17 +124,36 @@ export class Router extends HTMLElement {
 	}
 
 	/**
+	 * Hook up listeners to either the window or the parent router.
+	 */
+	private hookUpListeners () {
+		if (this.isChildRouter) {
+			this.parentRouter.addEventListener(Router.events.didChangeRoute, this.onPathChanged);
+
+		} else {
+			window.addEventListener("popstate", this.onPathChanged);
+			window.addEventListener(Router.events.onPushState, this.onPathChanged);
+		}
+	}
+
+	/**
+	 * Tear down the listeners from either the window or the parent router.
+	 */
+	private tearDownListeners () {
+		if (this.isChildRouter) {
+			this.parentRouter.removeEventListener(Router.events.didChangeRoute, this.onPathChanged);
+		}
+
+		window.removeEventListener("popstate", this.onPathChanged);
+		window.removeEventListener(Router.events.onPushState, this.onPathChanged);
+	}
+
+	/**
 	 * Each time the path changes, load the new path.
 	 * Prevents the event from continuing down the router tree if a navigation was made.
 	 * @private
 	 */
 	private async onPathChanged (e?: CustomEvent) {
-
-		// Ensure that the parent router is NOT loading (else we can get endless loops)
-		if (this.parentRouter != null && this.parentRouter.isLoading) {
-			return;
-		}
-
 		await this.loadPath(Router.currentPath);
 	}
 
@@ -158,20 +175,17 @@ export class Router extends HTMLElement {
 	 * @private
 	 */
 	private async loadPath (path: string): Promise<boolean> {
-		this._isLoading = true;
 
 		// Find the corresponding route.
 		const route = this.matchRoute(path);
 
 		// Ensure that a route was found.
 		if (route == null) {
-			this._isLoading = false;
 			throw new Error(`No routes matches the path '${path}'.`);
 		}
 
 		// Check whether the loader or redirectTo is specified.
 		if (route.loader == null && route.redirectTo == null && !(route.loader != null && route.redirectTo != null)) {
-			this._isLoading = false;
 			throw new Error(`The route ´${route.path}´ needs to have either a loader or a redirectTo set.`);
 		}
 
@@ -179,7 +193,7 @@ export class Router extends HTMLElement {
 		if (route.guards != null) {
 			for (const guard of route.guards) {
 				if (!guard(this, route)) {
-					this._isLoading = false;
+					// TODO: Should we remove the current route from the HTML?
 					return false;
 				}
 			}
@@ -191,7 +205,6 @@ export class Router extends HTMLElement {
 
 			// Redirect if nessesary
 			if (route.redirectTo != null) {
-				this._isLoading = false;
 				Router.replaceState(null, null, route.redirectTo);
 				return false;
 			}
@@ -204,18 +217,14 @@ export class Router extends HTMLElement {
 			// this.innerHTML = "";
 			// this.appendChild(page);
 
-			requestAnimationFrame(() => {
-				if (this.childNodes.length > 0) {
-					const previousPage = this.childNodes[0];
-					this.removeChild(previousPage);
-				}
+			if (this.childNodes.length > 0) {
+				const previousPage = this.childNodes[0];
+				this.removeChild(previousPage);
+			}
 
-				this.appendChild(page);
-			});
+			this.appendChild(page);
 
 			this.currentRoute = route;
-
-			this.dispatchDidChangeRouteEvent(route);
 		}
 
 		// Scroll to the top of the new page if nessesary.
@@ -224,7 +233,9 @@ export class Router extends HTMLElement {
 			window.scrollTo(0, 0);
 		}
 
-		this._isLoading = false;
+		// Always dispatch the did change route event to notify the children.
+		this.dispatchDidChangeRouteEvent(route);
+
 		return navigate;
 	}
 

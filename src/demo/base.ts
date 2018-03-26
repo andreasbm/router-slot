@@ -1,1 +1,1 @@
-export * from "../../node_modules/web-components-config/lib/base";
+export * from "../../node_modules/@appnest/web-config/base";

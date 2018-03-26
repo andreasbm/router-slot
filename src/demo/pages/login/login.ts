@@ -1,5 +1,5 @@
-import { Router } from "../../lib/router";
-import { html, LitElement, TemplateResult } from "../base";
+import { Router } from "../../../lib/router";
+import { html, LitElement, TemplateResult } from "../../base";
 
 export default class LoginComponent extends LitElement {
 
