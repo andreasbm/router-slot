@@ -26,6 +26,7 @@ function compile (callback) {
 		tsc.compile(
 			Object.assign({}, tsconfig.json.compilerOptions, {
 				"outDir": outLib,
+				"target": "es6",
 				"declaration": true
 			}),
 			["src/lib/index.ts"]
