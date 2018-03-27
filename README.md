@@ -5,17 +5,26 @@
 This is a a simple router for the web.
 
 ## 😃 Benefits
-- Async loading of routes
+- Lazy loading of routes
 - Web component friendly
 - Small and lightweight
 - Easy to use API
 - Uses the History api.
 
-## 🎁 Step 1 -  Install the library
+## 🎁 Step 1 -  Install the dependency
 
 ```javascript
 npm i @appnest/web-router --save
 ```
+
+## 🤝 Step 2 - Import it
+
+Import the dependency in your application.
+
+```javascript
+import "@appnest/web-router";
+```
+
 
 ## 👏 Step 2 - Add the router to the markup.
 

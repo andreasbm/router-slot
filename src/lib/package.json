@@ -16,7 +16,8 @@
 		"custom",
 		"elements",
 		"web",
-		"component"
+		"component",
+		"router"
 	],
 	"license": "MIT"
 }
