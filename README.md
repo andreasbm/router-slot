@@ -34,7 +34,7 @@ import "@appnest/web-router";
 
 ## 👍 Step 4 - Add some routes!
 
-Routes are added to the router through the `createRoutes` function. At least one of the routes must always match. *Remember that all pages needs to implement the `IPage` interface.
+Routes are added to the router through the `setup` function. At least one of the routes must always match. *Remember that all pages needs to implement the `IPage` interface*.
 
 ```javascript
 const router: Router = document.querySelector("router-component");
