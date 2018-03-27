@@ -26,13 +26,13 @@ import "@appnest/web-router";
 ```
 
 
-## 👏 Step 2 - Add the router to the markup.
+## 👏 Step 3 - Add the router to the markup.
 
 ```html
 <router-component></router-component>
 ```
 
-## 👍 Step 3 - Add some routes!
+## 👍 Step 4 - Add some routes!
 
 Routes are added to the router through the `createRoutes` function. At least one of the routes must always match. *Remember that all pages needs to implement the `IPage` interface.
 
@@ -62,7 +62,7 @@ customElements.whenDefined("router-component").then(async () => {
 });
 ```
 
-## 🎉 Step 4 - Add some guards (optional)
+## 🎉 Step 5 - Add some guards (optional)
 
 A guard is a function that determines whether the route can be activated or not. The example below checks whether the user has a session saved in the local storage and redirects the user to the login page if the access is not provided.
 
@@ -90,7 +90,7 @@ await router.createRoutes([
 ]);
 ```
 
-## 👶 Step 5 - Add some child routes
+## 👶 Step 6 - Add some child routes
 
 Child routes are routes within another route! It is super simple to add one. All children will have the `parentRouter` property set. The `parentRouter` must be set on the child router through the `setup` method. Here's an example of how to add routes to a child router.
 
@@ -125,7 +125,7 @@ export default class HomeComponent implements IPage {
 window.customElements.define("home-component", HomeComponent);
 ```
 
-## 🙌 Step 6 - Change route!
+## 🙌 Step 7 - Change route!
 
 In order to change a route you can either use the static methods on the `Router` class or the `RouterLink` component. The static methods mirrors the History API. Why not just use the `history` object directly you may ask? Because we have to keep track of when the state changes. Currently we have to dispatch our own `onpushstate` event.
 
