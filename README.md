@@ -37,15 +37,15 @@ import "@appnest/web-router";
 Routes are added to the router through the `setup` function. At least one of the routes must always match. *Remember that all pages needs to implement the `IPage` interface*.
 
 ```javascript
-const router: Router = document.querySelector("router-component");
+const router: RouterComponent = document.querySelector("router-component");
 await router.setup([
   {
     path: new RegExp("/login.*"),
-    loader: import("./pages/login")
+    component: import("./pages/login")
   },
   {
     path: new RegExp("/home.*"),
-    loader: import("./pages/home")
+    component: HomeComponent
   },
   {
     path: new RegExp("/.*"),
@@ -83,7 +83,7 @@ await router.createRoutes([
   ...
   {
     path: new RegExp("/home.*"),
-    loader: import("./pages/home"),
+    component: import("./pages/home"),
     guards: [sessionGuard]
   },
   ...
@@ -104,11 +104,11 @@ export default class HomeComponent implements IPage {
     $router.createRoutes([
       {
         path: new RegExp("home/secret.*"),
-        loader: (import("./secret"))
+        component: (import("./secret"))
       },
       {
         path: new RegExp("home/user.*"),
-        loader: (import("./user"))
+        component: (import("./user"))
       },
       {
          path: new RegExp(""),

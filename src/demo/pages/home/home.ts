@@ -1,22 +1,22 @@
-import { IPage, Router } from "../../../lib/router";
+import { IPage, Router, RouterComponent } from "../../../lib";
 import { html, LitElement, TemplateResult } from "../../base";
 
 export default class HomeComponent extends LitElement implements IPage {
 
-	parentRouter: Router;
+	parentRouter: RouterComponent;
 
 	connectedCallback () {
 		super.connectedCallback();
 
-		const $router: Router = this.shadowRoot.querySelector("router-component");
+		const $router: RouterComponent = this.shadowRoot.querySelector("router-component");
 		$router.setup([
 			{
 				path: new RegExp("home/secret.*"),
-				loader: (import("./secret/secret"))
+				component: (import("./secret/secret"))
 			},
 			{
 				path: new RegExp("home/user.*"),
-				loader: (import("./user/user"))
+				component: (import("./user/user"))
 			},
 			{
 				path: new RegExp(""),

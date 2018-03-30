@@ -1,4 +1,6 @@
-import { IRoute, Router } from "../lib/router";
+import { IRoute, Router, RouterComponent } from "../lib";
+import HomeComponent from "./pages/home/home";
+
 export * from "./../lib/router-link";
 
 /**
@@ -19,7 +21,7 @@ function sessionGuard (router: Router, route: IRoute) {
 
 // Setup the router
 customElements.whenDefined("router-component").then(async () => {
-	const router: Router = document.querySelector("router-component");
+	const router: RouterComponent = document.querySelector("router-component");
 
 	let hasInitialized = false;
 	router.addEventListener(Router.events.didChangeRoute, (e) => {
@@ -32,11 +34,11 @@ customElements.whenDefined("router-component").then(async () => {
 	await router.setup([
 		{
 			path: new RegExp("/login.*"),
-			loader: import("./pages/login/login")
+			component: import("./pages/login/login")
 		},
 		{
 			path: new RegExp("/home.*"),
-			loader: import("./pages/home/home"),
+			component: HomeComponent,
 			guards: [sessionGuard]
 		},
 		{
@@ -44,7 +46,5 @@ customElements.whenDefined("router-component").then(async () => {
 			redirectTo: "home"
 		}
 	]);
-
-
 
 });
