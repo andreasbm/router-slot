@@ -21,6 +21,6 @@
 		"lit-html": "^0.9.0"
 	},
 	"devDependencies": {
-		"@appnest/web-config": "0.0.8"
+		"@appnest/web-config": "0.0.9"
 	}
 }
