@@ -9,7 +9,7 @@ export * from "./../lib/router-link";
  * @param {IRoute} route
  * @returns {boolean}
  */
-function sessionGuard (router: Router, route: IRoute) {
+function sessionGuard (router: RouterComponent, route: IRoute) {
 
 	if (localStorage.getItem("session") == null) {
 		Router.replaceState(null, null, "login");

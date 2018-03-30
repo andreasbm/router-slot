@@ -96,7 +96,7 @@ export class Router {
 	 * @param {string} title
 	 * @param {string | null} url
 	 */
-	static pushState (data: {}, title: string, url: string | null) {
+	static pushState (data: {} | null, title: string | null, url: string | null) {
 		history.pushState(data, title, url);
 		this.dispatchOnPushStateEvent();
 	}

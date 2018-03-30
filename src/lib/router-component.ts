@@ -4,7 +4,7 @@ export interface IPage {
 	parentRouter: RouterComponent;
 }
 
-export type IGuard = ((router: Router, route: IRoute) => boolean);
+export type IGuard = ((router: RouterComponent, route: IRoute) => boolean);
 
 export interface IRoute {
 	/* The path match */
