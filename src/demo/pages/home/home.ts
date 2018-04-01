@@ -12,17 +12,19 @@ export default class HomeComponent extends LitElement implements IPage {
 		$router.setup([
 			{
 				path: new RegExp("home/secret.*"),
-				component: (import("./secret/secret"))
+				component: import("./secret/secret")
 			},
 			{
 				path: new RegExp("home/user.*"),
-				component: (import("./user/user"))
+				component: import("./user/user")
 			},
 			{
 				path: new RegExp(""),
 				redirectTo: "home/secret"
 			}
 		], this.parentRouter).then();
+
+		console.log(Router.params);
 	}
 
 	private logout () {
@@ -33,6 +35,7 @@ export default class HomeComponent extends LitElement implements IPage {
 	render (): TemplateResult {
 		return html`
 <p>HomeComponent</p>
+<p></p>
 <button on-click="${_ => this.logout()}">Logout</button>
 <router-link path="home/secret"><button>Go to SecretComponent</button></router-link>
 <router-link path="home/user"><button>Go to UserComponent</button></router-link>

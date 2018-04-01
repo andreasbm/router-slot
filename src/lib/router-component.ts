@@ -33,7 +33,7 @@ export class RouterComponent extends HTMLElement {
 	/**
 	 * The parent router.
 	 * Is REQUIRED if this router is a child.
-	 * When set, the relevant listeners are added or teared down.
+	 * When set, the relevant listeners are added or teared down because they depend on the parent.
 	 */
 	_parentRouter: RouterComponent | null;
 	set parentRouter (value: RouterComponent | null) {
@@ -51,6 +51,15 @@ export class RouterComponent extends HTMLElement {
 	 */
 	get isChildRouter () {
 		return this.parentRouter != null;
+	}
+
+	/**
+	 * RouterComponent related events.
+	 */
+	static get events () {
+		return {
+			didChangeRoute: "didChangeRoute"
+		};
 	}
 
 	/**
@@ -115,7 +124,7 @@ export class RouterComponent extends HTMLElement {
 	 */
 	private hookUpListeners () {
 		if (this.isChildRouter) {
-			this.parentRouter.addEventListener(Router.events.didChangeRoute, this.onPathChanged);
+			this.parentRouter.addEventListener(RouterComponent.events.didChangeRoute, this.onPathChanged);
 
 		} else {
 			window.addEventListener("popstate", this.onPathChanged);
@@ -128,7 +137,7 @@ export class RouterComponent extends HTMLElement {
 	 */
 	private tearDownListeners () {
 		if (this.isChildRouter) {
-			this.parentRouter.removeEventListener(Router.events.didChangeRoute, this.onPathChanged);
+			this.parentRouter.removeEventListener(RouterComponent.events.didChangeRoute, this.onPathChanged);
 		}
 
 		window.removeEventListener("popstate", this.onPathChanged);
@@ -140,7 +149,7 @@ export class RouterComponent extends HTMLElement {
 	 * Prevents the event from continuing down the router tree if a navigation was made.
 	 * @private
 	 */
-	private async onPathChanged (e?: CustomEvent) {
+	private async onPathChanged () {
 		await this.loadPath(Router.currentPath);
 	}
 
@@ -176,54 +185,70 @@ export class RouterComponent extends HTMLElement {
 			throw new Error(`The route ´${route.path}´ needs to have either a component or a redirectTo set (and not both).`);
 		}
 
-		// Check whether the guards allows us to go to the new route.
-		if (route.guards != null) {
-			for (const guard of route.guards) {
-				if (!guard(this, route)) {
-					// TODO: Should we remove the current route from the HTML?
-					return false;
+		try {
+
+			// Check whether the guards allows us to go to the new route.
+			if (route.guards != null) {
+				for (const guard of route.guards) {
+					if (!guard(this, route)) {
+						// Dispatch globally that a navigation was cancelled.
+						this.dispatchGlobalEvent(Router.events.navigationCancel, route);
+						return false;
+					}
 				}
 			}
-		}
 
-		// Only change route if its a new route.
-		const navigate = (this.currentRoute !== route);
-		if (navigate) {
+			// Only change route if its a new route.
+			const navigate = (this.currentRoute !== route);
+			if (navigate) {
 
-			// Redirect if nessesary
-			if (route.redirectTo != null) {
-				Router.replaceState(null, null, route.redirectTo);
-				return false;
+				// Dispatch globally that a navigation has started.
+				this.dispatchGlobalEvent(Router.events.navigationStart, route);
+
+				// Redirect if nessesary
+				if (route.redirectTo != null) {
+					Router.replaceState(null, null, route.redirectTo);
+					return false;
+				}
+
+				const module = await Promise.resolve(route.component);
+				const page = module.default ? (new module.default()) : new module();
+				page.parentRouter = this;
+
+				// Add the new page to the DOM
+				// this.innerHTML = "";
+				// this.appendChild(page);
+
+				if (this.childNodes.length > 0) {
+					const previousPage = this.childNodes[0];
+					this.removeChild(previousPage);
+				}
+
+				this.appendChild(page);
+				this.currentRoute = route;
 			}
 
-			const module = await Promise.resolve(route.component);
-			const page = module.default ? (new module.default()) : new module();
-			page.parentRouter = this;
-
-			// Add the new page to the DOM
-			// this.innerHTML = "";
-			// this.appendChild(page);
-
-			if (this.childNodes.length > 0) {
-				const previousPage = this.childNodes[0];
-				this.removeChild(previousPage);
+			// Scroll to the top of the new page if nessesary.
+			// Scrolling to the top is the default behavior.
+			if (route.scrollToTop == null || route.scrollToTop) {
+				window.scrollTo(0, 0);
 			}
 
-			this.appendChild(page);
+			// Always dispatch the did change route event to notify the children that something happened.
+			// This is because the child routes might have to change routes further down the tree.
+			this.dispatchDidChangeRouteEvent(route);
 
-			this.currentRoute = route;
+			// Dispatch globally that a navigation has ended.
+			if (navigate) {
+				this.dispatchGlobalEvent(Router.events.navigationEnd, route);
+			}
+
+			return navigate;
+
+		} catch (e) {
+			this.dispatchGlobalEvent(Router.events.navigationError, route);
+			throw e;
 		}
-
-		// Scroll to the top of the new page if nessesary.
-		// Scrolling to the top is the default behavior.
-		if (route.scrollToTop == null || route.scrollToTop) {
-			window.scrollTo(0, 0);
-		}
-
-		// Always dispatch the did change route event to notify the children.
-		this.dispatchDidChangeRouteEvent(route);
-
-		return navigate;
 	}
 
 	/**
@@ -231,11 +256,20 @@ export class RouterComponent extends HTMLElement {
 	 * @param {IRoute} route
 	 */
 	private dispatchDidChangeRouteEvent (route: IRoute) {
-		this.dispatchEvent(new CustomEvent(Router.events.didChangeRoute, {
+		this.dispatchEvent(new CustomEvent(RouterComponent.events.didChangeRoute, {
 			detail: {
 				route
 			}
 		}));
+	}
+
+	/**
+	 * Dispatches a global event.
+	 * @param eventName
+	 * @param {IRoute} route
+	 */
+	private dispatchGlobalEvent (eventName: string, route: IRoute) {
+		window.dispatchEvent(new CustomEvent(eventName, {detail: route}));
 	}
 }
 

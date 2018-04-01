@@ -1,10 +1,45 @@
+export type Params = { [key: string]: string };
+
+/**
+ * Splits a query string and returns the params.
+ * @param {string} query (example: ("test=123&hejsa=LOL&wuhuu"))
+ * @returns {Params}
+ */
+export function splitQuery (query: string): Params {
+
+	// If the query does not contain anything, return an empty object.
+	if (query.length === 0) {
+		return {};
+	}
+
+	// Grab the atoms (["test=123", "hejsa=LOL", "wuhuu"])
+	const atoms = query.split("&");
+
+	// Split by the values ([["test", "123"], ["hejsa", "LOL"], ["wuhuu"]])
+	const values = atoms.map(atom => atom.split("="));
+
+	// Assign the values to an object ({ test: "123", hejsa: "LOL", wuhuu: "" })
+	return Object.assign({}, ...values.map(arr => ({
+		[arr[0]]: (arr.length > 1 ? arr[1] : "")
+	})));
+}
+
 export class Router {
 
 	/**
 	 * The current path of the location.
 	 */
-	static get currentPath () {
+	static get currentPath (): string {
 		return window.location.pathname;
+	}
+
+	/**
+	 * Returns the params for the current path.
+	 * @returns Params
+	 */
+	static get params (): Params {
+		const query = window.location.search.substr(1);
+		return splitQuery(query);
 	}
 
 	/**
@@ -12,8 +47,21 @@ export class Router {
 	 */
 	static get events () {
 		return {
-			didChangeRoute: "didChangeRoute",
-			onPushState: "onPushState"
+
+			// An event triggered when a new state is added to the history.
+			onPushState: "onPushState",
+
+			// An event triggered when navigation starts.
+			navigationStart: "navigationStart",
+
+			// An event triggered when navigation is canceled. This is due to a Route Guard returning false during navigation.
+			navigationCancel: "navigationCancel",
+
+			// An event triggered when navigation fails due to an unexpected error.
+			navigationError: "navigationError",
+
+			// An event triggered when navigation ends successfully.
+			navigationEnd: "navigationEnd"
 		};
 	}
 

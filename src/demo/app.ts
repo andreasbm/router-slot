@@ -24,11 +24,27 @@ customElements.whenDefined("router-component").then(async () => {
 	const router: RouterComponent = document.querySelector("router-component");
 
 	let hasInitialized = false;
-	router.addEventListener(Router.events.didChangeRoute, (e) => {
+	router.addEventListener(RouterComponent.events.didChangeRoute, (e) => {
 		if (!hasInitialized) {
 			document.body.classList.add("initialized");
 			hasInitialized = true;
 		}
+	});
+
+	window.addEventListener(Router.events.onPushState, (e: CustomEvent) => {
+		console.log("On push state", e.detail);
+	});
+
+	window.addEventListener(Router.events.navigationStart, (e: CustomEvent) => {
+		console.log("Navigation start", e.detail);
+	});
+
+	window.addEventListener(Router.events.navigationCancel, (e: CustomEvent) => {
+		console.log("Navigation cancelled", e.detail);
+	});
+
+	window.addEventListener(Router.events.navigationError, (e: CustomEvent) => {
+		console.log("Navigation failed", e.detail);
 	});
 
 	await router.setup([
