@@ -44,11 +44,11 @@ await router.setup([
     component: import("./pages/login")
   },
   {
-    path: new RegExp("/home.*"),
+    path: /home.*/,
     component: HomeComponent
   },
   {
-    path: new RegExp("/.*"),
+    path: /.*/,
     redirectTo: "home"
   }
 ]);
@@ -79,11 +79,11 @@ funtion sessionGuard (router: Router, route: IRoute) {
 
 ...
 
-await router.createRoutes([
+await router.setup([
   ...
   {
-    path: new RegExp("/home.*"),
-    component: import("./pages/home"),
+    path: /home.*/,
+    component: HomeComponent,
     guards: [sessionGuard]
   },
   ...
@@ -92,26 +92,26 @@ await router.createRoutes([
 
 ## 👶 Step 6 - Add some child routes
 
-Child routes are routes within another route! It is super simple to add one. All children will have the `parentRouter` property set. The `parentRouter` must be set on the child router through the `setup` method. Here's an example of how to add routes to a child router.
+Child routes are routes within another route! It is super simple to add one. All children will have the `parentRouter` property set. The `parentRouter` must be passed to the child router through the `setup` method. Here's an example of how to add routes to a child router.
 
 ```javascript
 export default class HomeComponent implements IPage {
 
-  parentRouter: Router;
+  parentRouter: RouterComponent;
 
   connectedCallback () {
     const $router: Router = this.shadowRoot.querySelector("router-component");
-    $router.createRoutes([
+    $router.setup([
       {
-        path: new RegExp("home/secret.*"),
-        component: (import("./secret"))
+        path: /home\/secret.*/,
+        component: import("./secret")
       },
       {
-        path: new RegExp("home/user.*"),
-        component: (import("./user"))
+        path: /home\/user.*/,
+        component: import("./user")
       },
       {
-         path: new RegExp(""),
+         path: "",
          redirectTo: "home/secret"
        }
      ], this.parentRouter).then();
@@ -127,7 +127,7 @@ window.customElements.define("home-component", HomeComponent);
 
 ## 🙌 Step 7 - Change route!
 
-In order to change a route you can either use the static methods on the `Router` class or the `RouterLink` component. The static methods mirrors the History API. Why not just use the `history` object directly you may ask? Because we have to keep track of when the state changes. Currently we have to dispatch our own `onpushstate` event.
+In order to change a route you can either use the static methods on the `Router` class or the `RouterLink` component. The static methods mirrors the history API. Why not just use the `history` object directly you may ask? Because we have to keep track of when the state changes. Currently we have to dispatch our own `onpushstate` event.
 
 Here's an example on how to use the `Router` class for navigating.
 
@@ -135,13 +135,13 @@ Here's an example on how to use the `Router` class for navigating.
 Router.pushState(null, null, "login");
 ```
 
-Or (if you want to replace the route)
+Or (if you want to replace the state and not keep the current one in the history)
 
 ```javascript
 Router.replaceState(null, null, "login");
 ```
 
-You can also go back and forth!
+You can also go back and forth between the states!
 
 ```javascript
 Router.back();
@@ -152,6 +152,40 @@ Here's an example on how to use the `RouterLink` component for navigating.
 
 ```html
 <router-link path="home/secret"><button>Go to the secret!</button></router-link>
+```
+
+## 👋 Step 8 - Global navigation events
+
+You are able to listen to what happens in the `Router` through the events that are dispatched when something happens. They are dispatched on the `window` object. In this router we have the following events:
+
+- **Router.events.onPushState** (An event triggered when a new state is added to the history)
+- **Router.events.navigationState** (An event triggered when navigation starts)
+- **Router.events.navigationCancel** (An event triggered when navigation is canceled. This is due to a Route Guard returning false during navigation)
+- **Router.events.navigationError** (An event triggered when navigation fails due to an unexpected error)
+- **Router.events.navigationEnd** (An event triggered when navigation ends successfully)
+
+Here's an example of how you can listen to the events.
+
+```javascript
+window.addEventListener(Router.events.onPushState, (e: CustomEvent) => {
+  console.log("On push state", e.detail);
+});
+
+window.addEventListener(Router.events.navigationStart, (e: CustomEvent) => {
+  console.log("Navigation start", e.detail);
+});
+
+window.addEventListener(Router.events.navigationEnd, (e: CustomEvent) => {
+  console.log("Navigation end", e.detail);
+});
+
+window.addEventListener(Router.events.navigationCancel, (e: CustomEvent) => {
+  console.log("Navigation cancelled", e.detail);
+});
+
+window.addEventListener(Router.events.navigationError, (e: CustomEvent) => {
+  console.log("Navigation failed", e.detail);
+});
 ```
 
 ## 🎉 License

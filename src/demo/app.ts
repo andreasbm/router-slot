@@ -39,6 +39,10 @@ customElements.whenDefined("router-component").then(async () => {
 		console.log("Navigation start", e.detail);
 	});
 
+	window.addEventListener(Router.events.navigationEnd, (e: CustomEvent) => {
+		console.log("Navigation end", e.detail);
+	});
+
 	window.addEventListener(Router.events.navigationCancel, (e: CustomEvent) => {
 		console.log("Navigation cancelled", e.detail);
 	});
@@ -53,12 +57,12 @@ customElements.whenDefined("router-component").then(async () => {
 			component: import("./pages/login/login")
 		},
 		{
-			path: new RegExp("/home.*"),
+			path: /home.*/,
 			component: HomeComponent,
 			guards: [sessionGuard]
 		},
 		{
-			path: new RegExp("/.*"),
+			path: /.*/,
 			redirectTo: "home"
 		}
 	]);

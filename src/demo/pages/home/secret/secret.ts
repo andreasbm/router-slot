@@ -11,11 +11,11 @@ export default class SecretComponent extends LitElement implements IPage {
 		const $router: RouterComponent = this.shadowRoot.querySelector("router-component");
 		$router.setup([
 			{
-				path: new RegExp("home/secret/code"),
+				path: /home\/secret\/code/,
 				component: import("./code/code")
 			},
 			{
-				path: new RegExp("home/secret.*"),
+				path: /home\/secret.*/,
 				component: import("./password/password")
 			}
 		], this.parentRouter).then();

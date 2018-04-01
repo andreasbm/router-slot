@@ -11,15 +11,15 @@ export default class HomeComponent extends LitElement implements IPage {
 		const $router: RouterComponent = this.shadowRoot.querySelector("router-component");
 		$router.setup([
 			{
-				path: new RegExp("home/secret.*"),
+				path: /home\/secret.*/,
 				component: import("./secret/secret")
 			},
 			{
-				path: new RegExp("home/user.*"),
+				path: /home\/user.*/,
 				component: import("./user/user")
 			},
 			{
-				path: new RegExp(""),
+				path: "",
 				redirectTo: "home/secret"
 			}
 		], this.parentRouter).then();
