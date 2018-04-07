@@ -40,11 +40,11 @@ Routes are added to the router through the `setup` function. At least one of the
 const router: RouterComponent = document.querySelector("router-component");
 await router.setup([
   {
-    path: new RegExp("/login.*"),
-    component: import("./pages/login")
+    path: new RegExp("login.*"),
+    component: import("./pages/login")    // Preferred
   },
   {
-    path: /home.*/,
+    path: /home.*/,                       // Preferred
     component: HomeComponent
   },
   {

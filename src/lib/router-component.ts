@@ -159,7 +159,9 @@ export class RouterComponent extends HTMLElement {
 	 */
 	private matchRoute (path: string): IRoute | null {
 		for (const route of this.routes) {
-			if (path.match(route.path) != null) return route;
+			if (path.match(route.path) != null) {
+				return route;
+			}
 		}
 
 		return null;

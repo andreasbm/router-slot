@@ -28,9 +28,10 @@ export class Router {
 
 	/**
 	 * The current path of the location.
+	 * The "/" at the beginning is discarded.
 	 */
 	static get currentPath (): string {
-		return window.location.pathname;
+		return window.location.pathname.slice(1);
 	}
 
 	/**
