@@ -1,6 +1,6 @@
 {
 	"name": "@appnest/web-router",
-	"version": "0.0.12",
+	"version": "0.0.13",
 	"scripts": {
 		"b:dev": "webpack --mode=development --config src/demo/webpack.config.js",
 		"b:prod": "webpack --mode=production --optimize-minimize --config src/demo/webpack.config.js",
