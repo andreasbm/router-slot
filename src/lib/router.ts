@@ -20,7 +20,7 @@ export function splitQuery (query: string): Params {
 
 	// Assign the values to an object ({ test: "123", hejsa: "LOL", wuhuu: "" })
 	return Object.assign({}, ...values.map(arr => ({
-		[arr[0]]: (arr.length > 1 ? arr[1] : "")
+		[arr[0]]: (arr.length > 1 ? decodeURIComponent(arr[1]) : "")
 	})));
 }
 
