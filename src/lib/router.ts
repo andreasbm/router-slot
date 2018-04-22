@@ -16,11 +16,11 @@ export function splitQuery (query: string): Params {
 	const atoms = query.split("&");
 
 	// Split by the values ([["test", "123"], ["hejsa", "LOL"], ["wuhuu"]])
-	const values = atoms.map(atom => atom.split("="));
+	const arrayMap = atoms.map(atom => atom.split("="));
 
 	// Assign the values to an object ({ test: "123", hejsa: "LOL", wuhuu: "" })
-	return Object.assign({}, ...values.map(arr => ({
-		[arr[0]]: (arr.length > 1 ? decodeURIComponent(arr[1]) : "")
+	return Object.assign({}, ...arrayMap.map(arr => ({
+		[decodeURIComponent(arr[0])]: (arr.length > 1 ? decodeURIComponent(arr[1]) : "")
 	})));
 }
 
