@@ -1,3 +1,5 @@
+import {IRoute} from "./router-component";
+
 export type Params = { [key: string]: string };
 
 /**
@@ -24,6 +26,51 @@ export function splitQuery (query: string): Params {
 	})));
 }
 
+export interface IOnPushStateEvent extends CustomEvent {
+	detail: null;
+}
+
+export interface IPopStateEvent extends CustomEvent {
+	detail: null;
+}
+
+export interface INavigationStartEvent extends CustomEvent {
+	detail: IRoute;
+}
+
+export interface INavigationCancelEvent extends CustomEvent {
+	detail: IRoute;
+}
+
+export interface INavigationErrorEvent extends CustomEvent {
+	detail: IRoute;
+}
+
+export interface INavigationEndEvent extends CustomEvent {
+	detail: IRoute;
+}
+
+export enum RouterEventKind {
+
+	// An event triggered when a new state is added to the history.
+	OnPushState = "onPushState",
+
+	// An event triggered when a state in the history is popped.
+	PopState = "popstate",
+
+	// An event triggered when navigation starts.
+	NavigationStart = "navigationStart",
+
+	// An event triggered when navigation is canceled. This is due to a Route Guard returning false during navigation.
+	NavigationCancel = "navigationCancel",
+
+	// An event triggered when navigation fails due to an unexpected error.
+	NavigationError = "navigationError",
+
+	// An event triggered when navigation ends successfully.
+	NavigationEnd = "navigationEnd"
+}
+
 export class Router {
 
 	/**
@@ -44,33 +91,10 @@ export class Router {
 	}
 
 	/**
-	 * Router related events.
-	 */
-	static get events () {
-		return {
-
-			// An event triggered when a new state is added to the history.
-			onPushState: "onPushState",
-
-			// An event triggered when navigation starts.
-			navigationStart: "navigationStart",
-
-			// An event triggered when navigation is canceled. This is due to a Route Guard returning false during navigation.
-			navigationCancel: "navigationCancel",
-
-			// An event triggered when navigation fails due to an unexpected error.
-			navigationError: "navigationError",
-
-			// An event triggered when navigation ends successfully.
-			navigationEnd: "navigationEnd"
-		};
-	}
-
-	/**
 	 * Dispatches a on push state event.
 	 */
 	private static dispatchOnPushStateEvent () {
-		window.dispatchEvent(new CustomEvent(Router.events.onPushState));
+		Router.dispatchEvent(RouterEventKind.OnPushState);
 	}
 
 	/*******************************************
@@ -159,5 +183,34 @@ export class Router {
 	static replaceState (data: {} | null, title: string | null, url: string | null) {
 		history.replaceState(data, title, url);
 		this.dispatchOnPushStateEvent();
+	}
+
+	/**
+	 * Adds a router event listener.
+	 * @param {RouterEventKind} type
+	 * @param listener
+	 * @param {boolean | AddEventListenerOptions} options
+	 */
+	static addEventListener (type: RouterEventKind, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) {
+		window.addEventListener(type, listener, options);
+	}
+
+	/**
+	 * Removes a router event listener.
+	 * @param {RouterEventKind} type
+	 * @param listener
+	 * @param {EventListenerOptions | boolean} options
+	 */
+	static removeEventListener (type: RouterEventKind, listener: EventListenerOrEventListenerObject, options?: EventListenerOptions | boolean) {
+		window.removeEventListener(type, listener, options);
+	}
+
+	/**
+	 * Dispatches a router event.
+	 * @param type
+	 * @param route
+	 */
+	static dispatchEvent (type: RouterEventKind, route?: IRoute) {
+		window.dispatchEvent(new CustomEvent(type, {detail: route}));
 	}
 }

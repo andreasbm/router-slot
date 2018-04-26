@@ -13,7 +13,7 @@ This is a a simple router for the web.
 
 ## 🎁 Step 1 -  Install the dependency
 
-```javascript
+```node
 npm i @appnest/web-router --save
 ```
 
@@ -36,15 +36,15 @@ import "@appnest/web-router";
 
 Routes are added to the router through the `setup` function. At least one of the routes must always match. *Remember that all pages needs to implement the `IPage` interface*.
 
-```javascript
+```typescript
 const router: RouterComponent = document.querySelector("router-component");
 await router.setup([
   {
-    path: new RegExp("login.*"),
+    path: /login.*/,                      // Preferred
     component: import("./pages/login")    // Preferred
   },
   {
-    path: /home.*/,                       // Preferred
+    path:  new RegExp("home.*"), 
     component: HomeComponent
   },
   {
@@ -66,7 +66,7 @@ customElements.whenDefined("router-component").then(async () => {
 
 A guard is a function that determines whether the route can be activated or not. The example below checks whether the user has a session saved in the local storage and redirects the user to the login page if the access is not provided.
 
-```javascript
+```typescript
 funtion sessionGuard (router: Router, route: IRoute) {
 
   if (localStorage.getItem("session") == null) {
@@ -94,13 +94,13 @@ await router.setup([
 
 Child routes are routes within another route! It is super simple to add one. All children will have the `parentRouter` property set. The `parentRouter` must be passed to the child router through the `setup` method. Here's an example of how to add routes to a child router.
 
-```javascript
+```typescript
 export default class HomeComponent implements IPage {
 
   parentRouter: RouterComponent;
 
   connectedCallback () {
-    const $router: Router = this.shadowRoot.querySelector("router-component");
+    const $router: RouterComponent = this.shadowRoot.querySelector("router-component");
     $router.setup([
       {
         path: /home\/secret.*/,
@@ -156,34 +156,55 @@ Here's an example on how to use the `RouterLink` component for navigating.
 
 ## 👋 Step 8 - Global navigation events
 
-You are able to listen to what happens in the `Router` through the events that are dispatched when something happens. They are dispatched on the `window` object. In this router we have the following events:
+You are able to listen to what happens in the `Router` through the events that are dispatched when something happens. They are dispatched on the `window` object.
 
-- **Router.events.onPushState** (An event triggered when a new state is added to the history)
-- **Router.events.navigationState** (An event triggered when navigation starts)
-- **Router.events.navigationCancel** (An event triggered when navigation is canceled. This is due to a Route Guard returning false during navigation)
-- **Router.events.navigationError** (An event triggered when navigation fails due to an unexpected error)
-- **Router.events.navigationEnd** (An event triggered when navigation ends successfully)
+```typescript
+export enum RouterEventKind {
+
+  // An event triggered when a new state is added to the history.
+  OnPushState = "onPushState",
+
+  // An event triggered when a state in the history is popped.
+  PopState = "popstate",
+
+  // An event triggered when navigation starts.
+  NavigationStart = "navigationStart",
+
+  // An event triggered when navigation is canceled. This is due to a Route Guard returning false during navigation.
+  NavigationCancel = "navigationCancel",
+
+  // An event triggered when navigation fails due to an unexpected error.
+  NavigationError = "navigationError",
+
+  // An event triggered when navigation ends successfully.
+  NavigationEnd = "navigationEnd"
+}
+```
 
 Here's an example of how you can listen to the events.
 
-```javascript
-window.addEventListener(Router.events.onPushState, (e: CustomEvent) => {
-  console.log("On push state", e.detail);
+```typescript
+Router.addEventListener(RouterEventKind.OnPushState, (e: IOnPushStateEvent) => {
+  console.log("On push state", Router.currentPath);
 });
 
-window.addEventListener(Router.events.navigationStart, (e: CustomEvent) => {
+Router.addEventListener(RouterEventKind.PopState, (e: IPopStateEvent) => {
+  console.log("On pop state", Router.currentPath);
+});
+
+Router.addEventListener(RouterEventKind.NavigationStart, (e: INavigationStartEvent) => {
   console.log("Navigation start", e.detail);
 });
 
-window.addEventListener(Router.events.navigationEnd, (e: CustomEvent) => {
+Router.addEventListener(RouterEventKind.NavigationEnd, (e: INavigationEndEvent) => {
   console.log("Navigation end", e.detail);
 });
 
-window.addEventListener(Router.events.navigationCancel, (e: CustomEvent) => {
+Router.addEventListener(RouterEventKind.NavigationCancel, (e: INavigationCancelEvent) => {
   console.log("Navigation cancelled", e.detail);
 });
 
-window.addEventListener(Router.events.navigationError, (e: CustomEvent) => {
+Router.addEventListener(RouterEventKind.NavigationError, (e: INavigationErrorEvent) => {
   console.log("Navigation failed", e.detail);
 });
 ```

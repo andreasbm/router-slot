@@ -1,4 +1,4 @@
-import { Router } from "./router";
+import {Router, RouterEventKind} from "./router";
 
 export interface IPage {
 	parentRouter: RouterComponent;
@@ -23,6 +23,13 @@ export interface IRoute {
 
 	/* A redirection route */
 	redirectTo?: string;
+}
+
+/**
+ * RouterComponent related events.
+ */
+export enum RouterComponentEventKind {
+	DidChangeRoute = "didChangeRoute"
 }
 
 const template = document.createElement("template");
@@ -51,15 +58,6 @@ export class RouterComponent extends HTMLElement {
 	 */
 	get isChildRouter () {
 		return this.parentRouter != null;
-	}
-
-	/**
-	 * RouterComponent related events.
-	 */
-	static get events () {
-		return {
-			didChangeRoute: "didChangeRoute"
-		};
 	}
 
 	/**
@@ -124,11 +122,11 @@ export class RouterComponent extends HTMLElement {
 	 */
 	private hookUpListeners () {
 		if (this.isChildRouter) {
-			this.parentRouter.addEventListener(RouterComponent.events.didChangeRoute, this.onPathChanged);
+			this.parentRouter.addEventListener(RouterComponentEventKind.DidChangeRoute, this.onPathChanged);
 
 		} else {
-			window.addEventListener("popstate", this.onPathChanged);
-			window.addEventListener(Router.events.onPushState, this.onPathChanged);
+			Router.addEventListener(RouterEventKind.PopState, this.onPathChanged);
+			Router.addEventListener(RouterEventKind.OnPushState, this.onPathChanged);
 		}
 	}
 
@@ -137,11 +135,11 @@ export class RouterComponent extends HTMLElement {
 	 */
 	private tearDownListeners () {
 		if (this.isChildRouter) {
-			this.parentRouter.removeEventListener(RouterComponent.events.didChangeRoute, this.onPathChanged);
+			this.parentRouter.removeEventListener(RouterComponentEventKind.DidChangeRoute, this.onPathChanged);
 		}
 
-		window.removeEventListener("popstate", this.onPathChanged);
-		window.removeEventListener(Router.events.onPushState, this.onPathChanged);
+		Router.removeEventListener(RouterEventKind.PopState, this.onPathChanged);
+		Router.removeEventListener(RouterEventKind.OnPushState, this.onPathChanged);
 	}
 
 	/**
@@ -194,7 +192,7 @@ export class RouterComponent extends HTMLElement {
 				for (const guard of route.guards) {
 					if (!guard(this, route)) {
 						// Dispatch globally that a navigation was cancelled.
-						this.dispatchGlobalEvent(Router.events.navigationCancel, route);
+						Router.dispatchEvent(RouterEventKind.NavigationCancel, route);
 						return false;
 					}
 				}
@@ -205,7 +203,7 @@ export class RouterComponent extends HTMLElement {
 			if (navigate) {
 
 				// Dispatch globally that a navigation has started.
-				this.dispatchGlobalEvent(Router.events.navigationStart, route);
+				Router.dispatchEvent(RouterEventKind.NavigationStart, route);
 
 				// Redirect if nessesary
 				if (route.redirectTo != null) {
@@ -242,13 +240,13 @@ export class RouterComponent extends HTMLElement {
 
 			// Dispatch globally that a navigation has ended.
 			if (navigate) {
-				this.dispatchGlobalEvent(Router.events.navigationEnd, route);
+				Router.dispatchEvent(RouterEventKind.NavigationEnd, route);
 			}
 
 			return navigate;
 
 		} catch (e) {
-			this.dispatchGlobalEvent(Router.events.navigationError, route);
+			Router.dispatchEvent(RouterEventKind.NavigationError, route);
 			throw e;
 		}
 	}
@@ -258,20 +256,11 @@ export class RouterComponent extends HTMLElement {
 	 * @param {IRoute} route
 	 */
 	private dispatchDidChangeRouteEvent (route: IRoute) {
-		this.dispatchEvent(new CustomEvent(RouterComponent.events.didChangeRoute, {
+		this.dispatchEvent(new CustomEvent(RouterComponentEventKind.DidChangeRoute, {
 			detail: {
 				route
 			}
 		}));
-	}
-
-	/**
-	 * Dispatches a global event.
-	 * @param eventName
-	 * @param {IRoute} route
-	 */
-	private dispatchGlobalEvent (eventName: string, route: IRoute) {
-		window.dispatchEvent(new CustomEvent(eventName, {detail: route}));
 	}
 }
 

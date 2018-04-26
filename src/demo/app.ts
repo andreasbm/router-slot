@@ -1,4 +1,15 @@
-import { IRoute, Router, RouterComponent } from "../lib";
+import {
+	INavigationCancelEvent,
+	INavigationEndEvent, INavigationErrorEvent,
+	INavigationStartEvent,
+	IOnPushStateEvent,
+	IRoute,
+	Router,
+	RouterComponent,
+	RouterEventKind
+} from "../lib";
+import {IPopStateEvent} from "../lib/router";
+import {RouterComponentEventKind} from "../lib/router-component";
 import HomeComponent from "./pages/home/home";
 
 export * from "./../lib/router-link";
@@ -24,30 +35,34 @@ customElements.whenDefined("router-component").then(async () => {
 	const router: RouterComponent = document.querySelector("router-component");
 
 	let hasInitialized = false;
-	router.addEventListener(RouterComponent.events.didChangeRoute, (e) => {
+	router.addEventListener(RouterComponentEventKind.DidChangeRoute, (e) => {
 		if (!hasInitialized) {
 			document.body.classList.add("initialized");
 			hasInitialized = true;
 		}
 	});
 
-	window.addEventListener(Router.events.onPushState, (e: CustomEvent) => {
-		console.log("On push state", e.detail);
+	Router.addEventListener(RouterEventKind.OnPushState, (e: IOnPushStateEvent) => {
+		console.log("On push state", Router.currentPath);
 	});
 
-	window.addEventListener(Router.events.navigationStart, (e: CustomEvent) => {
+	Router.addEventListener(RouterEventKind.PopState, (e: IPopStateEvent) => {
+		console.log("On pop state", Router.currentPath);
+	});
+
+	Router.addEventListener(RouterEventKind.NavigationStart, (e: INavigationStartEvent) => {
 		console.log("Navigation start", e.detail);
 	});
 
-	window.addEventListener(Router.events.navigationEnd, (e: CustomEvent) => {
+	Router.addEventListener(RouterEventKind.NavigationEnd, (e: INavigationEndEvent) => {
 		console.log("Navigation end", e.detail);
 	});
 
-	window.addEventListener(Router.events.navigationCancel, (e: CustomEvent) => {
+	Router.addEventListener(RouterEventKind.NavigationCancel, (e: INavigationCancelEvent) => {
 		console.log("Navigation cancelled", e.detail);
 	});
 
-	window.addEventListener(Router.events.navigationError, (e: CustomEvent) => {
+	Router.addEventListener(RouterEventKind.NavigationError, (e: INavigationErrorEvent) => {
 		console.log("Navigation failed", e.detail);
 	});
 
