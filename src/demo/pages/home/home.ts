@@ -1,5 +1,6 @@
 import { IPage, Router, RouterComponent } from "../../../lib";
-import { html, LitElement, TemplateResult } from "../../base";
+import { html, LitElement } from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
 
 export default class HomeComponent extends LitElement implements IPage {
 
@@ -32,7 +33,7 @@ export default class HomeComponent extends LitElement implements IPage {
 		Router.replaceState(null, null, "login");
 	}
 
-	render (): TemplateResult {
+	_render (): TemplateResult {
 		return html`
 <p>HomeComponent</p>
 <p></p>

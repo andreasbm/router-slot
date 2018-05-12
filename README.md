@@ -117,7 +117,7 @@ export default class HomeComponent implements IPage {
      ], this.parentRouter).then();
   }
 
-  render () {
+  _render () {
     return html`<router-component></router-component>`;
   }
 }

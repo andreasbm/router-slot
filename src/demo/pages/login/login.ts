@@ -1,5 +1,6 @@
-import { Router } from "../../../lib/router";
-import { html, LitElement, TemplateResult } from "../../base";
+import { Router } from "../../../lib";
+import { html, LitElement } from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
 
 export default class LoginComponent extends LitElement {
 
@@ -12,7 +13,7 @@ export default class LoginComponent extends LitElement {
 	 * Renders the component.
 	 * @returns {TemplateResult}
 	 */
-	render (): TemplateResult {
+	_render (): TemplateResult {
 		return html`
 <p>Login Component</p>
 <button on-click="${_ => this.login()}">Login</button>
