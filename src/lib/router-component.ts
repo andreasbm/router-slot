@@ -203,7 +203,6 @@ export class RouterComponent extends HTMLElement {
 
 			// Only change route if its a new route.
 			const navigate = (this.currentRoute !== route);
-			console.log(this.currentRoute, route, this.currentRoute !== route, navigate);
 			if (navigate) {
 
 				// Dispatch globally that a navigation has started.
