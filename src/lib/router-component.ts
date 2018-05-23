@@ -23,6 +23,9 @@ export interface IRoute {
 
 	/* A redirection route */
 	redirectTo?: string;
+
+	/* Optional metadata */
+	data?: any;
 }
 
 /**
