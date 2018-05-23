@@ -26,6 +26,20 @@ export function splitQuery (query: string): Params {
 	})));
 }
 
+/**
+ * Normalizes an url.
+ * Safari won't navigate if the doesn't start with "/". Other browser vendors do not care.
+ * @param {string} url
+ * @returns {string}
+ */
+export function normalizeUrl (url: string): string {
+	if (url.charAt(0) != '/') {
+		url = `/${url}`;
+	}
+
+	return url;
+}
+
 export interface IOnPushStateEvent extends CustomEvent {
 	detail: null;
 }
@@ -169,8 +183,8 @@ export class Router {
 	 * @param {string} title
 	 * @param {string | null} url
 	 */
-	static pushState (data: {} | null, title: string | null, url: string | null) {
-		history.pushState(data, title, url);
+	static pushState (data: {} | null, title: string | null, url: string) {
+		history.pushState(data, title, normalizeUrl(url));
 		this.dispatchOnPushStateEvent();
 	}
 
@@ -180,8 +194,8 @@ export class Router {
 	 * @param {string} title
 	 * @param {string | null} url
 	 */
-	static replaceState (data: {} | null, title: string | null, url: string | null) {
-		history.replaceState(data, title, url);
+	static replaceState (data: {} | null, title: string | null, url: string) {
+		history.replaceState(data, title, normalizeUrl(url));
 		this.dispatchOnPushStateEvent();
 	}
 

@@ -43,7 +43,7 @@ customElements.whenDefined("router-component").then(async () => {
 	});
 
 	Router.addEventListener(RouterEventKind.OnPushState, (e: IOnPushStateEvent) => {
-		console.log("On push state", Router.currentPath);
+		console.log("On push state", `'${Router.currentPath}'`);
 	});
 
 	Router.addEventListener(RouterEventKind.PopState, (e: IPopStateEvent) => {
