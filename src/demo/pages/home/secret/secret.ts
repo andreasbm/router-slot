@@ -13,11 +13,11 @@ export default class SecretComponent extends LitElement implements IPage {
 		$router.setup([
 			{
 				path: /home\/secret\/code/,
-				component: import("./code/code")
+				component: () => import("./code/code")
 			},
 			{
 				path: /home\/secret.*/,
-				component: import("./password/password")
+				component: () => import("./password/password")
 			}
 		], this.parentRouter).then();
 	}

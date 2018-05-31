@@ -41,7 +41,7 @@ const router: RouterComponent = document.querySelector("router-component");
 await router.setup([
   {
     path: /login.*/,                      // Preferred
-    component: import("./pages/login")    // Preferred
+    component: () => import("./pages/login")    // Preferred
   },
   {
     path:  new RegExp("home.*"), 
@@ -104,11 +104,11 @@ export default class HomeComponent implements IPage {
     $router.setup([
       {
         path: /home\/secret.*/,
-        component: import("./secret")
+        component: () => import("./secret")
       },
       {
         path: /home\/user.*/,
-        component: import("./user")
+        component: () => import("./user")
       },
       {
          path: "",

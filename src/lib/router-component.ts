@@ -6,13 +6,15 @@ export interface IPage {
 
 export type IGuard = ((router: RouterComponent, route: IRoute) => boolean);
 
+export type ModuleResolver = Promise<{ default: any }>;
+
 export interface IRoute {
 	/* The path match */
 	path: RegExp | string;
 
 	/* The component load (should return a module with a default export) */
 	/*tslint:disable:no-any*/
-	component?: Promise<{ default: any }> | any;
+	component?: ModuleResolver | any | (() => ModuleResolver);
 	/*tslint:enable:no-any*/
 
 	/* If guard returns false, the navigation is not allowed */
@@ -26,6 +28,15 @@ export interface IRoute {
 
 	/* Optional metadata */
 	data?: any;
+}
+
+/**
+ * Determines whether the provided function is a class.
+ * @param func
+ * @returns {boolean}
+ */
+function isClass(func: Function) {
+	return typeof func === 'function' && /^class\s/.test(Function.prototype.toString.call(func));
 }
 
 /**
@@ -214,13 +225,15 @@ export class RouterComponent extends HTMLElement {
 					return false;
 				}
 
-				const module = await Promise.resolve(route.component);
+				// If the component provided is a function (and not a class) call the function to get the promise.
+				let component = route.component;
+				if (component instanceof Function && !isClass(component)) {
+					component = route.component();
+				}
+
+				let module = await Promise.resolve(component);
 				const page = module.default ? (new module.default()) : new module();
 				page.parentRouter = this;
-
-				// Add the new page to the DOM
-				// this.innerHTML = "";
-				// this.appendChild(page);
 
 				if (this.childNodes.length > 0) {
 					const previousPage = this.childNodes[0];

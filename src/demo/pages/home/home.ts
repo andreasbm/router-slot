@@ -13,11 +13,11 @@ export default class HomeComponent extends LitElement implements IPage {
 		$router.setup([
 			{
 				path: /home\/secret.*/,
-				component: import("./secret/secret")
+				component: () => import("./secret/secret")
 			},
 			{
 				path: /home\/user.*/,
-				component: import("./user/user")
+				component: () => import("./user/user")
 			},
 			{
 				path: "",

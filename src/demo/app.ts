@@ -69,7 +69,7 @@ customElements.whenDefined("router-component").then(async () => {
 	await router.setup([
 		{
 			path: new RegExp("login.*"),
-			component: import("./pages/login/login")
+			component: () => import("./pages/login/login")
 		},
 		{
 			path: /home.*/,
