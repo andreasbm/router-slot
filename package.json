@@ -17,6 +17,6 @@
 		"publish:major": "npm run bump:major && git push && npm run b:lib && npm run publish"
 	},
 	"dependencies": {
-		"@appnest/web-config": "0.0.24"
+		"@appnest/web-config": "0.0.25"
 	}
 }
