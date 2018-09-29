@@ -110,12 +110,13 @@ export class RouterComponent extends HTMLElement {
 	 */
 	async setup (routes: IRoute[], parentRouter?: RouterComponent | null, navigate = true) {
 
-		// Add the routes to the array
+		// Clean up the current routes
 		await this.clearRoutes();
-		for (const route of routes) {
-			this.routes.push(route);
-		}
 
+		// Add the routes to the array
+		this.routes = routes;
+
+		// Store the reference to the parent router.
 		this.parentRouter = parentRouter;
 
 		// Register that the path has changed so the correct route can be loaded.
@@ -171,7 +172,14 @@ export class RouterComponent extends HTMLElement {
 	 */
 	private matchRoute (path: string): IRoute | null {
 		for (const route of this.routes) {
-			if (path.match(route.path) != null) {
+
+			// We need to treat empty paths a bit different because an empty string matches every path.
+			if (route.path === "") {
+				if (path === "") {
+					return route;
+				}
+
+			} else if (path.match(route.path) != null) {
 				return route;
 			}
 		}

@@ -40,28 +40,22 @@ export function normalizeUrl (url: string): string {
 	return url;
 }
 
-export interface IOnPushStateEvent extends CustomEvent {
-	detail: null;
+export interface IOnPushStateEvent extends CustomEvent<null> {
 }
 
-export interface IPopStateEvent extends CustomEvent {
-	detail: null;
+export interface IPopStateEvent extends CustomEvent<null> {
 }
 
-export interface INavigationStartEvent extends CustomEvent {
-	detail: IRoute;
+export interface INavigationStartEvent extends CustomEvent<IRoute> {
 }
 
-export interface INavigationCancelEvent extends CustomEvent {
-	detail: IRoute;
+export interface INavigationCancelEvent extends CustomEvent<IRoute> {
 }
 
-export interface INavigationErrorEvent extends CustomEvent {
-	detail: IRoute;
+export interface INavigationErrorEvent extends CustomEvent<IRoute> {
 }
 
-export interface INavigationEndEvent extends CustomEvent {
-	detail: IRoute;
+export interface INavigationEndEvent extends CustomEvent<IRoute> {
 }
 
 export enum RouterEventKind {
