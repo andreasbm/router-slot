@@ -1,23 +1,29 @@
 # @appnest/web-router
 
-## 🧐 What is this?
+<a href="https://npmcharts.com/compare/@appnest/web-router?minimal=true"><img alt="Downloads per month" src="https://img.shields.io/npm/dm/@appnest/web-router.svg" height="20"></img></a>
+<a href="https://david-dm.org/andreasbm/web-router"><img alt="Dependencies" src="https://img.shields.io/david/andreasbm/web-router.svg" height="20"></img></a>
+<a href="https://www.npmjs.com/package/@appnest/web-router"><img alt="NPM Version" src="https://img.shields.io/npm/v/@appnest/web-router.svg" height="20"></img></a>
+<a href="https://github.com/andreasbm/web-router/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/andreasbm/web-router.svg" height="20"></img></a>
+<a href="https://opensource.org/licenses/MIT"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellow.svg" height="20"></img></a>
+
+## What is this?
 
 This is a a simple router for the web.
 
-## 😃 Benefits
+## Benefits
 - Lazy loading of routes
 - Web component friendly
 - Small and lightweight
 - Easy to use API
 - Uses the History api.
 
-## 🎁 Step 1 -  Install the dependency
+## 🎁  Step 1 -  Install the dependency
 
 ```node
-npm i @appnest/web-router --save
+npm i @appnest/web-router
 ```
 
-## 🤝 Step 2 - Import it
+## 🤝  Step 2 - Import it
 
 Import the dependency in your application.
 
@@ -25,26 +31,25 @@ Import the dependency in your application.
 import "@appnest/web-router";
 ```
 
-
-## 👏 Step 3 - Add the router to the markup.
+## 👏  Step 3 - Add the router to the markup.
 
 ```html
 <router-component></router-component>
 ```
 
-## 👍 Step 4 - Add some routes!
+## 👍  Step 4 - Add some routes!
 
 Routes are added to the router through the `setup` function. At least one of the routes must always match. *Remember that all pages needs to implement the `IPage` interface*.
 
 ```typescript
-const router: RouterComponent = document.querySelector("router-component");
+const router = <RouterComponent>document.querySelector("router-component");
 await router.setup([
   {
-    path: /login.*/,                      // Preferred
+    path: /login.*/,                            // Preferred
     component: () => import("./pages/login")    // Preferred
   },
   {
-    path:  new RegExp("home.*"), 
+    path: new RegExp("home.*"), 
     component: HomeComponent
   },
   {
@@ -54,7 +59,7 @@ await router.setup([
 ]);
 ```
 
-You may want to wrap the above in a `whenDefined` callback.
+You may want to wrap the above in a `whenDefined` callback to ensure the `router-component` exists before using its logic.
 
 ```javascript
 customElements.whenDefined("router-component").then(async () => {
@@ -62,7 +67,7 @@ customElements.whenDefined("router-component").then(async () => {
 });
 ```
 
-## 🎉 Step 5 - Add some guards (optional)
+## 🎉  Step 5 - Add some guards (optional)
 
 A guard is a function that determines whether the route can be activated or not. The example below checks whether the user has a session saved in the local storage and redirects the user to the login page if the access is not provided.
 
@@ -90,17 +95,18 @@ await router.setup([
 ]);
 ```
 
-## 👶 Step 6 - Add some child routes
+## 👶  Step 6 - Add some child routes
 
 Child routes are routes within another route! It is super simple to add one. All children will have the `parentRouter` property set. The `parentRouter` must be passed to the child router through the `setup` method. Here's an example of how to add routes to a child router.
 
 ```typescript
-export default class HomeComponent implements IPage {
+export default class HomeComponent extends LitElement implements IPage {
 
   parentRouter: RouterComponent;
 
-  connectedCallback () {
-    const $router: RouterComponent = this.shadowRoot.querySelector("router-component");
+  firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    const $router = <RouterComponent>this.shadowRoot!.querySelector("router-component");
     $router.setup([
       {
         path: /home\/secret.*/,
@@ -117,7 +123,7 @@ export default class HomeComponent implements IPage {
      ], this.parentRouter).then();
   }
 
-  _render () {
+  render () {
     return html`<router-component></router-component>`;
   }
 }
@@ -125,7 +131,7 @@ export default class HomeComponent implements IPage {
 window.customElements.define("home-component", HomeComponent);
 ```
 
-## 🙌 Step 7 - Change route!
+## 🙌  Step 7 - Change route!
 
 In order to change a route you can either use the static methods on the `Router` class or the `RouterLink` component. The static methods mirrors the history API. Why not just use the `history` object directly you may ask? Because we have to keep track of when the state changes. Currently we have to dispatch our own `onpushstate` event.
 
@@ -154,7 +160,7 @@ Here's an example on how to use the `RouterLink` component for navigating.
 <router-link path="home/secret"><button>Go to the secret!</button></router-link>
 ```
 
-## 👋 Step 8 - Global navigation events
+## 👋  Step 8 - Global navigation events
 
 You are able to listen to what happens in the `Router` through the events that are dispatched when something happens. They are dispatched on the `window` object.
 

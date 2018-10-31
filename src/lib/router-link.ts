@@ -13,7 +13,7 @@ export class RouterLink extends HTMLElement {
 	}
 
 	get path (): string {
-		return this.getAttribute("path");
+		return this.getAttribute("path") || "";
 	}
 
 	/**
@@ -58,9 +58,12 @@ export class RouterLink extends HTMLElement {
 	/**
 	 * Navigates to the specified path.
 	 */
-	navigate () {
+	navigate (e: Event) {
 		if (this.path == null) throw new Error("The RouterLink needs a path set.");
-		if (this.disabled) return;
+		if (this.disabled) {
+			e.preventDefault();
+			return;
+		}
 
 		Router.pushState(null, null, this.path);
 	}

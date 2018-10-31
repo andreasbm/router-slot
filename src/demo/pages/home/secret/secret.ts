@@ -1,3 +1,4 @@
+import { PropertyValues } from "@polymer/lit-element/src/lib/updating-element";
 import { IPage, RouterComponent } from "../../../../lib";
 import { html, LitElement } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
@@ -6,10 +7,10 @@ export default class SecretComponent extends LitElement implements IPage {
 
 	parentRouter: RouterComponent;
 
-	connectedCallback () {
-		super.connectedCallback();
+	firstUpdated(changedProperties: PropertyValues) {
+		super.firstUpdated(changedProperties);
 
-		const $router: RouterComponent = this.shadowRoot.querySelector("router-component");
+		const $router = <RouterComponent>this.shadowRoot!.querySelector("router-component");
 		$router.setup([
 			{
 				path: /.*\/code/,
@@ -26,7 +27,7 @@ export default class SecretComponent extends LitElement implements IPage {
 	 * Renders the component.
 	 * @returns {TemplateResult}
 	 */
-	_render (): TemplateResult {
+	render (): TemplateResult {
 		return html`
 <p>SecretComponent</p>
 <router-link path="home/secret/code"><button>Go to CodeComponent</button></router-link>

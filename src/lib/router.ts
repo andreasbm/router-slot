@@ -1,83 +1,5 @@
-import {IRoute} from "./router-component";
-
-export type Params = { [key: string]: string };
-
-/**
- * Splits a query string and returns the params.
- * @param {string} query (example: ("test=123&hejsa=LOL&wuhuu"))
- * @returns {Params}
- */
-export function splitQuery (query: string): Params {
-
-	// If the query does not contain anything, return an empty object.
-	if (query.length === 0) {
-		return {};
-	}
-
-	// Grab the atoms (["test=123", "hejsa=LOL", "wuhuu"])
-	const atoms = query.split("&");
-
-	// Split by the values ([["test", "123"], ["hejsa", "LOL"], ["wuhuu"]])
-	const arrayMap = atoms.map(atom => atom.split("="));
-
-	// Assign the values to an object ({ test: "123", hejsa: "LOL", wuhuu: "" })
-	return Object.assign({}, ...arrayMap.map(arr => ({
-		[decodeURIComponent(arr[0])]: (arr.length > 1 ? decodeURIComponent(arr[1]) : "")
-	})));
-}
-
-/**
- * Normalizes an url.
- * Safari won't navigate if the doesn't start with "/". Other browser vendors do not care.
- * @param {string} url
- * @returns {string}
- */
-export function normalizeUrl (url: string): string {
-	if (url.charAt(0) != '/') {
-		url = `/${url}`;
-	}
-
-	return url;
-}
-
-export interface IOnPushStateEvent extends CustomEvent<null> {
-}
-
-export interface IPopStateEvent extends CustomEvent<null> {
-}
-
-export interface INavigationStartEvent extends CustomEvent<IRoute> {
-}
-
-export interface INavigationCancelEvent extends CustomEvent<IRoute> {
-}
-
-export interface INavigationErrorEvent extends CustomEvent<IRoute> {
-}
-
-export interface INavigationEndEvent extends CustomEvent<IRoute> {
-}
-
-export enum RouterEventKind {
-
-	// An event triggered when a new state is added to the history.
-	OnPushState = "onPushState",
-
-	// An event triggered when a state in the history is popped.
-	PopState = "popstate",
-
-	// An event triggered when navigation starts.
-	NavigationStart = "navigationStart",
-
-	// An event triggered when navigation is canceled. This is due to a Route Guard returning false during navigation.
-	NavigationCancel = "navigationCancel",
-
-	// An event triggered when navigation fails due to an unexpected error.
-	NavigationError = "navigationError",
-
-	// An event triggered when navigation ends successfully.
-	NavigationEnd = "navigationEnd"
-}
+import { IRoute, Params, RouterEventKind } from "./model";
+import { normalizeUrl, splitQuery } from "./util";
 
 export class Router {
 
@@ -178,7 +100,7 @@ export class Router {
 	 * @param {string | null} url
 	 */
 	static pushState (data: {} | null, title: string | null, url: string) {
-		history.pushState(data, title, normalizeUrl(url));
+		history.pushState(data, title!, normalizeUrl(url));
 		this.dispatchOnPushStateEvent();
 	}
 
@@ -189,7 +111,7 @@ export class Router {
 	 * @param {string | null} url
 	 */
 	static replaceState (data: {} | null, title: string | null, url: string) {
-		history.replaceState(data, title, normalizeUrl(url));
+		history.replaceState(data, title!, normalizeUrl(url));
 		this.dispatchOnPushStateEvent();
 	}
 

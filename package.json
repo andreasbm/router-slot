@@ -1,22 +1,45 @@
 {
 	"name": "@appnest/web-router",
 	"version": "0.0.20",
+	"description": "A simple router for the web.",
+	"author": "Appnest",
+	"bugs": {
+		"url": "https://github.com/andreasbm/web-router/issues"
+	},
+	"homepage": "https://github.com/andreasbm/web-router#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/andreasbm/web-router.git"
+	},
+	"keywords": [
+		"webapp",
+		"custom",
+		"elements",
+		"web",
+		"component",
+		"router"
+	],
+	"license": "MIT",
 	"scripts": {
-		"b:dev": "webpack --mode=development --config src/demo/webpack.config.js",
-		"b:prod": "webpack --mode=production --optimize-minimize --config src/demo/webpack.config.js",
-		"s": "node_modules/.bin/webpack-dev-server --open --hot --inline --config src/demo/webpack.config.js --mode=development",
-		"start": "npm run s",
+		"b:demo:dev": "rollup -c --environment NODE_ENV:dev",
+		"b:demo:prod": "rollup -c --environment NODE_ENV:prod",
+		"s:dev": "rollup -c --watch --environment NODE_ENV:dev",
+		"s:prod": "rollup -c --watch --environment NODE_ENV:prod",
+		"s": "npm run s:dev",
 		"ncu": "ncu -u -a && npm update && npm install",
 		"b:lib": "node build.js --harmony --experimental-modules",
+		"publish": "cd dist && npm publish --access=public && cd ..",
 		"bump:patch": "cd src/lib && npm version patch && cd ../.. && git stash && npm version patch && git stash apply && git add . && git commit --no-edit --amend --no-verify",
 		"bump:minor": "cd src/lib && npm version minor && cd ../.. && git stash && npm version minor && git stash apply && git add . && git commit --no-edit --amend --no-verify",
 		"bump:major": "cd src/lib && npm version major && cd ../.. && git stash && npm version major && git stash apply && git add . && git commit --no-edit --amend --no-verify",
-		"publish": "cd dist && npm publish --access=public && cd ..",
 		"publish:patch": "npm run bump:patch && git push && npm run b:lib && npm run publish",
 		"publish:minor": "npm run bump:minor && git push && npm run b:lib && npm run publish",
 		"publish:major": "npm run bump:major && git push && npm run b:lib && npm run publish"
 	},
-	"dependencies": {
-		"@appnest/web-config": "0.0.25"
+	"devDependencies": {
+		"@appnest/web-config": "0.1.26",
+		"@polymer/lit-element": "^0.6.2",
+		"node-typescript-compiler": "^1.1.1",
+		"npm-bump": "0.0.25"
 	}
 }

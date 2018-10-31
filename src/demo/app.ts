@@ -1,4 +1,5 @@
 import {
+	IDidChangeRouteEvent,
 	INavigationCancelEvent,
 	INavigationEndEvent, INavigationErrorEvent,
 	INavigationStartEvent,
@@ -6,10 +7,10 @@ import {
 	IRoute,
 	Router,
 	RouterComponent,
-	RouterEventKind
+	RouterEventKind,
+	IPopStateEvent,
+	RouterComponentEventKind
 } from "../lib";
-import {IPopStateEvent} from "../lib/router";
-import {RouterComponentEventKind} from "../lib/router-component";
 import HomeComponent from "./pages/home/home";
 
 export * from "./../lib/router-link";
@@ -32,10 +33,10 @@ function sessionGuard (router: RouterComponent, route: IRoute) {
 
 // Setup the router
 customElements.whenDefined("router-component").then(async () => {
-	const router: RouterComponent = document.querySelector("router-component");
+	const router  = <RouterComponent>document.querySelector("router-component");
 
 	let hasInitialized = false;
-	router.addEventListener(RouterComponentEventKind.DidChangeRoute, (e) => {
+	router.addEventListener(RouterComponentEventKind.DidChangeRoute, (e: IDidChangeRouteEvent) => {
 		if (!hasInitialized) {
 			document.body.classList.add("initialized");
 			hasInitialized = true;

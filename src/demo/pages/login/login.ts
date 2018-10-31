@@ -13,10 +13,10 @@ export default class LoginComponent extends LitElement {
 	 * Renders the component.
 	 * @returns {TemplateResult}
 	 */
-	_render (): TemplateResult {
+	render (): TemplateResult {
 		return html`
 <p>Login Component</p>
-<button on-click="${_ => this.login()}">Login</button>
+<button @click="${() => this.login()}">Login</button>
 		`;
 	}
 

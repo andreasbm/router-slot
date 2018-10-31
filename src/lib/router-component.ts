@@ -1,63 +1,19 @@
-import {Router, RouterEventKind} from "./router";
-
-export interface IPage {
-	parentRouter: RouterComponent;
-}
-
-export type IGuard = ((router: RouterComponent, route: IRoute) => boolean);
-
-export type ModuleResolver = Promise<{ default: any }>;
-
-export interface IRoute {
-	/* The path match */
-	path: RegExp | string;
-
-	/* The component load (should return a module with a default export) */
-	/*tslint:disable:no-any*/
-	component?: ModuleResolver | any | (() => ModuleResolver);
-	/*tslint:enable:no-any*/
-
-	/* If guard returns false, the navigation is not allowed */
-	guards?: IGuard[];
-
-	/* Determines whether there should be scrolled to the top on the new page */
-	scrollToTop?: boolean;
-
-	/* A redirection route */
-	redirectTo?: string;
-
-	/* Optional metadata */
-	data?: any;
-}
-
-/**
- * Determines whether the provided function is a class.
- * @param func
- * @returns {boolean}
- */
-function isClass(func: Function) {
-	return typeof func === 'function' && /^class\s/.test(Function.prototype.toString.call(func));
-}
-
-/**
- * RouterComponent related events.
- */
-export enum RouterComponentEventKind {
-	DidChangeRoute = "didChangeRoute"
-}
+import { IRoute, IRouterComponent, RouterComponentEventKind, RouterEventKind } from "./model";
+import { Router } from "./router";
+import { isClass } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
 
-export class RouterComponent extends HTMLElement {
+export class RouterComponent extends HTMLElement implements IRouterComponent {
 
 	/**
 	 * The parent router.
 	 * Is REQUIRED if this router is a child.
 	 * When set, the relevant listeners are added or teared down because they depend on the parent.
 	 */
-	_parentRouter: RouterComponent | null;
-	set parentRouter (value: RouterComponent | null) {
+	_parentRouter: IRouterComponent | null | undefined;
+	set parentRouter (value: IRouterComponent | null | undefined) {
 		this.tearDownListeners();
 		this._parentRouter = value;
 		this.hookUpListeners();
@@ -137,7 +93,7 @@ export class RouterComponent extends HTMLElement {
 	 */
 	private hookUpListeners () {
 		if (this.isChildRouter) {
-			this.parentRouter.addEventListener(RouterComponentEventKind.DidChangeRoute, this.onPathChanged);
+			this.parentRouter!.addEventListener(RouterComponentEventKind.DidChangeRoute, this.onPathChanged);
 
 		} else {
 			Router.addEventListener(RouterEventKind.PopState, this.onPathChanged);
@@ -150,7 +106,7 @@ export class RouterComponent extends HTMLElement {
 	 */
 	private tearDownListeners () {
 		if (this.isChildRouter) {
-			this.parentRouter.removeEventListener(RouterComponentEventKind.DidChangeRoute, this.onPathChanged);
+			this.parentRouter!.removeEventListener(RouterComponentEventKind.DidChangeRoute, this.onPathChanged);
 		}
 
 		Router.removeEventListener(RouterEventKind.PopState, this.onPathChanged);
@@ -174,12 +130,8 @@ export class RouterComponent extends HTMLElement {
 		for (const route of this.routes) {
 
 			// We need to treat empty paths a bit different because an empty string matches every path.
-			if (route.path === "") {
-				if (path === "") {
-					return route;
-				}
-
-			} else if (path.match(route.path) != null) {
+			const matchPath = route.path === "" ? /^$/ : route.path;
+			if (path.match(matchPath) != null) {
 				return route;
 			}
 		}
@@ -211,6 +163,7 @@ export class RouterComponent extends HTMLElement {
 
 			// Check whether the guards allows us to go to the new route.
 			if (route.guards != null) {
+				// @ts-ignore
 				for (const guard of route.guards) {
 					if (!guard(this, route)) {
 						// Dispatch globally that a navigation was cancelled.
