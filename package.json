@@ -1,6 +1,6 @@
 {
 	"name": "@appnest/web-router",
-	"version": "0.0.22",
+	"version": "0.0.23",
 	"description": "A simple router for the web.",
 	"author": "Appnest",
 	"bugs": {
