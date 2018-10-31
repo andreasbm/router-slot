@@ -29,9 +29,9 @@
 		"ncu": "ncu -u -a && npm update && npm install",
 		"b:lib": "node build.js --harmony --experimental-modules",
 		"publish": "cd dist && npm publish --access=public && cd ..",
-		"bump:patch": "cd src/lib && npm version patch && cd ../.. && git stash && npm version patch && git stash apply && git add . && git commit --no-edit --amend --no-verify",
-		"bump:minor": "cd src/lib && npm version minor && cd ../.. && git stash && npm version minor && git stash apply && git add . && git commit --no-edit --amend --no-verify",
-		"bump:major": "cd src/lib && npm version major && cd ../.. && git stash && npm version major && git stash apply && git add . && git commit --no-edit --amend --no-verify",
+		"bump:patch": "npm version patch && git add . && git commit --no-edit --amend --no-verify",
+		"bump:minor": "npm version minor && git add . && git commit --no-edit --amend --no-verify",
+		"bump:major": "npm version major && git add . && git commit --no-edit --amend --no-verify",
 		"publish:patch": "npm run bump:patch && git push && npm run b:lib && npm run publish",
 		"publish:minor": "npm run bump:minor && git push && npm run b:lib && npm run publish",
 		"publish:major": "npm run bump:major && git push && npm run b:lib && npm run publish"
