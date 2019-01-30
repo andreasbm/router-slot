@@ -1,4 +1,3 @@
-import { Router } from "../../../lib";
 import { html, LitElement } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
@@ -6,7 +5,7 @@ export default class LoginComponent extends LitElement {
 
 	private login () {
 		localStorage.setItem("session", "secretToken");
-		Router.replaceState(null, null, "");
+		history.replaceState(null, "", "");
 	}
 
 	/**
@@ -15,8 +14,8 @@ export default class LoginComponent extends LitElement {
 	 */
 	render (): TemplateResult {
 		return html`
-<p>Login Component</p>
-<button @click="${() => this.login()}">Login</button>
+			<p>Login Component</p>
+			<button @click="${() => this.login()}">Login</button>
 		`;
 	}
 

@@ -1,92 +1,79 @@
 export interface IRouterComponent extends EventTarget {
-	parentRouter: IRouterComponent | null | undefined;
+	readonly currentRoute: IRoute | null;
 	readonly isChildRouter: boolean;
+	parentRouter: IRouterComponent | null | undefined;
 	setup: ((routes: IRoute[], parentRouter?: IRouterComponent | null, navigate?: boolean) => Promise<void>);
 	clearRoutes: (() => Promise<void>);
 }
 
-export interface IPage {
+export interface IPage extends HTMLElement {
 	parentRouter: IRouterComponent;
 }
 
 export type IGuard = ((router: IRouterComponent, route: IRoute) => boolean);
 
-export type ModuleResolver = Promise<{ default: any }>;
+export type ModuleResolver = Promise<{default: any}>;
+export type Class = {new (...args: any[]): any;};
 
-export interface IRoute {
+export interface IRoute<T = any> {
+
 	/* The path match */
 	path: RegExp | string;
 
-	/* The component load (should return a module with a default export) */
-	/*tslint:disable:no-any*/
-	component?: ModuleResolver | any | (() => ModuleResolver);
-	/*tslint:enable:no-any*/
+	/* The component loader (should return a module with a default export) */
+	component?: Class | ModuleResolver | (() => ModuleResolver);
 
 	/* If guard returns false, the navigation is not allowed */
 	guards?: IGuard[];
-
-	/* Determines whether there should be scrolled to the top on the new page */
-	scrollToTop?: boolean;
 
 	/* A redirection route */
 	redirectTo?: string;
 
 	/* Optional metadata */
-	data?: any;
+	data?: T;
 }
 
+
+/**
+ * The router component did change route event.
+ */
+export type ChangeRouteEvent = CustomEvent<IRoute>;
+export type PushStateEvent = CustomEvent<null>;
+// export type PopStateEvent = CustomEvent<null>;
+export type NavigationStartEvent = CustomEvent<IRoute>;
+export type NavigationCancelEvent = CustomEvent<IRoute>;
+export type NavigationErrorEvent = CustomEvent<IRoute>;
+export type NavigationEndEvent = CustomEvent<IRoute>;
+
+export type Params = {[key: string]: string};
 
 /**
  * RouterComponent related events.
  */
 export enum RouterComponentEventKind {
-	DidChangeRoute = "didChangeRoute"
+	RouteChange = "routechange"
 }
 
 /**
- * The router component did change route event.
+ * History related events.
  */
-export interface IDidChangeRouteEvent extends CustomEvent<IRoute> {
-}
-
-export type Params = { [key: string]: string };
-
-
-export interface IOnPushStateEvent extends CustomEvent<null> {
-}
-
-export interface IPopStateEvent extends CustomEvent<null> {
-}
-
-export interface INavigationStartEvent extends CustomEvent<IRoute> {
-}
-
-export interface INavigationCancelEvent extends CustomEvent<IRoute> {
-}
-
-export interface INavigationErrorEvent extends CustomEvent<IRoute> {
-}
-
-export interface INavigationEndEvent extends CustomEvent<IRoute> {
-}
-
 export enum RouterEventKind {
 
 	// An event triggered when a new state is added to the history.
-	OnPushState = "onPushState",
+	PushState = "pushstate",
 
-	// An event triggered when a state in the history is popped.
+	// An event triggered when a state in the history is popped from the history.
 	PopState = "popstate",
 
 	// An event triggered when navigation starts.
-	NavigationStart = "navigationStart",
+	NavigationStart = "navigationstart",
 
 	// An event triggered when navigation is canceled. This is due to a Route Guard returning false during navigation.
-	NavigationCancel = "navigationCancel",
+	NavigationCancel = "navigationcancel",
 
 	// An event triggered when navigation fails due to an unexpected error.
-	NavigationError = "navigationError",
+	NavigationError = "navigationerror",
 
 	// An event triggered when navigation ends successfully.
-	NavigationEnd = "navigationEnd"
+	NavigationEnd = "navigationend"
 }

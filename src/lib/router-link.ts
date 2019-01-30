@@ -1,5 +1,3 @@
-import { Router } from "./router";
-
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
 
@@ -65,7 +63,7 @@ export class RouterLink extends HTMLElement {
 			return;
 		}
 
-		Router.pushState(null, null, this.path);
+		history.pushState(null, "", this.path);
 	}
 
 }

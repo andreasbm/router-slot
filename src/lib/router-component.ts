@@ -1,11 +1,18 @@
+import { currentPath, dispatchRouteChangeEvent, dispatchWindowEvent, ensureHistoryEvents, resolvePageComponent, matchRoute } from "./helpers";
 import { IRoute, IRouterComponent, RouterComponentEventKind, RouterEventKind } from "./model";
-import { Router } from "./router";
-import { isClass } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
 
+// Patches the history object and ensures the correct events.
+ensureHistoryEvents();
+
 export class RouterComponent extends HTMLElement implements IRouterComponent {
+
+	/**
+	 * Contains the available routes.
+	 */
+	private routes: IRoute[] = [];
 
 	/**
 	 * The parent router.
@@ -13,14 +20,22 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 	 * When set, the relevant listeners are added or teared down because they depend on the parent.
 	 */
 	_parentRouter: IRouterComponent | null | undefined;
-	set parentRouter (value: IRouterComponent | null | undefined) {
-		this.tearDownListeners();
-		this._parentRouter = value;
-		this.hookUpListeners();
-	}
-
 	get parentRouter () {
 		return this._parentRouter;
+	}
+
+	set parentRouter (router: IRouterComponent | null | undefined) {
+		this.detachListeners();
+		this._parentRouter = router;
+		this.attachListeners();
+	}
+
+	/**
+	 * The current route.
+	 */
+	private _currentRoute: IRoute | null;
+	get currentRoute () {
+		return this._currentRoute;
 	}
 
 	/**
@@ -29,16 +44,6 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 	get isChildRouter () {
 		return this.parentRouter != null;
 	}
-
-	/**
-	 * Contains the available routes.
-	 */
-	private routes: IRoute[] = [];
-
-	/**
-	 * The current route.
-	 */
-	private currentRoute: IRoute | null;
 
 	constructor () {
 		super();
@@ -54,17 +59,16 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 	 * Remove event listeners and clean up.
 	 */
 	disconnectedCallback () {
-		this.tearDownListeners();
+		this.detachListeners();
 	}
 
 	/**
-	 * Sets up the routes.
-	 * @param {IRoute[]} routes
+	 * Initializes the router.
+	 * @param routes
 	 * @param parentRouter
-	 * @param {boolean} navigate
-	 * @returns {Promise<void>}
+	 * @param navigate
 	 */
-	async setup (routes: IRoute[], parentRouter?: RouterComponent | null, navigate = true) {
+	async setup (routes: IRoute[], parentRouter?: IRouterComponent | null, navigate = true) {
 
 		// Clean up the current routes
 		await this.clearRoutes();
@@ -89,28 +93,27 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 	}
 
 	/**
-	 * Hook up listeners to either the window or the parent router.
+	 * Attaches listeners.
 	 */
-	private hookUpListeners () {
+	protected attachListeners () {
 		if (this.isChildRouter) {
-			this.parentRouter!.addEventListener(RouterComponentEventKind.DidChangeRoute, this.onPathChanged);
-
+			this.parentRouter!.addEventListener(RouterComponentEventKind.RouteChange, this.onPathChanged);
 		} else {
-			Router.addEventListener(RouterEventKind.PopState, this.onPathChanged);
-			Router.addEventListener(RouterEventKind.OnPushState, this.onPathChanged);
+			window.addEventListener(RouterEventKind.PopState, this.onPathChanged);
+			window.addEventListener(RouterEventKind.PushState, this.onPathChanged);
 		}
 	}
 
 	/**
-	 * Tear down the listeners from either the window or the parent router.
+	 * Detaches the listeners.
 	 */
-	private tearDownListeners () {
+	protected detachListeners () {
 		if (this.isChildRouter) {
-			this.parentRouter!.removeEventListener(RouterComponentEventKind.DidChangeRoute, this.onPathChanged);
+			this.parentRouter!.removeEventListener(RouterComponentEventKind.RouteChange, this.onPathChanged);
+		} else {
+			window.removeEventListener(RouterEventKind.PopState, this.onPathChanged);
+			window.removeEventListener(RouterEventKind.PushState, this.onPathChanged);
 		}
-
-		Router.removeEventListener(RouterEventKind.PopState, this.onPathChanged);
-		Router.removeEventListener(RouterEventKind.OnPushState, this.onPathChanged);
 	}
 
 	/**
@@ -118,25 +121,8 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 	 * Prevents the event from continuing down the router tree if a navigation was made.
 	 * @private
 	 */
-	private async onPathChanged () {
-		await this.loadPath(Router.currentPath);
-	}
-
-	/**
-	 * Matches the first route that matches the given path.
-	 * @private
-	 */
-	private matchRoute (path: string): IRoute | null {
-		for (const route of this.routes) {
-
-			// We need to treat empty paths a bit different because an empty string matches every path in the regex.
-			const matchPath = route.path === "" ? /^$/ : route.path;
-			if (path.match(matchPath) != null) {
-				return route;
-			}
-		}
-
-		return null;
+	protected async onPathChanged () {
+		await this.loadPath(currentPath());
 	}
 
 	/**
@@ -144,19 +130,19 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 	 * Returns true if a navigation was made to a new page.
 	 * @private
 	 */
-	private async loadPath (path: string): Promise<boolean> {
+	protected async loadPath (path: string): Promise<boolean> {
 
 		// Find the corresponding route.
-		const route = this.matchRoute(path);
+		const route = matchRoute(this.routes, path);
 
 		// Ensure that a route was found.
 		if (route == null) {
-			throw new Error(`No routes matches the path '${path}'.`);
+			throw new Error(`No routes matches the path "${path}".`);
 		}
 
 		// Check whether the component or redirectTo is specified (and that both are not specified)
 		if (route.component == null && route.redirectTo == null && !(route.component != null && route.redirectTo != null)) {
-			throw new Error(`The route ´${route.path}´ needs to have either a component or a redirectTo set (and not both).`);
+			throw new Error(`The route "${route.path}" needs to have either a component or a redirectTo set (and not both).`);
 		}
 
 		try {
@@ -167,7 +153,7 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 				for (const guard of route.guards) {
 					if (!guard(this, route)) {
 						// Dispatch globally that a navigation was cancelled.
-						Router.dispatchEvent(RouterEventKind.NavigationCancel, route);
+						dispatchWindowEvent(RouterEventKind.NavigationCancel, route);
 						return false;
 					}
 				}
@@ -178,22 +164,16 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 			if (navigate) {
 
 				// Dispatch globally that a navigation has started.
-				Router.dispatchEvent(RouterEventKind.NavigationStart, route);
+				dispatchWindowEvent(RouterEventKind.NavigationStart, route);
 
-				// Redirect if nessesary
+				// Redirect if necessary
 				if (route.redirectTo != null) {
-					Router.replaceState(null, null, route.redirectTo);
+					history.replaceState(history.state, "", route.redirectTo);
 					return false;
 				}
 
 				// If the component provided is a function (and not a class) call the function to get the promise.
-				let component = route.component;
-				if (component instanceof Function && !isClass(component)) {
-					component = route.component();
-				}
-
-				let module = await Promise.resolve(component);
-				const page = module.default ? (new module.default()) : new module();
+				const page = await resolvePageComponent(route);
 				page.parentRouter = this;
 
 				if (this.childNodes.length > 0) {
@@ -202,43 +182,26 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 				}
 
 				this.appendChild(page);
-				this.currentRoute = route;
+				this._currentRoute = route;
 			}
 
-			// Scroll to the top of the new page if nessesary.
-			// Scrolling to the top is the default behavior.
-			if (route.scrollToTop == null || route.scrollToTop) {
-				window.scrollTo(0, 0);
-			}
-
-			// Always dispatch the did change route event to notify the children that something happened.
+			// Always dispatch the route change event to notify the children that something happened.
 			// This is because the child routes might have to change routes further down the tree.
-			this.dispatchDidChangeRouteEvent(route);
+			dispatchRouteChangeEvent(this, route);
 
 			// Dispatch globally that a navigation has ended.
 			if (navigate) {
-				Router.dispatchEvent(RouterEventKind.NavigationEnd, route);
+				dispatchWindowEvent(RouterEventKind.NavigationEnd, route);
 			}
 
 			return navigate;
 
 		} catch (e) {
-			Router.dispatchEvent(RouterEventKind.NavigationError, route);
+			dispatchWindowEvent(RouterEventKind.NavigationError, route);
 			throw e;
 		}
 	}
 
-	/**
-	 * Dispatches a did change route event.
-	 * @param {IRoute} route
-	 */
-	private dispatchDidChangeRouteEvent (route: IRoute) {
-		this.dispatchEvent(new CustomEvent(RouterComponentEventKind.DidChangeRoute, {
-			detail: {
-				route
-			}
-		}));
-	}
 }
 
 window.customElements.define("router-component", RouterComponent);

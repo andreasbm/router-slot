@@ -9,7 +9,7 @@ export default class UserComponent extends LitElement {
 	 */
 	_render (): TemplateResult {
 		return html`
-<p>UserComponent</p>
+			<p>UserComponent</p>
 		`;
 	}
 

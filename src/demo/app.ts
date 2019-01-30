@@ -1,19 +1,6 @@
-import {
-	IDidChangeRouteEvent,
-	INavigationCancelEvent,
-	INavigationEndEvent, INavigationErrorEvent,
-	INavigationStartEvent,
-	IOnPushStateEvent,
-	IRoute,
-	Router,
-	RouterComponent,
-	RouterEventKind,
-	IPopStateEvent,
-	RouterComponentEventKind
-} from "../lib";
-import HomeComponent from "./pages/home/home";
+import { currentPath, ChangeRouteEvent, IRoute, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, PushStateEvent, RouterComponent, RouterComponentEventKind, RouterEventKind } from "../lib";
 
-export * from "./../lib/router-link";
+import "./../lib/router-link";
 
 /**
  * Asserts that the user is authenticated.
@@ -24,7 +11,7 @@ export * from "./../lib/router-link";
 function sessionGuard (router: RouterComponent, route: IRoute) {
 
 	if (localStorage.getItem("session") == null) {
-		Router.replaceState(null, null, "login");
+		history.replaceState(null, "", "login");
 		return false;
 	}
 
@@ -33,48 +20,49 @@ function sessionGuard (router: RouterComponent, route: IRoute) {
 
 // Setup the router
 customElements.whenDefined("router-component").then(async () => {
-	const router  = <RouterComponent>document.querySelector("router-component");
+	const router = <RouterComponent>document.querySelector("router-component");
 
 	let hasInitialized = false;
-	router.addEventListener(RouterComponentEventKind.DidChangeRoute, (e: IDidChangeRouteEvent) => {
+	router.addEventListener(RouterComponentEventKind.RouteChange, (e: ChangeRouteEvent) => {
 		if (!hasInitialized) {
 			document.body.classList.add("initialized");
 			hasInitialized = true;
 		}
 	});
 
-	Router.addEventListener(RouterEventKind.OnPushState, (e: IOnPushStateEvent) => {
-		console.log("On push state", `'${Router.currentPath}'`);
+	window.addEventListener(RouterEventKind.PushState, (e: PushStateEvent) => {
+		console.log("On push state", `'${currentPath()}'`);
 	});
 
-	Router.addEventListener(RouterEventKind.PopState, (e: IPopStateEvent) => {
-		console.log("On pop state", Router.currentPath);
+	window.addEventListener(RouterEventKind.PopState, (e: PopStateEvent) => {
+		console.log("On pop state", currentPath(), e.state);
 	});
 
-	Router.addEventListener(RouterEventKind.NavigationStart, (e: INavigationStartEvent) => {
+	window.addEventListener(RouterEventKind.NavigationStart, (e: NavigationStartEvent) => {
 		console.log("Navigation start", e.detail);
 	});
 
-	Router.addEventListener(RouterEventKind.NavigationEnd, (e: INavigationEndEvent) => {
+	window.addEventListener(RouterEventKind.NavigationEnd, (e: NavigationEndEvent) => {
+		window.scrollTo({top: 0, left: 0, behavior: "smooth"});
 		console.log("Navigation end", e.detail);
 	});
 
-	Router.addEventListener(RouterEventKind.NavigationCancel, (e: INavigationCancelEvent) => {
+	window.addEventListener(RouterEventKind.NavigationCancel, (e: NavigationCancelEvent) => {
 		console.log("Navigation cancelled", e.detail);
 	});
 
-	Router.addEventListener(RouterEventKind.NavigationError, (e: INavigationErrorEvent) => {
+	window.addEventListener(RouterEventKind.NavigationError, (e: NavigationErrorEvent) => {
 		console.log("Navigation failed", e.detail);
 	});
 
 	await router.setup([
 		{
-			path: new RegExp("login.*"),
+			path: /^login.*/,
 			component: () => import("./pages/login/login")
 		},
 		{
-			path: /home.*/,
-			component: HomeComponent,
+			path: /^home.*/,
+			component: () => import("./pages/home/home"),
 			guards: [sessionGuard]
 		},
 		{

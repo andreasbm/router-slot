@@ -10,6 +10,8 @@ export default class SecretComponent extends LitElement implements IPage {
 	firstUpdated(changedProperties: PropertyValues) {
 		super.firstUpdated(changedProperties);
 
+		console.log(this.parentRouter.currentRoute);
+
 		const $router = <RouterComponent>this.shadowRoot!.querySelector("router-component");
 		$router.setup([
 			{
@@ -29,12 +31,12 @@ export default class SecretComponent extends LitElement implements IPage {
 	 */
 	render (): TemplateResult {
 		return html`
-<p>SecretComponent</p>
-<router-link path="home/secret/code"><button>Go to CodeComponent</button></router-link>
-<router-link path="home/secret"><button>Go to PasswordComponent</button></router-link>
-<div id="child">
-	<router-component></router-component>
-</div>
+			<p>SecretComponent</p>
+			<router-link path="home/secret/code"><button>Go to CodeComponent</button></router-link>
+			<router-link path="home/secret"><button>Go to PasswordComponent</button></router-link>
+			<div id="child">
+				<router-component></router-component>
+			</div>
 		`;
 	}
 

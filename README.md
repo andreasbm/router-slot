@@ -15,15 +15,15 @@ This is a a simple router for the web.
 - Web component friendly
 - Small and lightweight
 - Easy to use API
-- Uses the History api.
+- Uses the History api
 
-## 🎁  Step 1 -  Install the dependency
+## Step 1 -  Install the dependency
 
 ```node
 npm i @appnest/web-router
 ```
 
-## 🤝  Step 2 - Import it
+## Step 2 - Import it
 
 Import the dependency in your application.
 
@@ -31,25 +31,25 @@ Import the dependency in your application.
 import "@appnest/web-router";
 ```
 
-## 👏  Step 3 - Add the router to the markup.
+## Step 3 - Add the router to the markup.
 
 ```html
 <router-component></router-component>
 ```
 
-## 👍  Step 4 - Add some routes!
+## Step 4 - Add some routes!
 
-Routes are added to the router through the `setup` function. At least one of the routes must always match. *Remember that all pages needs to implement the `IPage` interface*.
+Routes are added to the router through the `setup` function. At least one of the routes must always match.
 
 ```typescript
-const router = <RouterComponent>document.querySelector("router-component");
+const router = <IRouterComponent>document.querySelector("router-component");
 await router.setup([
   {
-    path: /login.*/,                            // Preferred
-    component: () => import("./pages/login")    // Preferred
+    path: /^login.*/,
+    component: () => import("./pages/login")
   },
   {
-    path: new RegExp("home.*"), 
+    path: /^home.*/,
     component: HomeComponent
   },
   {
@@ -67,7 +67,7 @@ customElements.whenDefined("router-component").then(async () => {
 });
 ```
 
-## 🎉  Step 5 - Add some guards (optional)
+## Step 5 - Add some guards (optional)
 
 A guard is a function that determines whether the route can be activated or not. The example below checks whether the user has a session saved in the local storage and redirects the user to the login page if the access is not provided.
 
@@ -75,7 +75,7 @@ A guard is a function that determines whether the route can be activated or not.
 funtion sessionGuard (router: Router, route: IRoute) {
 
   if (localStorage.getItem("session") == null) {
-    Router.replaceState(null, null, "login");
+    Router.replaceState(null, "", "login");
     return false;
   }
 
@@ -95,25 +95,25 @@ await router.setup([
 ]);
 ```
 
-## 👶  Step 6 - Add some child routes
+## Step 6 - Add some child routes
 
 Child routes are routes within another route! It is super simple to add one. All children will have the `parentRouter` property set. The `parentRouter` must be passed to the child router through the `setup` method. Here's an example of how to add routes to a child router.
 
 ```typescript
 export default class HomeComponent extends LitElement implements IPage {
 
-  parentRouter: RouterComponent;
+  parentRouter: IRouterComponent;
 
   firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
-    const $router = <RouterComponent>this.shadowRoot!.querySelector("router-component");
+    const $router = <IRouterComponent>this.shadowRoot!.querySelector("router-component");
     $router.setup([
       {
-        path: /home\/secret.*/,
+        path: /^home\/secret.*/,
         component: () => import("./secret")
       },
       {
-        path: /home\/user.*/,
+        path: /^home\/user.*/,
         component: () => import("./user")
       },
       {
@@ -131,86 +131,86 @@ export default class HomeComponent extends LitElement implements IPage {
 window.customElements.define("home-component", HomeComponent);
 ```
 
-## 🙌  Step 7 - Change route!
+## Step 7 - Change route!
 
-In order to change a route you can either use the static methods on the `Router` class or the `RouterLink` component. The static methods mirrors the history API. Why not just use the `history` object directly you may ask? Because we have to keep track of when the state changes. Currently we have to dispatch our own `onpushstate` event.
+In order to change a route you can either use the [`history`](https://developer.mozilla.org/en-US/docs/Web/API/History) api directly or the `RouterLink` component.
 
-Here's an example on how to use the `Router` class for navigating.
+Here's an example on how to navigate.
 
 ```javascript
-Router.pushState(null, null, "login");
+history.pushState(null, "", "login");
 ```
 
 Or (if you want to replace the state and not keep the current one in the history)
 
 ```javascript
-Router.replaceState(null, null, "login");
+history.replaceState(null, """, "login");
 ```
 
 You can also go back and forth between the states!
 
 ```javascript
-Router.back();
-Router.forward();
+history.back();
+history.forward();
 ```
 
 Here's an example on how to use the `RouterLink` component for navigating.
 
 ```html
-<router-link path="home/secret"><button>Go to the secret!</button></router-link>
+<router-link path="home/secret"><button>Go to the secret page!</button></router-link>
 ```
 
-## 👋  Step 8 - Global navigation events
+## Step 8 - Global navigation events
 
-You are able to listen to what happens in the `Router` through the events that are dispatched when something happens. They are dispatched on the `window` object.
+You are able to listen to the navigation related events that are dispatched each time something important happens. They are dispatched on the `window` object.
 
 ```typescript
 export enum RouterEventKind {
 
   // An event triggered when a new state is added to the history.
-  OnPushState = "onPushState",
+  PushState = "pushstate",
 
-  // An event triggered when a state in the history is popped.
+  // An event triggered when a state in the history is popped from the history.
   PopState = "popstate",
 
   // An event triggered when navigation starts.
-  NavigationStart = "navigationStart",
+  NavigationStart = "navigationstart",
 
   // An event triggered when navigation is canceled. This is due to a Route Guard returning false during navigation.
-  NavigationCancel = "navigationCancel",
+  NavigationCancel = "navigationcancel",
 
   // An event triggered when navigation fails due to an unexpected error.
-  NavigationError = "navigationError",
+  NavigationError = "navigationerror",
 
   // An event triggered when navigation ends successfully.
-  NavigationEnd = "navigationEnd"
+  NavigationEnd = "navigationend"
 }
 ```
 
 Here's an example of how you can listen to the events.
 
 ```typescript
-Router.addEventListener(RouterEventKind.OnPushState, (e: IOnPushStateEvent) => {
+window.addEventListener(RouterEventKind.OnPushState, (e: PushStateEvent) => {
   console.log("On push state", Router.currentPath);
 });
 
-Router.addEventListener(RouterEventKind.PopState, (e: IPopStateEvent) => {
+window.addEventListener(RouterEventKind.PopState, (e: PopStateEvent) => {
   console.log("On pop state", Router.currentPath);
 });
 
-Router.addEventListener(RouterEventKind.NavigationStart, (e: INavigationStartEvent) => {
+window.addEventListener(RouterEventKind.NavigationStart, (e: NavigationStartEvent) => {
   console.log("Navigation start", e.detail);
 });
 
-Router.addEventListener(RouterEventKind.NavigationEnd, (e: INavigationEndEvent) => {
+window.addEventListener(RouterEventKind.NavigationEnd, (e: NavigationEndEvent) => {
   console.log("Navigation end", e.detail);
 });
 
-Router.addEventListener(RouterEventKind.NavigationCancel, (e: INavigationCancelEvent) => {
+window.addEventListener(RouterEventKind.NavigationCancel, (e: NavigationCancelEvent) => {
   console.log("Navigation cancelled", e.detail);
 });
 
-Router.addEventListener(RouterEventKind.NavigationError, (e: INavigationErrorEvent) => {
+window.addEventListener(RouterEventKind.NavigationError, (e: NavigationErrorEvent) => {
   console.log("Navigation failed", e.detail);
 });
 ```
