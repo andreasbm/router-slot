@@ -129,7 +129,7 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 	private matchRoute (path: string): IRoute | null {
 		for (const route of this.routes) {
 
-			// We need to treat empty paths a bit different because an empty string matches every path.
+			// We need to treat empty paths a bit different because an empty string matches every path in the regex.
 			const matchPath = route.path === "" ? /^$/ : route.path;
 			if (path.match(matchPath) != null) {
 				return route;
@@ -161,7 +161,7 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 
 		try {
 
-			// Check whether the guards allows us to go to the new route.
+			// Check whether the guards allow us to go to the new route.
 			if (route.guards != null) {
 				// @ts-ignore
 				for (const guard of route.guards) {
