@@ -136,7 +136,7 @@ window.customElements.define("home-component", HomeComponent);
 
 In order to change a route you can either use the [`history`](https://developer.mozilla.org/en-US/docs/Web/API/History) API directly or the `RouterLink` component.
 
-## History API
+### History API
 Here's an example on how to navigate.
 
 ```javascript
@@ -149,7 +149,7 @@ Or (if you want to replace the state and not keep the current one in the history
 history.replaceState(null, """, "login");
 ```
 
-## `RouterLink` component
+### `RouterLink` component
 
 With the `RouterLink` component you add the `<router-link>` to your markup and specifies a path. When ever the component is clicked it will navigate to the specified path. Whenever the router link is active the active attribute is set.
 
