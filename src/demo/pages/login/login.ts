@@ -1,11 +1,12 @@
-import { html, LitElement } from "@polymer/lit-element";
+import { html, LitElement } from "lit-element";
 import { TemplateResult } from "lit-html";
+import { sharedStyles } from "../styles";
 
 export default class LoginComponent extends LitElement {
 
 	private login () {
 		localStorage.setItem("session", "secretToken");
-		history.replaceState(null, "", "");
+		history.replaceState(null, "", "/");
 	}
 
 	/**
@@ -14,6 +15,9 @@ export default class LoginComponent extends LitElement {
 	 */
 	render (): TemplateResult {
 		return html`
+			<style>
+				${sharedStyles}
+			</style>
 			<p>Login Component</p>
 			<button @click="${() => this.login()}">Login</button>
 		`;

@@ -1,4 +1,4 @@
-import { currentPath, ChangeRouteEvent, IRoute, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, PushStateEvent, RouterComponent, RouterComponentEventKind, RouterEventKind } from "../lib";
+import { currentPath, ChangeRouteEvent, IRoute, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, PushStateEvent, RouterComponent, RouterComponentEventKind, RouterEventKind, NavigationSuccessEvent } from "../lib";
 
 import "./../lib/router-link";
 
@@ -47,6 +47,10 @@ customElements.whenDefined("router-component").then(async () => {
 		console.log("Navigation end", e.detail);
 	});
 
+	window.addEventListener(RouterEventKind.NavigationSuccess, (e: NavigationSuccessEvent) => {
+		console.log("Navigation success", e.detail);
+	});
+
 	window.addEventListener(RouterEventKind.NavigationCancel, (e: NavigationCancelEvent) => {
 		console.log("Navigation cancelled", e.detail);
 	});
@@ -57,11 +61,11 @@ customElements.whenDefined("router-component").then(async () => {
 
 	await router.setup([
 		{
-			path: /^login.*/,
+			path: /.*login.*/,
 			component: () => import("./pages/login/login")
 		},
 		{
-			path: /^home.*/,
+			path: /.*home.*/,
 			component: () => import("./pages/home/home"),
 			guards: [sessionGuard]
 		},

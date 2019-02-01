@@ -1,17 +1,20 @@
+import { currentPath, isPathMatch } from "./helpers";
+import { RouterEventKind } from "./model";
+
 const template = document.createElement("template");
-template.innerHTML = `<slot></slot>`;
+template.innerHTML = `</style><slot></slot>`;
 
 export class RouterLink extends HTMLElement {
 
 	/**
-	 * The path of the routing.
+	 * The path of the navigation.
 	 */
 	set path (value: string) {
 		this.setAttribute("path", value);
 	}
 
 	get path (): string {
-		return this.getAttribute("path") || "";
+		return this.getAttribute("path") || "/";
 	}
 
 	/**
@@ -22,17 +25,25 @@ export class RouterLink extends HTMLElement {
 	}
 
 	set disabled (value: boolean) {
-		if (value) {
-			this.setAttribute("disabled", "true");
-		} else {
-			this.removeAttribute("disabled");
-		}
+		value ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
+	}
+
+	/**
+	 * Whether the component is active or not.
+	 */
+	get active (): boolean {
+		return Boolean(this.getAttribute("disabled"));
+	}
+
+	set active (value: boolean) {
+		value ? this.setAttribute("active", "") : this.removeAttribute("active");
 	}
 
 	constructor () {
 		super();
 
 		this.navigate = this.navigate.bind(this);
+		this.updateActive = this.updateActive.bind(this);
 
 		// Attach the template
 		const shadow = this.attachShadow({mode: "open"});
@@ -44,6 +55,7 @@ export class RouterLink extends HTMLElement {
 	 */
 	connectedCallback () {
 		this.addEventListener("click", this.navigate);
+		window.addEventListener(RouterEventKind.NavigationEnd, this.updateActive);
 	}
 
 	/**
@@ -51,13 +63,23 @@ export class RouterLink extends HTMLElement {
 	 */
 	disconnectedCallback () {
 		this.removeEventListener("click", this.navigate);
+		window.removeEventListener(RouterEventKind.NavigationEnd, this.updateActive);
+	}
+
+	/**
+	 * Updates whether the route is active or not.
+	 */
+	updateActive () {
+		const active = isPathMatch(this.path, currentPath());
+		if (active !== this.active) {
+			this.active = active;
+		}
 	}
 
 	/**
 	 * Navigates to the specified path.
 	 */
 	navigate (e: Event) {
-		if (this.path == null) throw new Error("The RouterLink needs a path set.");
 		if (this.disabled) {
 			e.preventDefault();
 			return;

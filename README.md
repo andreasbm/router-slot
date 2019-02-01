@@ -8,14 +8,15 @@
 
 ## What is this?
 
-This is a a simple router for the web.
+This is a simple web component router. Go here to see a demo [https://appnest-demo.firebaseapp.com/web-router](https://appnest-demo.firebaseapp.com/web-router).
 
 ## Benefits
 - Lazy loading of routes
 - Web component friendly
 - Small and lightweight
 - Easy to use API
-- Uses the History api
+- Zero dependencies
+- Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
 
 ## Step 1 -  Install the dependency
 
@@ -131,10 +132,11 @@ export default class HomeComponent extends LitElement implements IPage {
 window.customElements.define("home-component", HomeComponent);
 ```
 
-## Step 7 - Change route!
+## Step 7 - Navigate!
 
-In order to change a route you can either use the [`history`](https://developer.mozilla.org/en-US/docs/Web/API/History) api directly or the `RouterLink` component.
+In order to change a route you can either use the [`history`](https://developer.mozilla.org/en-US/docs/Web/API/History) API directly or the `RouterLink` component.
 
+## History API
 Here's an example on how to navigate.
 
 ```javascript
@@ -147,6 +149,14 @@ Or (if you want to replace the state and not keep the current one in the history
 history.replaceState(null, """, "login");
 ```
 
+## `RouterLink` component
+
+With the `RouterLink` component you add the `<router-link>` to your markup and specifies a path. When ever the component is clicked it will navigate to the specified path. Whenever the router link is active the active attribute is set.
+
+```html
+<router-link path="home/secret"><button>Go to SecretComponent</button></router-link>
+```
+
 You can also go back and forth between the states!
 
 ```javascript
@@ -154,7 +164,7 @@ history.back();
 history.forward();
 ```
 
-Here's an example on how to use the `RouterLink` component for navigating.
+Here's an example on how to use the `RouterLink` component for navigating. Whenever you use a router link component you can
 
 ```html
 <router-link path="home/secret"><button>Go to the secret page!</button></router-link>
@@ -182,7 +192,10 @@ export enum RouterEventKind {
   // An event triggered when navigation fails due to an unexpected error.
   NavigationError = "navigationerror",
 
-  // An event triggered when navigation ends successfully.
+  // An event triggered when navigation successfully completes.
+  NavigationSuccess = "navigationsuccess",
+
+  // An event triggered when navigation ends.
   NavigationEnd = "navigationend"
 }
 ```
@@ -213,7 +226,15 @@ window.addEventListener(RouterEventKind.NavigationCancel, (e: NavigationCancelEv
 window.addEventListener(RouterEventKind.NavigationError, (e: NavigationErrorEvent) => {
   console.log("Navigation failed", e.detail);
 });
+
+window.addEventListener(RouterEventKind.NavigationSuccess, (e: NavigationSuccessEvent) => {
+  console.log("Navigation failed", e.detail);
+});
 ```
+
+## Be careful when navigating to the root!
+
+From my testing I found that Chrome and Safari treat an empty string as url when navigating differently. As an example `history.pushState(null, null, "")` will navigate to the root of the website in Chrome but in Safari the path won't change. The workaround I found was to simply pass "/" when navigating to the root of the website instead.
 
 ## 🎉 License
 

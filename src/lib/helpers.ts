@@ -12,7 +12,7 @@ export function currentPath (): string {
  * Returns the params for the current path.
  * @returns Params
  */
-export function params (): Params {
+export function query (): Params {
 	const query = window.location.search.substr(1);
 	return splitQuery(query);
 }
@@ -76,16 +76,24 @@ export function dispatchRouteChangeEvent ($elem: HTMLElement, route: IRoute) {
 }
 
 /**
+ * Determines whether a route matches a path.
+ * @param routePath
+ * @param path
+ */
+export function isPathMatch (routePath: string | RegExp, path: string): boolean {
+	// We need to treat empty paths a bit different because an empty string matches every path in the regex.
+	const matchPath = routePath === "" ? /^$/ : routePath;
+	return path.match(matchPath) != null;
+}
+
+/**
  * Matches the first route that matches the given path.
  * @param routes
  * @param path
  */
-export function matchRoute (routes: IRoute[], path: string): IRoute | null {
+export function matchRoutes (routes: IRoute[], path: string): IRoute | null {
 	for (const route of routes) {
-
-		// We need to treat empty paths a bit different because an empty string matches every path in the regex.
-		const matchPath = route.path === "" ? /^$/ : route.path;
-		if (path.match(matchPath) != null) {
+		if (isPathMatch(route.path, path)) {
 			return route;
 		}
 	}

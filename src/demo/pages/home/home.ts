@@ -1,7 +1,8 @@
-import { LitElement, PropertyValues } from "@polymer/lit-element";
+import { LitElement, PropertyValues } from "lit-element";
 import { html, TemplateResult } from "lit-html";
 import { IPage, IRouterComponent, RouterComponent } from "../../../lib";
-import { params } from "../../../lib/helpers";
+import { query } from "../../../lib/helpers";
+import { sharedStyles } from "../styles";
 
 export default class HomeComponent extends LitElement implements IPage {
 
@@ -26,16 +27,19 @@ export default class HomeComponent extends LitElement implements IPage {
 			}
 		], this.parentRouter).then();
 
-		console.log(params());
+		console.log(query());
 	}
 
 	private logout () {
 		localStorage.clear();
-		history.replaceState(null, "", "login");
+		history.replaceState(null, "", "/login");
 	}
 
 	render (): TemplateResult {
 		return html`
+			<style>
+				${sharedStyles}
+			</style>
 			<p>HomeComponent</p>
 			<p></p>
 			<button @click="${() => this.logout()}">Logout</button>

@@ -1,7 +1,7 @@
 {
 	"name": "@appnest/web-router",
 	"version": "0.0.23",
-	"description": "A simple router for the web.",
+	"description": "A simple web component router",
 	"author": "Appnest",
 	"bugs": {
 		"url": "https://github.com/andreasbm/web-router/issues"
@@ -17,7 +17,9 @@
 		"elements",
 		"web",
 		"component",
-		"router"
+		"router",
+		"navigation",
+		"zero dependencies"
 	],
 	"license": "MIT",
 	"scripts": {
@@ -37,8 +39,8 @@
 		"publish:major": "npm run bump:major && git push && npm run b:lib && npm run publish"
 	},
 	"devDependencies": {
-		"@appnest/web-config": "0.1.26",
-		"@polymer/lit-element": "^0.6.2",
+		"@appnest/web-config": "0.3.0",
+		"lit-element": "^2.0.0-rc.5",
 		"node-typescript-compiler": "^1.1.1",
 		"npm-bump": "0.0.25"
 	}

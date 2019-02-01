@@ -1,4 +1,4 @@
-import { currentPath, dispatchRouteChangeEvent, dispatchWindowEvent, ensureHistoryEvents, resolvePageComponent, matchRoute } from "./helpers";
+import { currentPath, dispatchRouteChangeEvent, dispatchWindowEvent, ensureHistoryEvents, resolvePageComponent, matchRoutes } from "./helpers";
 import { IRoute, IRouterComponent, RouterComponentEventKind, RouterEventKind } from "./model";
 
 const template = document.createElement("template");
@@ -133,7 +133,7 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 	protected async loadPath (path: string): Promise<boolean> {
 
 		// Find the corresponding route.
-		const route = matchRoute(this.routes, path);
+		const route = matchRoutes(this.routes, path);
 
 		// Ensure that a route was found.
 		if (route == null) {
@@ -147,18 +147,6 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 
 		try {
 
-			// Check whether the guards allow us to go to the new route.
-			if (route.guards != null) {
-				// @ts-ignore
-				for (const guard of route.guards) {
-					if (!guard(this, route)) {
-						// Dispatch globally that a navigation was cancelled.
-						dispatchWindowEvent(RouterEventKind.NavigationCancel, route);
-						return false;
-					}
-				}
-			}
-
 			// Only change route if its a new route.
 			const navigate = (this.currentRoute !== route);
 			if (navigate) {
@@ -166,8 +154,29 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 				// Dispatch globally that a navigation has started.
 				dispatchWindowEvent(RouterEventKind.NavigationStart, route);
 
+				// Listen for another navigation start event
+				let cancelNavigation = false;
+				const newNavigationHandler = () => cancelNavigation = true;
+				window.addEventListener(RouterEventKind.NavigationStart, newNavigationHandler, {once: true});
+				const cleanup = () => window.removeEventListener(RouterEventKind.NavigationStart, newNavigationHandler);
+
+				// Check whether the guards allow us to go to the new route.
+				if (route.guards != null) {
+
+					// @ts-ignore
+					for (const guard of route.guards) {
+						if (!(await Promise.resolve(guard(this, route)))) {
+							// Dispatch globally that a navigation was cancelled.
+							cleanup();
+							dispatchWindowEvent(RouterEventKind.NavigationCancel, route);
+							return false;
+						}
+					}
+				}
+
 				// Redirect if necessary
 				if (route.redirectTo != null) {
+					cleanup();
 					history.replaceState(history.state, "", route.redirectTo);
 					return false;
 				}
@@ -176,11 +185,21 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 				const page = await resolvePageComponent(route);
 				page.parentRouter = this;
 
+				cleanup();
+
+				// Cancel the navigation if another navigation event was sent while this one was loading
+				if (cancelNavigation) {
+					dispatchWindowEvent(RouterEventKind.NavigationCancel, route);
+					return false;
+				}
+
+				// Remove the old page
 				if (this.childNodes.length > 0) {
 					const previousPage = this.childNodes[0];
 					this.removeChild(previousPage);
 				}
 
+				// Append the new page
 				this.appendChild(page);
 				this._currentRoute = route;
 			}
@@ -191,6 +210,7 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 
 			// Dispatch globally that a navigation has ended.
 			if (navigate) {
+				dispatchWindowEvent(RouterEventKind.NavigationSuccess, route);
 				dispatchWindowEvent(RouterEventKind.NavigationEnd, route);
 			}
 
@@ -198,6 +218,7 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 
 		} catch (e) {
 			dispatchWindowEvent(RouterEventKind.NavigationError, route);
+			dispatchWindowEvent(RouterEventKind.NavigationEnd, route);
 			throw e;
 		}
 	}
