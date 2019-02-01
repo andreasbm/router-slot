@@ -82,7 +82,6 @@ export default {
 			...defaultExternals(pkg)
 		] : [])
 	],
-	experimentalCodeSplitting: true,
 	treeshake: isProd,
 	context: "window"
 }

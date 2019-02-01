@@ -32,7 +32,7 @@ export class RouterLink extends HTMLElement {
 	 * Whether the component is active or not.
 	 */
 	get active (): boolean {
-		return Boolean(this.getAttribute("disabled"));
+		return Boolean(this.getAttribute("active"));
 	}
 
 	set active (value: boolean) {
@@ -71,6 +71,7 @@ export class RouterLink extends HTMLElement {
 	 */
 	updateActive () {
 		const active = isPathMatch(this.path, currentPath());
+		console.log(active, this.active);
 		if (active !== this.active) {
 			this.active = active;
 		}
