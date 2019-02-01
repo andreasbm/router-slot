@@ -76,7 +76,7 @@ A guard is a function that determines whether the route can be activated or not.
 funtion sessionGuard (router: Router, route: IRoute) {
 
   if (localStorage.getItem("session") == null) {
-    Router.replaceState(null, "", "login");
+    history.replaceState(null, "", "login");
     return false;
   }
 
