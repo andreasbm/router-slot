@@ -204,11 +204,11 @@ Here's an example of how you can listen to the events.
 
 ```typescript
 window.addEventListener(RouterEventKind.OnPushState, (e: PushStateEvent) => {
-  console.log("On push state", Router.currentPath);
+  console.log("On push state", currentPath());
 });
 
 window.addEventListener(RouterEventKind.PopState, (e: PopStateEvent) => {
-  console.log("On pop state", Router.currentPath);
+  console.log("On pop state", currentPath());
 });
 
 window.addEventListener(RouterEventKind.NavigationStart, (e: NavigationStartEvent) => {
