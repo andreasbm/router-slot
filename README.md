@@ -146,7 +146,7 @@ history.pushState(null, "", "login");
 Or (if you want to replace the state and not keep the current one in the history)
 
 ```javascript
-history.replaceState(null, """, "login");
+history.replaceState(null, "", "login");
 ```
 
 ### `RouterLink` component
