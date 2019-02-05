@@ -23,7 +23,7 @@ export default class SecretComponent extends LitElement implements IPage {
 
 		console.log(this.parentRouter.currentRoute);
 
-		const $router = <RouterComponent>this.shadowRoot!.querySelector("router-component");
+		const $router = <RouterComponent>this.shadowRoot!.querySelector("web-router");
 		$router.setup([
 			{
 				path: /.*\/code/,
@@ -54,7 +54,7 @@ export default class SecretComponent extends LitElement implements IPage {
 			<router-link path="home/secret/code"><button>Go to CodeComponent</button></router-link>
 			<router-link path="home/secret/password"><button>Go to PasswordComponent</button></router-link>
 			<div id="child">
-				<router-component></router-component>
+				<web-router></web-router>
 			</div>
 		`;
 	}

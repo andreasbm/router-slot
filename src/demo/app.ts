@@ -19,8 +19,8 @@ function sessionGuard (router: RouterComponent, route: IRoute) {
 }
 
 // Setup the router
-customElements.whenDefined("router-component").then(async () => {
-	const router = <RouterComponent>document.querySelector("router-component");
+customElements.whenDefined("web-router").then(async () => {
+	const router = <RouterComponent>document.querySelector("web-router");
 
 	let hasInitialized = false;
 	router.addEventListener(RouterComponentEventKind.RouteChange, (e: ChangeRouteEvent) => {

@@ -11,7 +11,7 @@ export default class HomeComponent extends LitElement implements IPage {
 	firstUpdated (changedProperties: PropertyValues) {
 		super.firstUpdated(changedProperties);
 
-		const $router = <RouterComponent>this.shadowRoot!.querySelector("router-component");
+		const $router = <RouterComponent>this.shadowRoot!.querySelector("web-router");
 		$router.setup([
 			{
 				path: /.*\/secret.*/,
@@ -46,7 +46,7 @@ export default class HomeComponent extends LitElement implements IPage {
 			<router-link path="home/secret"><button>Go to SecretComponent</button></router-link>
 			<router-link path="home/user"><button>Go to UserComponent</button></router-link>
 			<div id="child">
-				<router-component></router-component>
+				<web-router></web-router>
 			</div>
 		`;
 	}

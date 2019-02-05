@@ -35,7 +35,7 @@ import "@appnest/web-router";
 ## Step 3 - Add the router to the markup.
 
 ```html
-<router-component></router-component>
+<web-router></web-router>
 ```
 
 ## Step 4 - Add some routes!
@@ -43,7 +43,7 @@ import "@appnest/web-router";
 Routes are added to the router through the `setup` function. At least one of the routes must always match.
 
 ```typescript
-const router = <IRouterComponent>document.querySelector("router-component");
+const router = <IRouterComponent>document.querySelector("web-router");
 await router.setup([
   {
     path: /^login.*/,
@@ -60,10 +60,10 @@ await router.setup([
 ]);
 ```
 
-You may want to wrap the above in a `whenDefined` callback to ensure the `router-component` exists before using its logic.
+You may want to wrap the above in a `whenDefined` callback to ensure the `web-router` exists before using its logic.
 
 ```javascript
-customElements.whenDefined("router-component").then(async () => {
+customElements.whenDefined("web-router").then(async () => {
   ...
 });
 ```
@@ -107,7 +107,7 @@ export default class HomeComponent extends LitElement implements IPage {
 
   firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
-    const $router = <IRouterComponent>this.shadowRoot!.querySelector("router-component");
+    const $router = <IRouterComponent>this.shadowRoot!.querySelector("web-router");
     $router.setup([
       {
         path: /^home\/secret.*/,
@@ -125,7 +125,7 @@ export default class HomeComponent extends LitElement implements IPage {
   }
 
   render () {
-    return html`<router-component></router-component>`;
+    return html`<web-router></web-router>`;
   }
 }
 

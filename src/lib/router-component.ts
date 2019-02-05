@@ -225,4 +225,4 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 
 }
 
-window.customElements.define("router-component", RouterComponent);
+window.customElements.define("web-router", RouterComponent);
