@@ -39,8 +39,8 @@
 		"publish:major": "npm run bump:major && git push && npm run b:lib && npm run publish"
 	},
 	"devDependencies": {
-		"@appnest/web-config": "0.3.4",
-		"lit-element": "^2.0.0-rc.5",
+		"@appnest/web-config": "0.3.10",
+		"lit-element": "^2.0.1",
 		"node-typescript-compiler": "^1.1.1",
 		"npm-bump": "0.0.25"
 	}

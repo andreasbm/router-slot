@@ -92,3 +92,9 @@ export class RouterLink extends HTMLElement {
 }
 
 window.customElements.define("router-link", RouterLink);
+
+declare global {
+	interface HTMLElementTagNameMap {
+		"router-link": RouterLink;
+	}
+}

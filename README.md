@@ -151,7 +151,7 @@ history.replaceState(null, "", "login");
 
 ### `RouterLink` component
 
-With the `RouterLink` component you add the `<router-link>` to your markup and specifies a path. When ever the component is clicked it will navigate to the specified path. Whenever the router link is active the active attribute is set.
+With the `RouterLink` component you add `<router-link>` to your markup and specify a path. Whenever the component is clicked it will navigate to the specified path. Whenever the path of the router link is active the active attribute is set.
 
 ```html
 <router-link path="home/secret"><button>Go to SecretComponent</button></router-link>

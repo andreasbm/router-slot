@@ -1,4 +1,4 @@
-import { currentPath, ChangeRouteEvent, IRoute, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, PushStateEvent, RouterComponent, RouterComponentEventKind, RouterEventKind, NavigationSuccessEvent } from "../lib";
+import { currentPath, ChangeRouteEvent, IRoute, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, PushStateEvent, WebRouter, RouterComponentEventKind, RouterEventKind, NavigationSuccessEvent } from "../lib";
 
 import "./../lib/router-link";
 
@@ -8,7 +8,7 @@ import "./../lib/router-link";
  * @param {IRoute} route
  * @returns {boolean}
  */
-function sessionGuard (router: RouterComponent, route: IRoute) {
+function sessionGuard (router: WebRouter, route: IRoute) {
 
 	if (localStorage.getItem("session") == null) {
 		history.replaceState(null, "", "login");
@@ -20,7 +20,7 @@ function sessionGuard (router: RouterComponent, route: IRoute) {
 
 // Setup the router
 customElements.whenDefined("web-router").then(async () => {
-	const router = <RouterComponent>document.querySelector("web-router");
+	const router = <WebRouter>document.querySelector("web-router");
 
 	let hasInitialized = false;
 	router.addEventListener(RouterComponentEventKind.RouteChange, (e: ChangeRouteEvent) => {

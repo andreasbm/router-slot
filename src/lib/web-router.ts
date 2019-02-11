@@ -7,7 +7,7 @@ template.innerHTML = `<slot></slot>`;
 // Patches the history object and ensures the correct events.
 ensureHistoryEvents();
 
-export class RouterComponent extends HTMLElement implements IRouterComponent {
+export class WebRouter extends HTMLElement implements IRouterComponent {
 
 	/**
 	 * Contains the available routes.
@@ -225,4 +225,10 @@ export class RouterComponent extends HTMLElement implements IRouterComponent {
 
 }
 
-window.customElements.define("web-router", RouterComponent);
+window.customElements.define("web-router", WebRouter);
+
+declare global {
+	interface HTMLElementTagNameMap {
+		"web-router": WebRouter;
+	}
+}
