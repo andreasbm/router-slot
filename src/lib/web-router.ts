@@ -119,15 +119,12 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 
 		// Attach child router listeners
 		if (this.isChildRouter) {
-			console.log("ATTACH CHILD ROUTER LISTENERS");
 			this.listeners.push(
 				addListener(this.parentRouter!, RouterComponentEventKind.RouteChange, this.onPathChanged)
 			);
 
 			return;
 		}
-
-		console.log("ATTACH GLOBAL ROUTER LISTENERS");
 
 		// Add global listeners.
 		this.listeners.push(
@@ -140,7 +137,6 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	 * Detaches the listeners.
 	 */
 	protected detachListeners () {
-		console.log("DETACH");
 		removeListeners(this.listeners);
 	}
 
@@ -168,8 +164,6 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 
 		// Find the corresponding route.
 		const match = matchRoutes(this.routes, path);
-
-		console.log("LOAD", path, match);
 
 		// Ensure that a route was found, otherwise we just clear the current state of the route.
 		if (match == null) {

@@ -87,7 +87,6 @@ export class RouterLink extends HTMLElement {
 	 */
 	protected updateActive () {
 		const active = isPathActive(this.getAbsolutePath(), currentPath());
-		console.log("WUHUU", this.getAbsolutePath(), currentPath(), active);
 		if (active !== this.active) {
 			this.active = active;
 		}
