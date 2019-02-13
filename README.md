@@ -122,7 +122,7 @@ window.customElements.define("home-component", HomeComponent);
 
 In order to change a route you can either use the [`history`](https://developer.mozilla.org/en-US/docs/Web/API/History) API directly or the `router-link` component.
 
-### History API
+#### History API
 
 Here's an example on how to navigate.
 
@@ -143,7 +143,7 @@ history.back();
 history.forward();
 ```
 
-### `router-link`
+#### `router-link`
 
 With the `router-link` component you add `<router-link>` to your markup and specify a path. Whenever the component is clicked it will navigate to the specified path. Whenever the path of the router link is active the active attribute is set.
 
@@ -158,7 +158,7 @@ Paths can be specified either in relative or absolute terms. To specify an absol
 
 ## Advanced
 
-You can customize a lot of things in this library. The first and most important concept to know about are routes.
+You can customize a lot in this library. Continue reading to learn how to handle your new superpowers.
 
 ### Guards
 
