@@ -8,7 +8,7 @@
 
 ## What is this?
 
-This is a simple web component router. Go here to see a demo [https://appnest-demo.firebaseapp.com/web-router](https://appnest-demo.firebaseapp.com/web-router).
+This library is a simple web component router. It interprets the browser URL and navigates to a specific views based on the configuration. Go here to see a demo [https://appnest-demo.firebaseapp.com/web-router](https://appnest-demo.firebaseapp.com/web-router).
 
 ## Benefits
 - Lazy loading of routes
@@ -18,29 +18,43 @@ This is a simple web component router. Go here to see a demo [https://appnest-de
 - Zero dependencies
 - Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
 
-## Step 1 -  Install the dependency
+## Install the dependency
 
 ```node
 npm i @appnest/web-router
 ```
 
-## Step 2 - Import it
+## The Basics
 
-Import the dependency in your application.
+This section will introduce the basics of the router.
+
+### `<base href>`
+
+Your application should add a `<base>` element to the `index.html` in the `<head>` tag. If your file is located in the root, the `href` value should be the following:
+
+```html
+<base href="/">
+```
+
+### Router import
+
+To import the `router` you'll need to import the dependency in your application.
 
 ```javascript
 import "@appnest/web-router";
 ```
 
-## Step 3 - Add the router to the markup.
+### `web-router`
+
+The `web-router` component acts as a placeholder that marks the spot in the template where the router should display the components for that route part.
 
 ```html
-<web-router></web-router>
+<web-router><!-- Routed components will go here --></web-router>
 ```
 
-## Step 4 - Add some routes!
+### Configuration
 
-Routes are added to the router through the `setup` function. It's super simple - just specify the part of the path you want it to math with or use the `*` wildcard to catch all routes.
+Routes are added to the router through the `setup` function on a `web-router` component`. Specify the parts of the path you want it to math with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
 
 ```typescript
 const router = <IWebRouter>document.querySelector("web-router");
@@ -54,7 +68,7 @@ await router.setup([
     component: HomeComponent // Not lazy loaded
   },
   {
-    path: "*",
+    path: "**",
     redirectTo: "home"
   }
 ]);
@@ -68,37 +82,9 @@ customElements.whenDefined("web-router").then(async () => {
 });
 ```
 
-## Step 5 - Add some guards (optional)
+#### Child routes
 
-A guard is a function that determines whether the route can be activated or not. The example below checks whether the user has a session saved in the local storage and redirects the user to the login page if the access is not provided.
-
-```typescript
-funtion sessionGuard (router: IWebRouter, route: IRoute) {
-
-  if (localStorage.getItem("session") == null) {
-    history.replaceState(null, "", "/login");
-    return false;
-  }
-
-  return true;
-}
-
-...
-
-await router.setup([
-  ...
-  {
-    path: "home",
-    component: HomeComponent,
-    guards: [sessionGuard]
-  },
-  ...
-]);
-```
-
-## Step 6 - Add some child routes
-
-Child routes are routes within another route! It is super simple to add one. All children will have the `parentRouter` property set. The `parentRouter` must be passed to the child router through the `setup` method. Here's an example of how to add routes to a child router.
+Child routes are routes within another route. All child routes will have the `parentRouter` property set. The `parentRouter` must be passed to the child router through the `setup` method in the child route. In the example below we know that the `HomeComponent` is a child route with the  `home` route specified before being the parent route. The first route in the example would match the `home/secret` path and import the secret component. The second route would match the `home/user` path and the third one would go one route backwards and then navigate to the `login` route as specified in the previous example.
 
 ```typescript
 export default class HomeComponent extends LitElement implements IPage {
@@ -111,16 +97,16 @@ export default class HomeComponent extends LitElement implements IPage {
     $router.setup([
       {
         path: "secret",
-        component: () => import("./secret")
+        component: () => import("./pages/secret")
       },
       {
         path: "user",
-        component: () => import("./user")
+        component: () => import("./pages/user")
       },
       {
-         path: "*",
-         redirectTo: "secret"
-       }
+         path: "**",
+         redirectTo: "../login"
+      }
      ], this.parentRouter).then();
   }
 
@@ -132,11 +118,12 @@ export default class HomeComponent extends LitElement implements IPage {
 window.customElements.define("home-component", HomeComponent);
 ```
 
-## Step 7 - Navigate!
+### Navigation
 
-In order to change a route you can either use the [`history`](https://developer.mozilla.org/en-US/docs/Web/API/History) API directly or the `RouterLink` component.
+In order to change a route you can either use the [`history`](https://developer.mozilla.org/en-US/docs/Web/API/History) API directly or the `router-link` component.
 
 ### History API
+
 Here's an example on how to navigate.
 
 ```javascript
@@ -156,22 +143,115 @@ history.back();
 history.forward();
 ```
 
-### `RouterLink` component
+### `router-link`
 
-With the `RouterLink` component you add `<router-link>` to your markup and specify a path. Whenever the component is clicked it will navigate to the specified path. Whenever the path of the router link is active the active attribute is set.
+With the `router-link` component you add `<router-link>` to your markup and specify a path. Whenever the component is clicked it will navigate to the specified path. Whenever the path of the router link is active the active attribute is set.
 
 ```html
-<router-link path="/home/secret"><button>Go to the secret page!</button></router-link>
+<router-link path="/home/secret">
+  <button>Go to the secret page!</button>
+</router-link>
 ```
 
-Paths can be specified either in relative terms or in absolute terms. To specify an absolute path you simply pass `/home/secret`. To specify a relative path you first have to be aware of the context within you are navigating. The `RouterLink` component will for example navigate based on the nearest `web-router` component. If you pass `secret` (without the slash) as path, the navigating will be done in relation to the parent router. You can also specify `../../secret` to traverse up the router tree.
+Paths can be specified either in relative or absolute terms. To specify an absolute path you simply pass `/home/secret`. To specify a relative path you first have to be aware of the router context  you are navigating within. The `router-link` component will for navigate based on the nearest `web-router` component. If you give the component a path (without the slash) as path, the navigation will be done in relation to the parent router. You can also specify `../login` to traverse up the router tree.
 
-## Step 9 - Global navigation events
+
+## Advanced
+
+You can customize a lot of things in this library. The first and most important concept to know about are routes.
+
+### Guards
+
+A guard is a function that determines whether the route can be activated or not. The example below checks whether the user has a session saved in the local storage and redirects the user to the login page if the access is not provided. If a guard returns false the routing is cancelled.
+
+```typescript
+funtion sessionGuard (router: IWebRouter, route: IRoute) {
+
+  if (localStorage.getItem("session") == null) {
+    history.replaceState(null, "", "/login");
+    return false;
+  }
+
+  return true;
+}
+...
+
+Add this guard to the setup function in the `guards` array.
+
+await router.setup([
+  ...
+  {
+    path: "home",
+    component: HomeComponent,
+    guards: [sessionGuard]
+  },
+  ...
+]);
+```
+
+### Deep dive into the different route kinds
+
+There exists three different kinds of routes. We are going to take a look at those different kinds in a bit, but first you should be familiar with what all routes have in common.
+
+```typescript
+export interface IRouteBase<T = any> {
+
+  // The path for the route fragment
+  path: PathFragment;
+
+  // Optional metadata
+  data?: T;
+
+  // If guard returns false, the navigation is not allowed
+  guards?: Guard[];
+
+  // Whether the match is fuzzy (eg. "name" would not only match "name" or "name/" but also "nameasdpokasf") 
+  fuzzy?: boolean;
+}
+```
+
+#### Component routes
+
+Component routes resolves a specified component. You can provide the `component` property with either a class that instantiates a `web component` or a function that imports the component lazily.
+
+```typescript
+export interface IComponentRoute extends IRouteBase {
+
+  // The component loader (should return a module with a default export)
+  component: Class | ModuleResolver | (() => ModuleResolver);
+}
+```
+
+#### Redirection routes
+
+A redirection route is good to use to catch all of the paths that the routes before did not catch. This could for example be used to handle "404 - Page not found" cases.
+
+```typescript
+export interface IRedirectRoute extends IRouteBase {
+
+  // The paths the route should redirect to. Can either be relative or absolute. 
+  redirectTo: string;
+}
+```
+
+#### Resolver routes
+
+Use the resolver routes when you want to customize what should happen when the path matches the route. This is good to use if you for example want to show a dialog instead of navigating to a new component.
+
+```typescript
+export interface IResolverRoute extends IRouteBase {
+  
+  // A custom resolver that handles the route change
+  resolve: CustomResolver;
+}
+```
+
+### Global navigation events
 
 You are able to listen to the navigation related events that are dispatched each time something important happens. They are dispatched on the `window` object.
 
 ```typescript
-export enum RouterEventKind {
+export enum GlobalWebRouterEventKind {
 
   // An event triggered when a new state is added to the history.
   PushState = "pushstate",
@@ -199,31 +279,31 @@ export enum RouterEventKind {
 Here's an example of how you can listen to the events.
 
 ```typescript
-window.addEventListener(RouterEventKind.OnPushState, (e: PushStateEvent) => {
+window.addEventListener(GlobalWebRouterEventKind.OnPushState, (e: PushStateEvent) => {
   console.log("On push state", currentPath());
 });
 
-window.addEventListener(RouterEventKind.PopState, (e: PopStateEvent) => {
+window.addEventListener(GlobalWebRouterEventKind.PopState, (e: PopStateEvent) => {
   console.log("On pop state", currentPath());
 });
 
-window.addEventListener(RouterEventKind.NavigationStart, (e: NavigationStartEvent) => {
+window.addEventListener(GlobalWebRouterEventKind.NavigationStart, (e: NavigationStartEvent) => {
   console.log("Navigation start", e.detail);
 });
 
-window.addEventListener(RouterEventKind.NavigationEnd, (e: NavigationEndEvent) => {
+window.addEventListener(GlobalWebRouterEventKind.NavigationEnd, (e: NavigationEndEvent) => {
   console.log("Navigation end", e.detail);
 });
 
-window.addEventListener(RouterEventKind.NavigationCancel, (e: NavigationCancelEvent) => {
+window.addEventListener(GlobalWebRouterEventKind.NavigationCancel, (e: NavigationCancelEvent) => {
   console.log("Navigation cancelled", e.detail);
 });
 
-window.addEventListener(RouterEventKind.NavigationError, (e: NavigationErrorEvent) => {
+window.addEventListener(GlobalWebRouterEventKind.NavigationError, (e: NavigationErrorEvent) => {
   console.log("Navigation failed", e.detail);
 });
 
-window.addEventListener(RouterEventKind.NavigationSuccess, (e: NavigationSuccessEvent) => {
+window.addEventListener(GlobalWebRouterEventKind.NavigationSuccess, (e: NavigationSuccessEvent) => {
   console.log("Navigation failed", e.detail);
 });
 ```

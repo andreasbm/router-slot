@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, WEB_ROUTER_TAG_NAME } from "./config";
-import { EventListenerSubscription, IWebRouter, PathFragment, RouterEventKind } from "./model";
-import { addListener, constructPath, currentPath, isPathActive, removeListeners, traverseRoots } from "./util";
+import { EventListenerSubscription, IWebRouter, PathFragment, GlobalWebRouterEventKind } from "./model";
+import { addListener, constructPath, currentPath, isPathActive, removeListeners, queryParentRoots } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `</style><slot></slot>`;
@@ -47,7 +47,7 @@ export class RouterLink extends HTMLElement {
 	 * The current router context.
 	 */
 	get router (): IWebRouter | null {
-		return this._router || traverseRoots<IWebRouter>(this, WEB_ROUTER_TAG_NAME);
+		return this._router || queryParentRoots<IWebRouter>(this, WEB_ROUTER_TAG_NAME);
 	}
 
 	set router (value: IWebRouter | null) {
@@ -71,7 +71,7 @@ export class RouterLink extends HTMLElement {
 	connectedCallback () {
 		this.listeners.push(
 			addListener(this, "click", this.navigate),
-			addListener(GLOBAL_ROUTER_EVENTS_TARGET, RouterEventKind.NavigationEnd, this.updateActive)
+			addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalWebRouterEventKind.NavigationEnd, this.updateActive)
 		);
 	}
 

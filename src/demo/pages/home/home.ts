@@ -21,7 +21,7 @@ export default class HomeComponent extends LitElement implements IPage {
 				component: () => import("./user/user")
 			},
 			{
-				path: "*",
+				path: "**",
 				redirectTo: "secret"
 			}
 		], this.parentRouter).then();

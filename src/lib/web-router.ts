@@ -1,5 +1,5 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET } from "./config";
-import { Cancel, Cleanup, EventListenerSubscription, IRoute, IRouteMatch, IWebRouter, PathFragment, RouterComponentEventKind, RouterEventKind } from "./model";
+import { Cancel, Cleanup, EventListenerSubscription, IRoute, IRouteMatch, IWebRouter, PathFragment, WebRouterEventKind, GlobalWebRouterEventKind } from "./model";
 import { addListener, currentPath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, removeListeners, resolvePageComponent } from "./util";
 
 const template = document.createElement("template");
@@ -120,7 +120,7 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 		// Attach child router listeners
 		if (this.isChildRouter) {
 			this.listeners.push(
-				addListener(this.parentRouter!, RouterComponentEventKind.RouteChange, this.onPathChanged)
+				addListener(this.parentRouter!, WebRouterEventKind.RouteChange, this.onPathChanged)
 			);
 
 			return;
@@ -128,8 +128,8 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 
 		// Add global listeners.
 		this.listeners.push(
-			addListener(GLOBAL_ROUTER_EVENTS_TARGET, RouterEventKind.PopState, this.onPathChanged),
-			addListener(GLOBAL_ROUTER_EVENTS_TARGET, RouterEventKind.PushState, this.onPathChanged)
+			addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalWebRouterEventKind.PopState, this.onPathChanged),
+			addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalWebRouterEventKind.PushState, this.onPathChanged)
 		);
 	}
 
@@ -183,20 +183,20 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 				// while we are about to navigate we have to cancel.
 				let cancelNavigation = false;
 				const newPushStateHandler = () => cancelNavigation = true;
-				window.addEventListener(RouterEventKind.PushState, newPushStateHandler, {once: true});
+				window.addEventListener(GlobalWebRouterEventKind.PushState, newPushStateHandler, {once: true});
 
 				// Cleans up the subscriptions
-				const cleanup: Cleanup = () => window.removeEventListener(RouterEventKind.NavigationStart, newPushStateHandler);
+				const cleanup: Cleanup = () => window.removeEventListener(GlobalWebRouterEventKind.NavigationStart, newPushStateHandler);
 
 				// Cleans up and dispatches a global event that a navigation was cancelled.
 				const cancel: Cancel = () => {
 					cleanup();
-					dispatchGlobalRouterEvent(RouterEventKind.NavigationCancel, route);
+					dispatchGlobalRouterEvent(GlobalWebRouterEventKind.NavigationCancel, route);
 					return false;
 				};
 
 				// Dispatch globally that a navigation has started
-				dispatchGlobalRouterEvent(RouterEventKind.NavigationStart, route);
+				dispatchGlobalRouterEvent(GlobalWebRouterEventKind.NavigationStart, route);
 
 				// Check whether the guards allow us to go to the new route.
 				if (route.guards != null) {
@@ -256,15 +256,15 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 
 			// Dispatch globally that a navigation has ended.
 			if (navigate) {
-				dispatchGlobalRouterEvent(RouterEventKind.NavigationSuccess, route);
-				dispatchGlobalRouterEvent(RouterEventKind.NavigationEnd, route);
+				dispatchGlobalRouterEvent(GlobalWebRouterEventKind.NavigationSuccess, route);
+				dispatchGlobalRouterEvent(GlobalWebRouterEventKind.NavigationEnd, route);
 			}
 
 			return navigate;
 
 		} catch (e) {
-			dispatchGlobalRouterEvent(RouterEventKind.NavigationError, route);
-			dispatchGlobalRouterEvent(RouterEventKind.NavigationEnd, route);
+			dispatchGlobalRouterEvent(GlobalWebRouterEventKind.NavigationError, route);
+			dispatchGlobalRouterEvent(GlobalWebRouterEventKind.NavigationEnd, route);
 			throw e;
 		}
 	}

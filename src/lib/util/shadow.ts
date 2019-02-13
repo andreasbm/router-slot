@@ -3,7 +3,7 @@
  * @param $elem
  * @param query
  */
-export function traverseRoots<T> ($elem: Element, query: string): T | null {
+export function queryParentRoots<T> ($elem: Element, query: string): T | null {
 
 	// If a shadow root doesn't exist we don't continue the traversal
 	if ($elem.shadowRoot == null) {
@@ -18,5 +18,5 @@ export function traverseRoots<T> ($elem: Element, query: string): T | null {
 	}
 
 	// We continue the traversal if there was not matches
-	return traverseRoots($root, query);
+	return queryParentRoots($root, query);
 }

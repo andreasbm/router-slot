@@ -24,32 +24,34 @@ export type RouterTree = {router: IWebRouter} & {child?: RouterTree} | null | un
 
 export interface IRouteBase<T = any> {
 
-	/* The path for the route fragment */
+	// The path for the route fragment
 	path: PathFragment;
 
-	/* Optional metadata */
+	// Optional metadata
 	data?: T;
 
-	/* If guard returns false, the navigation is not allowed */
+	// If guard returns false, the navigation is not allowed
 	guards?: Guard[];
 
-	/* Whether the match is fuzzy (eg. "name" would not only match "name" or "name/" but also "nameasdpokasf") */
+	// Whether the match is fuzzy (eg. "name" would not only match "name" or "name/" but also "nameasdpokasf")
 	fuzzy?: boolean;
 }
 
 export interface IRedirectRoute extends IRouteBase {
 
-	/* A redirection route */
+	// The paths the route should redirect to. Can either be relative or absolute.
 	redirectTo: string;
 }
 
 export interface IComponentRoute extends IRouteBase {
 
-	/* The component loader (should return a module with a default export) */
+	// The component loader (should return a module with a default export)
 	component: Class | ModuleResolver | (() => ModuleResolver);
 }
 
 export interface IResolverRoute extends IRouteBase {
+
+	// A custom resolver that handles the route change
 	resolve: CustomResolver;
 }
 
@@ -81,14 +83,14 @@ export type EventListenerSubscription = (() => void);
 /**
  * RouterComponent related events.
  */
-export enum RouterComponentEventKind {
+export enum WebRouterEventKind {
 	RouteChange = "routechange"
 }
 
 /**
  * History related events.
  */
-export enum RouterEventKind {
+export enum GlobalWebRouterEventKind {
 
 	// An event triggered when a new state is added to the history.
 	PushState = "pushstate",

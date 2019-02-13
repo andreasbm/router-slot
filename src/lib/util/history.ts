@@ -1,19 +1,19 @@
 import { dispatchGlobalRouterEvent } from "./events";
-import { RouterEventKind } from "../model";
+import { GlobalWebRouterEventKind } from "../model";
 
 /**
  * Patches the history object by ensuring correct events are dispatches when the history changes.
  */
 export function ensureHistoryEvents () {
 	const patches = [
-		["pushState", RouterEventKind.PushState],
-		["replaceState", RouterEventKind.PushState],
-		["forward", RouterEventKind.PushState],
-		["back", RouterEventKind.PushState],
-		["go", RouterEventKind.PushState]
+		["pushState", GlobalWebRouterEventKind.PushState],
+		["replaceState", GlobalWebRouterEventKind.PushState],
+		["forward", GlobalWebRouterEventKind.PushState],
+		["back", GlobalWebRouterEventKind.PushState],
+		["go", GlobalWebRouterEventKind.PushState]
 	];
 	for (const [name, event] of patches) {
-		attachCallback(history, name, () => dispatchGlobalRouterEvent(<RouterEventKind>event));
+		attachCallback(history, name, () => dispatchGlobalRouterEvent(<GlobalWebRouterEventKind>event));
 	}
 }
 
