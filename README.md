@@ -50,12 +50,14 @@ import "@appnest/web-router";
 The `web-router` component acts as a placeholder that marks the spot in the template where the router should display the components for that route part.
 
 ```html
-<web-router><!-- Routed components will go here --></web-router>
+<web-router>
+	<!-- Routed components will go here -->
+</web-router>
 ```
 
 ### Configuration
 
-Routes are added to the router through the `setup` function on a `web-router` component`. Specify the parts of the path you want it to math with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
+Routes are added to the router through the `setup` function on a `web-router` component. Specify the parts of the path you want it to math with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
 
 ```typescript
 const router = <IWebRouter>document.querySelector("web-router");
