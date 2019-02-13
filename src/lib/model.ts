@@ -22,7 +22,6 @@ export type Cancel = (() => boolean);
 
 export type RouterTree = {router: IWebRouter} & {child?: RouterTree} | null | undefined;
 
-
 export interface IRouteBase<T = any> {
 
 	/* The path for the route fragment */

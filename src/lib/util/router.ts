@@ -1,4 +1,4 @@
-import { CATCH_ALL_FLAG, TRAVERSE_FLAG } from "../config";
+import { CATCH_ALL_WILDCARD, TRAVERSE_FLAG } from "../config";
 import { Class, IComponentRoute, IPage, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IWebRouter, ModuleResolver, PathFragment, RouterTree } from "../model";
 import { ensureSlash, stripSlash } from "./url";
 
@@ -21,7 +21,7 @@ export function matchRoute (route: IRoute, path: string | PathFragment): IRouteM
 	// Construct the regex to match with the path or fragment
 	// If fuzzy we simply need to match the start of the path with the route path.
 	// If not fuzzy we need to match either with the route path and "/" or the route path and the end of the line.
-	const regex = route.path === CATCH_ALL_FLAG ? /.*/
+	const regex = route.path === CATCH_ALL_WILDCARD ? /.*/
 		: route.fuzzy
 			? new RegExp(`^[\/]?${route.path}`)
 			: new RegExp(`(^[\/]?${route.path}[\/])|(^[\/]?${route.path}$)`);

@@ -40,21 +40,21 @@ import "@appnest/web-router";
 
 ## Step 4 - Add some routes!
 
-Routes are added to the router through the `setup` function. At least one of the routes must always routeMatch.
+Routes are added to the router through the `setup` function. It's super simple - just specify the part of the path you want it to math with or use the `*` wildcard to catch all routes.
 
 ```typescript
 const router = <IWebRouter>document.querySelector("web-router");
 await router.setup([
   {
-    path: /^login.*/,
-    component: () => import("./pages/login")
+    path: "login",
+    component: () => import("./pages/login") // Lazy loaded
   },
   {
-    path: /^home.*/,
-    component: HomeComponent
+    path: "home",
+    component: HomeComponent // Not lazy loaded
   },
   {
-    path: /.*/,
+    path: "*",
     redirectTo: "home"
   }
 ]);
@@ -73,10 +73,10 @@ customElements.whenDefined("web-router").then(async () => {
 A guard is a function that determines whether the route can be activated or not. The example below checks whether the user has a session saved in the local storage and redirects the user to the login page if the access is not provided.
 
 ```typescript
-funtion sessionGuard (router: Router, route: IRoute) {
+funtion sessionGuard (router: IWebRouter, route: IRoute) {
 
   if (localStorage.getItem("session") == null) {
-    history.replaceState(null, "", "login");
+    history.replaceState(null, "", "/login");
     return false;
   }
 
@@ -88,7 +88,7 @@ funtion sessionGuard (router: Router, route: IRoute) {
 await router.setup([
   ...
   {
-    path: /home.*/,
+    path: "home",
     component: HomeComponent,
     guards: [sessionGuard]
   },
@@ -110,16 +110,16 @@ export default class HomeComponent extends LitElement implements IPage {
     const $router = <IWebRouter>this.shadowRoot!.querySelector("web-router");
     $router.setup([
       {
-        path: /^home\/secret.*/,
+        path: "secret",
         component: () => import("./secret")
       },
       {
-        path: /^home\/user.*/,
+        path: "user",
         component: () => import("./user")
       },
       {
-         path: "",
-         redirectTo: "home/secret"
+         path: "*",
+         redirectTo: "secret"
        }
      ], this.parentRouter).then();
   }
@@ -140,21 +140,13 @@ In order to change a route you can either use the [`history`](https://developer.
 Here's an example on how to navigate.
 
 ```javascript
-history.pushState(null, "", "login");
+history.pushState(null, "", "/login");
 ```
 
 Or (if you want to replace the state and not keep the current one in the history)
 
 ```javascript
-history.replaceState(null, "", "login");
-```
-
-### `RouterLink` component
-
-With the `RouterLink` component you add `<router-link>` to your markup and specify a path. Whenever the component is clicked it will navigate to the specified path. Whenever the path of the router link is active the active attribute is set.
-
-```html
-<router-link path="home/secret"><button>Go to SecretComponent</button></router-link>
+history.replaceState(null, "", "/login");
 ```
 
 You can also go back and forth between the states!
@@ -164,13 +156,17 @@ history.back();
 history.forward();
 ```
 
-Here's an example on how to use the `RouterLink` component for navigating. Whenever you use a router link component you can
+### `RouterLink` component
+
+With the `RouterLink` component you add `<router-link>` to your markup and specify a path. Whenever the component is clicked it will navigate to the specified path. Whenever the path of the router link is active the active attribute is set.
 
 ```html
-<router-link path="home/secret"><button>Go to the secret page!</button></router-link>
+<router-link path="/home/secret"><button>Go to the secret page!</button></router-link>
 ```
 
-## Step 8 - Global navigation events
+Paths can be specified either in relative terms or in absolute terms. To specify an absolute path you simply pass `/home/secret`. To specify a relative path you first have to be aware of the context within you are navigating. The `RouterLink` component will for example navigate based on the nearest `web-router` component. If you pass `secret` (without the slash) as path, the navigating will be done in relation to the parent router. You can also specify `../../secret` to traverse up the router tree.
+
+## Step 9 - Global navigation events
 
 You are able to listen to the navigation related events that are dispatched each time something important happens. They are dispatched on the `window` object.
 
