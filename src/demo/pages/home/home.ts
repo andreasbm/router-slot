@@ -1,7 +1,6 @@
 import { LitElement, PropertyValues } from "lit-element";
 import { html, TemplateResult } from "lit-html";
-import { IPage, IWebRouter, WebRouter } from "../../../lib";
-import { query } from "../../../lib/helpers";
+import { IPage, IWebRouter, query, WebRouter } from "../../../lib";
 import { sharedStyles } from "../styles";
 
 export default class HomeComponent extends LitElement implements IPage {
@@ -43,7 +42,7 @@ export default class HomeComponent extends LitElement implements IPage {
 			<p>HomeComponent</p>
 			<p></p>
 			<button @click="${() => this.logout()}">Logout</button>
-			<router-link path="secret/code"><button>Go to SecretComponent</button></router-link>
+			<router-link path="secret"><button>Go to SecretComponent</button></router-link>
 			<router-link path="user"><button>Go to UserComponent</button></router-link>
 			<div id="child">
 				<web-router></web-router>

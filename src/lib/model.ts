@@ -25,8 +25,8 @@ export type RouterTree = {router: IWebRouter} & {child?: RouterTree} | null | un
 
 export interface IRouteBase<T = any> {
 
-	/* The path routeMatch */
-	path: string;
+	/* The path for the route fragment */
+	path: PathFragment;
 
 	/* Optional metadata */
 	data?: T;

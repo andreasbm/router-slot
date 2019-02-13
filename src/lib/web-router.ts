@@ -1,6 +1,6 @@
-import { ROUTER_EVENTS_TARGET } from "./config";
-import { addListener, currentPath, dispatchRouteChangeEvent, dispatchWindowEvent, ensureHistoryEvents, getFragments, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, removeListeners, resolvePageComponent, traverseRouterTree } from "./helpers";
+import { GLOBAL_ROUTER_EVENTS_TARGET } from "./config";
 import { Cancel, Cleanup, EventListenerSubscription, IRoute, IRouteMatch, IWebRouter, PathFragment, RouterComponentEventKind, RouterEventKind } from "./model";
+import { addListener, currentPath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, removeListeners, resolvePageComponent } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -131,8 +131,8 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 
 		// Add global listeners.
 		this.listeners.push(
-			addListener(ROUTER_EVENTS_TARGET, RouterEventKind.PopState, this.onPathChanged),
-			addListener(ROUTER_EVENTS_TARGET, RouterEventKind.PushState, this.onPathChanged)
+			addListener(GLOBAL_ROUTER_EVENTS_TARGET, RouterEventKind.PopState, this.onPathChanged),
+			addListener(GLOBAL_ROUTER_EVENTS_TARGET, RouterEventKind.PushState, this.onPathChanged)
 		);
 	}
 
@@ -197,12 +197,12 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 				// Cleans up and dispatches a global event that a navigation was cancelled.
 				const cancel: Cancel = () => {
 					cleanup();
-					dispatchWindowEvent(RouterEventKind.NavigationCancel, route);
+					dispatchGlobalRouterEvent(RouterEventKind.NavigationCancel, route);
 					return false;
 				};
 
 				// Dispatch globally that a navigation has started
-				dispatchWindowEvent(RouterEventKind.NavigationStart, route);
+				dispatchGlobalRouterEvent(RouterEventKind.NavigationStart, route);
 
 				// Check whether the guards allow us to go to the new route.
 				if (route.guards != null) {
@@ -262,15 +262,15 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 
 			// Dispatch globally that a navigation has ended.
 			if (navigate) {
-				dispatchWindowEvent(RouterEventKind.NavigationSuccess, route);
-				dispatchWindowEvent(RouterEventKind.NavigationEnd, route);
+				dispatchGlobalRouterEvent(RouterEventKind.NavigationSuccess, route);
+				dispatchGlobalRouterEvent(RouterEventKind.NavigationEnd, route);
 			}
 
 			return navigate;
 
 		} catch (e) {
-			dispatchWindowEvent(RouterEventKind.NavigationError, route);
-			dispatchWindowEvent(RouterEventKind.NavigationEnd, route);
+			dispatchGlobalRouterEvent(RouterEventKind.NavigationError, route);
+			dispatchGlobalRouterEvent(RouterEventKind.NavigationEnd, route);
 			throw e;
 		}
 	}

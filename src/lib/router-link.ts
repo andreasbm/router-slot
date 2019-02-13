@@ -1,20 +1,23 @@
-import { WEB_ROUTER_TAG_NAME } from "./config";
-import { constructPath, currentPath, isPathMatch, traverseRoots } from "./helpers";
-import { IWebRouter, RouterEventKind } from "./model";
+import { GLOBAL_ROUTER_EVENTS_TARGET, WEB_ROUTER_TAG_NAME } from "./config";
+import { EventListenerSubscription, IWebRouter, PathFragment, RouterEventKind } from "./model";
+import { addListener, constructPath, currentPath, isPathActive, removeListeners, traverseRoots } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `</style><slot></slot>`;
 
 export class RouterLink extends HTMLElement {
 
+	private listeners: EventListenerSubscription[] = [];
+	private _router: IWebRouter | null = null;
+
 	/**
 	 * The path of the navigation.
 	 */
-	set path (value: string) {
+	set path (value: string | PathFragment) {
 		this.setAttribute("path", value);
 	}
 
-	get path (): string {
+	get path (): string | PathFragment {
 		return this.getAttribute("path") || "/";
 	}
 
@@ -40,7 +43,9 @@ export class RouterLink extends HTMLElement {
 		value ? this.setAttribute("active", "") : this.removeAttribute("active");
 	}
 
-	private _router: IWebRouter | null = null;
+	/**
+	 * The current router context.
+	 */
 	get router (): IWebRouter | null {
 		return this._router || traverseRoots<IWebRouter>(this, WEB_ROUTER_TAG_NAME);
 	}
@@ -64,49 +69,57 @@ export class RouterLink extends HTMLElement {
 	 * Hook up listeners.
 	 */
 	connectedCallback () {
-		this.addEventListener("click", this.navigate);
-		window.addEventListener(RouterEventKind.NavigationEnd, this.updateActive);
+		this.listeners.push(
+			addListener(this, "click", this.navigate),
+			addListener(GLOBAL_ROUTER_EVENTS_TARGET, RouterEventKind.NavigationEnd, this.updateActive)
+		);
 	}
 
 	/**
 	 * Tear down listeners.
 	 */
 	disconnectedCallback () {
-		this.removeEventListener("click", this.navigate);
-		window.removeEventListener(RouterEventKind.NavigationEnd, this.updateActive);
+		removeListeners(this.listeners);
 	}
 
 	/**
 	 * Updates whether the route is active or not.
 	 */
-	updateActive () {
-		const active = isPathMatch(this.path, currentPath());
-		console.log(this.path, currentPath(), active);
+	protected updateActive () {
+		const active = isPathActive(this.getAbsolutePath(), currentPath());
+		console.log("WUHUU", this.getAbsolutePath(), currentPath(), active);
 		if (active !== this.active) {
 			this.active = active;
 		}
 	}
 
 	/**
+	 * Updates the absolute path.
+	 */
+	protected getAbsolutePath () {
+
+		// If a router context is present, navigate relative to that one
+		const router = this.router;
+		if (router != null) {
+			return constructPath(router, this.path);
+		}
+
+		return this.path;
+	}
+
+	/**
 	 * Navigates to the specified path.
 	 */
 	navigate (e: Event) {
+
+		// If disabled, we just prevent the navigation already now.
 		if (this.disabled) {
 			e.preventDefault();
 			e.stopPropagation();
 			return;
 		}
 
-		let path = this.path;
-
-		// If a router context is present, navigate relative to that one
-		const router = this.router;
-		if (router != null) {
-			path = constructPath(router, this.path);
-			console.log("WHAT", {path: path, origin: this.path, router});
-		}
-
-		history.pushState(null, "", path);
+		history.pushState(null, "", this.getAbsolutePath());
 	}
 
 }
