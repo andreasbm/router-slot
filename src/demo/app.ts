@@ -1,4 +1,4 @@
-import { currentPath, ChangeRouteEvent, IRoute, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, PushStateEvent, WebRouter, WebRouterEventKind, GlobalWebRouterEventKind, NavigationSuccessEvent } from "../lib";
+import { currentPath, ChangeRouteEvent, IRoute, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, PushStateEvent, WebRouter, WebRouterEventKind, GlobalWebRouterEventKind, NavigationSuccessEvent, ReplaceStateEvent } from "../lib";
 
 import "./../lib/router-link";
 
@@ -32,6 +32,10 @@ customElements.whenDefined("web-router").then(async () => {
 
 	window.addEventListener(GlobalWebRouterEventKind.PushState, (e: PushStateEvent) => {
 		console.log("On push state", `'${currentPath()}'`);
+	});
+
+	window.addEventListener(GlobalWebRouterEventKind.ReplaceState, (e: ReplaceStateEvent) => {
+		console.log("On replace state", currentPath());
 	});
 
 	window.addEventListener(GlobalWebRouterEventKind.PopState, (e: PopStateEvent) => {

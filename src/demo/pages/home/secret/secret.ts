@@ -50,7 +50,7 @@ export default class SecretComponent extends LitElement implements IPage {
 			</style>
 			<p>SecretComponent</p>
 			<router-link path="code"><button>Go to CodeComponent</button></router-link>
-			<router-link path="password"><button>Go to PasswordComponent</button></router-link>
+			<router-link path="password"><button>Go to PasswordComponent (1sec delay)</button></router-link>
 			<div id="child">
 				<web-router></web-router>
 			</div>

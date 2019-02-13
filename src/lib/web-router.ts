@@ -1,5 +1,5 @@
-import { GLOBAL_ROUTER_EVENTS_TARGET } from "./config";
-import { Cancel, Cleanup, EventListenerSubscription, IRoute, IRouteMatch, IWebRouter, PathFragment, WebRouterEventKind, GlobalWebRouterEventKind } from "./model";
+import { GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS } from "./config";
+import { Cancel, Cleanup, EventListenerSubscription, GlobalWebRouterEventKind, IRoute, IRouteMatch, IWebRouter, PathFragment, WebRouterEventKind } from "./model";
 import { addListener, currentPath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, removeListeners, resolvePageComponent } from "./util";
 
 const template = document.createElement("template");
@@ -128,8 +128,7 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 
 		// Add global listeners.
 		this.listeners.push(
-			addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalWebRouterEventKind.PopState, this.onPathChanged),
-			addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalWebRouterEventKind.PushState, this.onPathChanged)
+			addListener(GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, this.onPathChanged)
 		);
 	}
 
@@ -181,12 +180,9 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 
 				// Listen for another push state event. If another push state event happens
 				// while we are about to navigate we have to cancel.
-				let cancelNavigation = false;
-				const newPushStateHandler = () => cancelNavigation = true;
-				window.addEventListener(GlobalWebRouterEventKind.PushState, newPushStateHandler, {once: true});
-
-				// Cleans up the subscriptions
-				const cleanup: Cleanup = () => window.removeEventListener(GlobalWebRouterEventKind.NavigationStart, newPushStateHandler);
+				let navigationInvalidated = false;
+				const cancelNavigation = () => navigationInvalidated = true;
+				const cleanup: EventListenerSubscription = addListener(GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, cancelNavigation, {once: true});
 
 				// Cleans up and dispatches a global event that a navigation was cancelled.
 				const cancel: Cancel = () => {
@@ -219,7 +215,7 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 					await Promise.resolve(route.resolve(this, route));
 
 					// Cancel the navigation if another navigation event was sent while this one was loading
-					if (cancelNavigation) {
+					if (navigationInvalidated) {
 						return cancel();
 					}
 				}
@@ -230,7 +226,7 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 					page.parentRouter = this;
 
 					// Cancel the navigation if another navigation event was sent while this one was loading
-					if (cancelNavigation) {
+					if (navigationInvalidated) {
 						return cancel();
 					}
 

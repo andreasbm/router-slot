@@ -7,9 +7,9 @@ import { GlobalWebRouterEventKind } from "../model";
 export function ensureHistoryEvents () {
 	const patches = [
 		["pushState", GlobalWebRouterEventKind.PushState],
-		["replaceState", GlobalWebRouterEventKind.PushState],
+		["replaceState", GlobalWebRouterEventKind.ReplaceState],
 		["forward", GlobalWebRouterEventKind.PushState],
-		["back", GlobalWebRouterEventKind.PushState],
+		["back", GlobalWebRouterEventKind.PopState],
 		["go", GlobalWebRouterEventKind.PushState]
 	];
 	for (const [name, event] of patches) {

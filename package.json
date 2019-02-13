@@ -1,7 +1,7 @@
 {
 	"name": "@appnest/web-router",
 	"version": "0.1.4",
-	"description": "A simple web component router",
+	"description": "A powerful web component router",
 	"author": "Appnest",
 	"bugs": {
 		"url": "https://github.com/andreasbm/web-router/issues"
@@ -15,6 +15,10 @@
 		"webapp",
 		"custom",
 		"elements",
+		"powerful",
+		"routes",
+		"fragments",
+		"vanilla",
 		"web",
 		"component",
 		"router",

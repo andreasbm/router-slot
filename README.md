@@ -8,7 +8,7 @@
 
 ## What is this?
 
-This library is a simple web component router. It interprets the browser URL and navigates to a specific views based on the configuration. Go here to see a demo [https://appnest-demo.firebaseapp.com/web-router](https://appnest-demo.firebaseapp.com/web-router).
+This library is a powerful web component router. It interprets the browser URL and navigates to a specific views based on the configuration. Go here to see a demo [https://appnest-demo.firebaseapp.com/web-router](https://appnest-demo.firebaseapp.com/web-router).
 
 ## Benefits
 - Lazy loading of routes
@@ -174,10 +174,12 @@ funtion sessionGuard (router: IWebRouter, route: IRoute) {
 
   return true;
 }
-...
+```
 
 Add this guard to the setup function in the `guards` array.
 
+```typescript
+...
 await router.setup([
   ...
   {
@@ -256,6 +258,9 @@ export enum GlobalWebRouterEventKind {
   // An event triggered when a new state is added to the history.
   PushState = "pushstate",
 
+  // An event triggered when the current state is replaced in the history.
+  ReplaceState = "replacestate",
+
   // An event triggered when a state in the history is popped from the history.
   PopState = "popstate",
 
@@ -279,8 +284,12 @@ export enum GlobalWebRouterEventKind {
 Here's an example of how you can listen to the events.
 
 ```typescript
-window.addEventListener(GlobalWebRouterEventKind.OnPushState, (e: PushStateEvent) => {
+window.addEventListener(GlobalWebRouterEventKind.PushState, (e: PushStateEvent) => {
   console.log("On push state", currentPath());
+});
+
+window.addEventListener(GlobalWebRouterEventKind.ReplaceState, (e: ReplaceStateEvent) => {
+  console.log("On replace state", currentPath());
 });
 
 window.addEventListener(GlobalWebRouterEventKind.PopState, (e: PopStateEvent) => {

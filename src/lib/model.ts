@@ -69,7 +69,7 @@ export interface IRouteMatch {
  */
 export type ChangeRouteEvent = CustomEvent<IRoute>;
 export type PushStateEvent = CustomEvent<null>;
-// export type PopStateEvent = CustomEvent<null>;
+export type ReplaceStateEvent = CustomEvent<null>;
 export type NavigationStartEvent = CustomEvent<IRoute>;
 export type NavigationSuccessEvent = CustomEvent<IRoute>;
 export type NavigationCancelEvent = CustomEvent<IRoute>;
@@ -94,6 +94,9 @@ export enum GlobalWebRouterEventKind {
 
 	// An event triggered when a new state is added to the history.
 	PushState = "pushstate",
+
+	// An event triggered when the current state is replaced in the history.
+	ReplaceState = "replacestate",
 
 	// An event triggered when a state in the history is popped from the history.
 	PopState = "popstate",
