@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, WEB_ROUTER_TAG_NAME } from "./config";
 import { EventListenerSubscription, IWebRouter, PathFragment, GlobalWebRouterEventKind } from "./model";
-import { addListener, constructPath, currentPath, isPathActive, removeListeners, queryParentRoots } from "./util";
+import { addListener, constructAbsolutePath, currentPath, isPathActive, removeListeners, queryParentRoots } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `</style><slot></slot>`;
@@ -100,7 +100,7 @@ export class RouterLink extends HTMLElement {
 		// If a router context is present, navigate relative to that one
 		const router = this.router;
 		if (router != null) {
-			return constructPath(router, this.path);
+			return constructAbsolutePath(router, this.path);
 		}
 
 		return this.path;

@@ -155,15 +155,14 @@ export function getFragments (tree: RouterTree, depth: number): PathFragment[] {
 }
 
 /**
- * Constructs the path based on a router.
+ * Constructs the correct absolute path based on a router.
  * - Handles relative paths: "mypath"
  * - Handles absolute paths: "/mypath"
  * - Handles traversing paths: "../../mypath"
  * @param router
  * @param path
  */
-export function constructPath (router: IWebRouter, path: string): string {
-
+export function constructAbsolutePath (router: IWebRouter, path: string | PathFragment): string {
 
 	// Grab the router tree
 	const {tree, depth} = traverseRouterTree(router);
@@ -205,7 +204,7 @@ export function constructPath (router: IWebRouter, path: string): string {
  * @param route
  */
 export function handleRedirect (router: IWebRouter, route: IRedirectRoute) {
-	history.replaceState(history.state, "", constructPath(router, route.redirectTo));
+	history.replaceState(history.state, "", constructAbsolutePath(router, route.redirectTo));
 }
 
 /**

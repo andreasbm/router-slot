@@ -21,8 +21,8 @@ export default class UserComponent extends LitElement implements IPage {
 				${sharedStyles}
 			</style>
 			<p>UserComponent</p>
-			<p>:user = ${user}</p>
-			<p>:dashId = ${dashId}</p>
+			<p>:user = <b>${user}</b></p>
+			<p>:dashId = <b>${dashId}</b></p>
 		`;
 	}
 

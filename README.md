@@ -13,9 +13,10 @@ This library is a powerful web component router. It interprets the browser URL a
 ## Benefits
 - Lazy loading of routes
 - Web component friendly
-- Small and lightweight
 - Easy to use API
+- Specify params in the path
 - Zero dependencies
+- Everything you wish for in a router!
 - Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
 
 ## Install the dependency
@@ -189,6 +190,41 @@ await router.setup([
   },
   ...
 ]);
+```
+
+### Params
+
+If you want params in your URL you can do it by using the `:value` syntax. Below is an example on how to specify a path that matches params as well. This route would match urls such as `user/123`, `user/@andreas`, `user/abc` and so on.
+
+```typescript
+...
+await router.setup([
+  {
+    path: "user/:userId",
+    component: UserComponent
+  }
+]);
+```
+
+To grab the params in the `UserComponent` you can use the `routeMatch` from the parent router as shown in the example below.
+
+```typescript
+export default class UserComponent extends LitElement implements IPage {
+  parentRouter: IWebRouter;
+
+  get params (): Params {
+    return this.parentRouter.routeMatch!.params;
+  }
+
+  render (): TemplateResult {
+    const {userId} = this.params;
+    return html`
+      <p>:userId = <b>${userId}</b></p>
+    `;
+  }
+}
+
+window.customElements.define("user-component", UserComponent);
 ```
 
 ### Deep dive into the different route kinds
