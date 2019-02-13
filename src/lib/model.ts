@@ -22,6 +22,7 @@ export type Cancel = (() => boolean);
 
 export type RouterTree = {router: IWebRouter} & {child?: RouterTree} | null | undefined;
 
+
 export interface IRouteBase<T = any> {
 
 	/* The path routeMatch */
@@ -32,6 +33,9 @@ export interface IRouteBase<T = any> {
 
 	/* If guard returns false, the navigation is not allowed */
 	guards?: Guard[];
+
+	/* Whether the match is fuzzy (eg. "name" would not only match "name" or "name/" but also "nameasdpokasf") */
+	fuzzy?: boolean;
 }
 
 export interface IRedirectRoute extends IRouteBase {
@@ -72,6 +76,8 @@ export type NavigationErrorEvent = CustomEvent<IRoute>;
 export type NavigationEndEvent = CustomEvent<IRoute>;
 
 export type Params = {[key: string]: string};
+
+export type EventListenerSubscription = (() => void);
 
 /**
  * RouterComponent related events.

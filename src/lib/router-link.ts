@@ -1,5 +1,6 @@
-import { currentPath, isPathMatch } from "./helpers";
-import { RouterEventKind } from "./model";
+import { WEB_ROUTER_TAG_NAME } from "./config";
+import { constructPath, currentPath, isPathMatch, traverseRoots } from "./helpers";
+import { IWebRouter, RouterEventKind } from "./model";
 
 const template = document.createElement("template");
 template.innerHTML = `</style><slot></slot>`;
@@ -37,6 +38,15 @@ export class RouterLink extends HTMLElement {
 
 	set active (value: boolean) {
 		value ? this.setAttribute("active", "") : this.removeAttribute("active");
+	}
+
+	private _router: IWebRouter | null = null;
+	get router (): IWebRouter | null {
+		return this._router || traverseRoots<IWebRouter>(this, WEB_ROUTER_TAG_NAME);
+	}
+
+	set router (value: IWebRouter | null) {
+		this._router = value;
 	}
 
 	constructor () {
@@ -83,10 +93,20 @@ export class RouterLink extends HTMLElement {
 	navigate (e: Event) {
 		if (this.disabled) {
 			e.preventDefault();
+			e.stopPropagation();
 			return;
 		}
 
-		history.pushState(null, "", this.path);
+		let path = this.path;
+
+		// If a router context is present, navigate relative to that one
+		const router = this.router;
+		if (router != null) {
+			path = constructPath(router, this.path);
+			console.log("WHAT", {path: path, origin: this.path, router});
+		}
+
+		history.pushState(null, "", path);
 	}
 
 }

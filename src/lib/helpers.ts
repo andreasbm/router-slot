@@ -1,5 +1,5 @@
 import { CATCH_ALL_FLAG, TRAVERSE_FLAG } from "./config";
-import { Class, IComponentRoute, IPage, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IWebRouter, ModuleResolver, Params, PathFragment, RouterComponentEventKind, RouterEventKind, RouterTree } from "./model";
+import { Class, EventListenerSubscription, IComponentRoute, IPage, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IWebRouter, ModuleResolver, Params, PathFragment, RouterComponentEventKind, RouterEventKind, RouterTree } from "./model";
 
 /**
  * The current path of the location.
@@ -19,11 +19,12 @@ export function query (): Params {
 }
 
 /**
- * Strips the slash from the start of a path.
+ * Strips the slash from the start and end of a path.
  * @param path
  */
 export function stripSlash (path: string): string {
-	return path.startsWith("/") ? path.slice(1) : path;
+	path = path.startsWith("/") ? path.slice(1) : path;
+	return path.endsWith("/") ? path.slice(0, path.length - 1) : path;
 }
 
 /**
@@ -31,7 +32,7 @@ export function stripSlash (path: string): string {
  * @param path
  */
 export function ensureSlash (path: string): string {
-	return `${!path.startsWith("/") ? "/" : ""}${path}`
+	return `${!path.startsWith("/") ? "/" : ""}${path}`;
 }
 
 /**
@@ -99,27 +100,48 @@ export function getPathMatch (routePath: string | RegExp, fullPath: string): Reg
 }
 
 /**
+ * Matches a route.
+ * @param route
+ * @param path
+ */
+export function matchRoute (route: IRoute, path: string | PathFragment): IRouteMatch | null {
+
+	// Construct the regex to match with the path or fragment
+	// If fuzzy we simply need to match the start of the path with the route path.
+	// If not fuzzy we need to match either with the route path and "/" or the route path and the end of the line.
+	const regex = route.path === CATCH_ALL_FLAG ? /.*/
+		: route.fuzzy
+			? new RegExp(`^[\/]?${route.path}`)
+			: new RegExp(`(^[\/]?${route.path}[\/])|(^[\/]?${route.path}$)`);
+
+	// Check if there's a match
+	const match = path.match(regex);
+	if (match != null) {
+
+		// Split up the path into fragments
+		const consumed = stripSlash(path.slice(0, match[0].length));
+		const rest = stripSlash(path.slice(match[0].length, path.length));
+
+		return {
+			route,
+			match,
+			fragments: [consumed, rest]
+		};
+	}
+
+	return null;
+}
+
+/**
  * Matches the first route that matches the given path.
  * @param routes
  * @param path
  */
 export function matchRoutes (routes: IRoute[], path: string | PathFragment): IRouteMatch | null {
 	for (const route of routes) {
-
-		// Construct the regex to match with the path or fragment
-		const regex = route.path === CATCH_ALL_FLAG ? /.*/ : new RegExp(`^${route.path}`);
-		const match = path.match(regex);
+		const match = matchRoute(route, path);
 		if (match != null) {
-
-			// Split up the path into fragments
-			const consumed = stripSlash(path.slice(0, match[0].length));
-			const rest = stripSlash(path.slice(match[0].length, path.length));
-
-			return {
-				route,
-				match,
-				fragments: [consumed, rest]
-			};
+			return match;
 		}
 	}
 
@@ -240,19 +262,21 @@ export function getFragments (tree: RouterTree, depth: number): PathFragment[] {
 }
 
 /**
- * Handles a redirect.
+ * Constructs the path based on a router.
+ * - Handles relative paths: "mypath"
+ * - Handles absolute paths: "/mypath"
+ * - Handles traversing paths: "../../mypath"
  * @param router
- * @param route
+ * @param path
  */
-export function handleRedirect (router: IWebRouter, route: IRedirectRoute) {
+export function constructPath (router: IWebRouter, path: string): string {
 
 	// Grab the router tree
 	const {tree, depth} = traverseRouterTree(router);
-	let path = route.redirectTo;
 
 	// If the path starts with "/" its an absolute path
 	if (!path.startsWith("/")) {
-		let traverseDepth = 1;
+		let traverseDepth = 0;
 
 		// If the path starts with "./" we can remove that part
 		// because we know the path is relative to its route.
@@ -273,9 +297,68 @@ export function handleRedirect (router: IWebRouter, route: IRedirectRoute) {
 		}
 
 		// Grab the fragments and construct the new path, taking the traverse depth into account.
-		const fragments = getFragments(tree, depth - traverseDepth);
-		path = ensureSlash(`${fragments.join("/")}${path != "" ? `/${path}` : ""}`);
+		// Always subtract atleast 1 because we the path is relative to its parent.
+		const fragments = getFragments(tree, depth - 1 - traverseDepth);
+		return ensureSlash(`${fragments.join("/")}${path != "" ? `/${path}` : ""}`);
 	}
 
-	history.replaceState(history.state, "", path);
+	return path;
+}
+
+/**
+ * Handles a redirect.
+ * @param router
+ * @param route
+ */
+export function handleRedirect (router: IWebRouter, route: IRedirectRoute) {
+	history.replaceState(history.state, "", constructPath(router, route.redirectTo));
+}
+
+
+/**
+ * Adds an event listener (or more) to an element and returns a function to unsubscribe.
+ * @param $elem
+ * @param type
+ * @param listener
+ * @param options
+ */
+export function addListener ($elem: EventTarget,
+                             type: string[] | string,
+                             listener: ((e?: Event) => void),
+                             options?: boolean | AddEventListenerOptions): EventListenerSubscription {
+	const types = Array.isArray(type) ? type : [type];
+	types.forEach(t => $elem.addEventListener(t, listener, options));
+	return () => types.forEach(t => $elem.removeEventListener(t, listener, options));
+}
+
+
+/**
+ * Removes the event listeners in the array.
+ * @param listeners
+ */
+export function removeListeners (listeners: EventListenerSubscription[]) {
+	listeners.forEach(unsub => unsub());
+}
+
+/**
+ * Traverses the roots and returns the first match.
+ * @param $elem
+ * @param query
+ */
+export function traverseRoots<T> ($elem: Element, query: string): T | null {
+
+	// If a shadow root doesn't exist we don't continue the traversal
+	if ($elem.shadowRoot == null) {
+		return null;
+	}
+
+	// Grab the rood node and query it
+	const $root = (<any>$elem.shadowRoot.host).getRootNode();
+	const match = $root.querySelector(query);
+	if (match != null) {
+		return <T>match;
+	}
+
+	// We continue the traversal if there was not matches
+	return traverseRoots($root, query);
 }

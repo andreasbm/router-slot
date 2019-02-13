@@ -1,5 +1,6 @@
-import { currentPath, dispatchRouteChangeEvent, dispatchWindowEvent, ensureHistoryEvents, getFragments, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, resolvePageComponent, traverseRouterTree } from "./helpers";
-import { Cancel, Cleanup, IRoute, IRouteMatch, IWebRouter, PathFragment, RouterComponentEventKind, RouterEventKind } from "./model";
+import { ROUTER_EVENTS_TARGET } from "./config";
+import { addListener, currentPath, dispatchRouteChangeEvent, dispatchWindowEvent, ensureHistoryEvents, getFragments, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, removeListeners, resolvePageComponent, traverseRouterTree } from "./helpers";
+import { Cancel, Cleanup, EventListenerSubscription, IRoute, IRouteMatch, IWebRouter, PathFragment, RouterComponentEventKind, RouterEventKind } from "./model";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -13,6 +14,11 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	 * Contains the available routes.
 	 */
 	private routes: IRoute[] = [];
+
+	/**
+	 * Listeners on the router.
+	 */
+	private listeners: EventListenerSubscription[] = [];
 
 	/**
 	 * The parent router.
@@ -107,27 +113,35 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	}
 
 	/**
-	 * Attaches listeners.
+	 * Attaches listeners, either globally or on the parent router.
 	 */
 	protected attachListeners () {
+
+		// Attach child router listeners
 		if (this.isChildRouter) {
-			this.parentRouter!.addEventListener(RouterComponentEventKind.RouteChange, this.onPathChanged);
-		} else {
-			window.addEventListener(RouterEventKind.PopState, this.onPathChanged);
-			window.addEventListener(RouterEventKind.PushState, this.onPathChanged);
+			console.log("ATTACH CHILD ROUTER LISTENERS");
+			this.listeners.push(
+				addListener(this.parentRouter!, RouterComponentEventKind.RouteChange, this.onPathChanged)
+			);
+
+			return;
 		}
+
+		console.log("ATTACH GLOBAL ROUTER LISTENERS");
+
+		// Add global listeners.
+		this.listeners.push(
+			addListener(ROUTER_EVENTS_TARGET, RouterEventKind.PopState, this.onPathChanged),
+			addListener(ROUTER_EVENTS_TARGET, RouterEventKind.PushState, this.onPathChanged)
+		);
 	}
 
 	/**
 	 * Detaches the listeners.
 	 */
 	protected detachListeners () {
-		if (this.isChildRouter) {
-			this.parentRouter!.removeEventListener(RouterComponentEventKind.RouteChange, this.onPathChanged);
-		} else {
-			window.removeEventListener(RouterEventKind.PopState, this.onPathChanged);
-			window.removeEventListener(RouterEventKind.PushState, this.onPathChanged);
-		}
+		console.log("DETACH");
+		removeListeners(this.listeners);
 	}
 
 	/**
@@ -154,6 +168,8 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 
 		// Find the corresponding route.
 		const match = matchRoutes(this.routes, path);
+
+		console.log("LOAD", path, match);
 
 		// Ensure that a route was found, otherwise we just clear the current state of the route.
 		if (match == null) {
@@ -185,7 +201,7 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 					return false;
 				};
 
-				// Dispatch globally that a navigation has started.
+				// Dispatch globally that a navigation has started
 				dispatchWindowEvent(RouterEventKind.NavigationStart, route);
 
 				// Check whether the guards allow us to go to the new route.

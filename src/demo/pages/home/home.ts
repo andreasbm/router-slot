@@ -43,8 +43,8 @@ export default class HomeComponent extends LitElement implements IPage {
 			<p>HomeComponent</p>
 			<p></p>
 			<button @click="${() => this.logout()}">Logout</button>
-			<router-link path="home/secret"><button>Go to SecretComponent</button></router-link>
-			<router-link path="home/user"><button>Go to UserComponent</button></router-link>
+			<router-link path="secret/code"><button>Go to SecretComponent</button></router-link>
+			<router-link path="user"><button>Go to UserComponent</button></router-link>
 			<div id="child">
 				<web-router></web-router>
 			</div>

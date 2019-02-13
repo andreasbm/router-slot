@@ -15,8 +15,8 @@ export default class PasswordComponent extends LitElement implements IPage {
 			{
 				path: "dialog",
 				resolve: ((router: IWebRouter, route: IResolverRoute) => {
-					alert("DIALOG :D");
-					console.log("DIALOG! :D", router, route);
+					alert("DIALOG");
+					console.log("DIALOG!", router, route);
 					history.replaceState(null, "", "/home/secret/password");
 				})
 			}
