@@ -1,4 +1,4 @@
-import { currentPath, dispatchRouteChangeEvent, dispatchWindowEvent, ensureHistoryEvents, isRedirectRoute, isResolverRoute, matchRoutes, resolvePageComponent } from "./helpers";
+import { currentPath, dispatchRouteChangeEvent, dispatchWindowEvent, ensureHistoryEvents, getFragments, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, resolvePageComponent, traverseRouterTree } from "./helpers";
 import { Cancel, Cleanup, IRoute, IRouteMatch, IWebRouter, PathFragment, RouterComponentEventKind, RouterEventKind } from "./model";
 
 const template = document.createElement("template");
@@ -40,8 +40,8 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	/**
 	 * The current path fragment.
 	 */
-	get pathFragment (): PathFragment | null {
-		return this.routeMatch != null ? this.routeMatch.pathFragment : null;
+	get fragments (): [PathFragment, PathFragment] | null {
+		return this.routeMatch != null ? this.routeMatch.fragments : null;
 	}
 
 	/**
@@ -138,8 +138,8 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	protected async onPathChanged () {
 
 		// Either choose the parent fragment or the current path if no parent exists.
-		const pathFragment = this.parentRouter != null && this.parentRouter.pathFragment != null
-			? this.parentRouter.pathFragment
+		const pathFragment = this.parentRouter != null && this.parentRouter.fragments != null
+			? this.parentRouter.fragments[1]
 			: currentPath();
 
 		await this.loadPath(pathFragment);
@@ -150,7 +150,7 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	 * Returns true if a navigation was made to a new page.
 	 * @private
 	 */
-	protected async loadPath (path: string): Promise<boolean> {
+	protected async loadPath (path: string | PathFragment): Promise<boolean> {
 
 		// Find the corresponding route.
 		const match = matchRoutes(this.routes, path);
@@ -200,7 +200,7 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 				// Redirect if necessary
 				if (isRedirectRoute(route)) {
 					cleanup();
-					history.replaceState(history.state, "", route.redirectTo);
+					handleRedirect(this, route);
 					return false;
 				}
 

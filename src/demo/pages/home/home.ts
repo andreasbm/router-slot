@@ -14,16 +14,16 @@ export default class HomeComponent extends LitElement implements IPage {
 		const $router = <WebRouter>this.shadowRoot!.querySelector("web-router");
 		$router.setup([
 			{
-				path: /secret/,
+				path: "secret",
 				component: () => import("./secret/secret")
 			},
 			{
-				path: /user/,
+				path: "user",
 				component: () => import("./user/user")
 			},
 			{
-				path: /.*/,
-				redirectTo: "home/secret"
+				path: "*",
+				redirectTo: "secret"
 			}
 		], this.parentRouter).then();
 

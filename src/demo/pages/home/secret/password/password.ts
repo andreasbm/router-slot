@@ -13,7 +13,7 @@ export default class PasswordComponent extends LitElement implements IPage {
 		const $router = <IWebRouter>this.shadowRoot!.querySelector("web-router");
 		$router.setup([
 			{
-				path: /dialog/,
+				path: "dialog",
 				resolve: ((router: IWebRouter, route: IResolverRoute) => {
 					alert("DIALOG :D");
 					console.log("DIALOG! :D", router, route);

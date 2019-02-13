@@ -1,4 +1,5 @@
-import { Class, IComponentRoute, IPage, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, ModuleResolver, Params, PathFragment, RouterComponentEventKind, RouterEventKind } from "./model";
+import { CATCH_ALL_FLAG, TRAVERSE_FLAG } from "./config";
+import { Class, IComponentRoute, IPage, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IWebRouter, ModuleResolver, Params, PathFragment, RouterComponentEventKind, RouterEventKind, RouterTree } from "./model";
 
 /**
  * The current path of the location.
@@ -22,11 +23,15 @@ export function query (): Params {
  * @param path
  */
 export function stripSlash (path: string): string {
-	if (path.charAt(0) === "/") {
-		return path.slice(1);
-	}
+	return path.startsWith("/") ? path.slice(1) : path;
+}
 
-	return path;
+/**
+ * Ensures the path starts with a slash
+ * @param path
+ */
+export function ensureSlash (path: string): string {
+	return `${!path.startsWith("/") ? "/" : ""}${path}`
 }
 
 /**
@@ -98,16 +103,22 @@ export function getPathMatch (routePath: string | RegExp, fullPath: string): Reg
  * @param routes
  * @param path
  */
-export function matchRoutes (routes: IRoute[], path: string): IRouteMatch | null {
+export function matchRoutes (routes: IRoute[], path: string | PathFragment): IRouteMatch | null {
 	for (const route of routes) {
-		// We need to treat empty paths a bit different because an empty string matches every path in the regex.
-		const matchPath = route.path === "" ? /^$/ : route.path;
-		const match = path.match(matchPath);
+
+		// Construct the regex to match with the path or fragment
+		const regex = route.path === CATCH_ALL_FLAG ? /.*/ : new RegExp(`^${route.path}`);
+		const match = path.match(regex);
 		if (match != null) {
+
+			// Split up the path into fragments
+			const consumed = stripSlash(path.slice(0, match[0].length));
+			const rest = stripSlash(path.slice(match[0].length, path.length));
+
 			return {
 				route,
 				match,
-				pathFragment: stripSlash(path.slice(match[0].length, path.length))
+				fragments: [consumed, rest]
 			};
 		}
 	}
@@ -184,4 +195,87 @@ export function isRedirectRoute (route: IRoute): route is IRedirectRoute {
  */
 export function isResolverRoute (route: IRoute): route is IResolverRoute {
 	return (<IResolverRoute>route).resolve != null;
+}
+
+/**
+ * Traverses the router tree up to the root route.
+ * @param route
+ */
+export function traverseRouterTree (route: IWebRouter): {tree: RouterTree, depth: number} {
+
+	// Find the nodes from the route up to the root route
+	let routes: IWebRouter[] = [route];
+	while (route.parentRouter != null) {
+		route = route.parentRouter;
+		routes.push(route);
+	}
+
+	// Create the tree
+	const tree = routes.reduce((acc: RouterTree, router: IWebRouter) => {
+		return {router, child: acc};
+	}, undefined);
+
+	const depth = routes.length;
+
+	return {tree, depth};
+}
+
+/**
+ * Generates a path based on the router tree.
+ * @param tree
+ * @param depth
+ */
+export function getFragments (tree: RouterTree, depth: number): PathFragment[] {
+	let child = tree;
+	const fragments: PathFragment[] = [];
+
+	// Look through all of the path fragments
+	while (child != null && child.router.routeMatch != null && depth > 0) {
+		fragments.push(child.router.routeMatch.fragments[0]);
+		child = child.child;
+		depth--;
+	}
+
+	return fragments;
+}
+
+/**
+ * Handles a redirect.
+ * @param router
+ * @param route
+ */
+export function handleRedirect (router: IWebRouter, route: IRedirectRoute) {
+
+	// Grab the router tree
+	const {tree, depth} = traverseRouterTree(router);
+	let path = route.redirectTo;
+
+	// If the path starts with "/" its an absolute path
+	if (!path.startsWith("/")) {
+		let traverseDepth = 1;
+
+		// If the path starts with "./" we can remove that part
+		// because we know the path is relative to its route.
+		if (path.startsWith("./")) {
+			path = path.slice(2);
+		}
+
+		// Match with the traverse flag.
+		const match = path.match(new RegExp(TRAVERSE_FLAG, "g"));
+		if (match != null) {
+
+			// If the path matched with the traverse flag we know that we have to construct
+			// a route until a certain depth. The traverse depth will is the amount of "../" in the path
+			// and the depth is the part of the path we a slicing away.
+			traverseDepth = match.length;
+			const length = match.reduce((acc: number, m: string) => acc + m.length, 0);
+			path = path.slice(length);
+		}
+
+		// Grab the fragments and construct the new path, taking the traverse depth into account.
+		const fragments = getFragments(tree, depth - traverseDepth);
+		path = ensureSlash(`${fragments.join("/")}${path != "" ? `/${path}` : ""}`);
+	}
+
+	history.replaceState(history.state, "", path);
 }

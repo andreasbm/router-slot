@@ -61,16 +61,16 @@ customElements.whenDefined("web-router").then(async () => {
 
 	await router.setup([
 		{
-			path: /login/,
+			path: "login",
 			component: () => import("./pages/login/login")
 		},
 		{
-			path: /home/,
+			path: "home",
 			component: () => import("./pages/home/home"),
 			guards: [sessionGuard]
 		},
 		{
-			path: /.*/,
+			path: "*",
 			redirectTo: "home"
 		}
 	]);

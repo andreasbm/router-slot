@@ -1,8 +1,8 @@
 export interface IWebRouter extends EventTarget {
 	readonly route: IRoute | null;
 	readonly isChildRouter: boolean;
-	readonly pathFragment: PathFragment |null;
-	readonly routeMatch: IRouteMatch |null;
+	readonly fragments: [PathFragment, PathFragment] | null;
+	readonly routeMatch: IRouteMatch | null;
 	parentRouter: IWebRouter | null | undefined;
 	setup: ((routes: IRoute[], parentRouter?: IWebRouter | null, navigate?: boolean) => Promise<void>);
 	clearRoutes: (() => Promise<void>);
@@ -20,10 +20,12 @@ export type Class = {new (...args: any[]): any;};
 export type Cleanup = (() => void);
 export type Cancel = (() => boolean);
 
+export type RouterTree = {router: IWebRouter} & {child?: RouterTree} | null | undefined;
+
 export interface IRouteBase<T = any> {
 
 	/* The path routeMatch */
-	path: RegExp | string;
+	path: string;
 
 	/* Optional metadata */
 	data?: T;
@@ -53,7 +55,7 @@ export type PathFragment = string;
 
 export interface IRouteMatch {
 	route: IRoute;
-	pathFragment: PathFragment;
+	fragments: [PathFragment, PathFragment];
 	match: RegExpMatchArray;
 }
 

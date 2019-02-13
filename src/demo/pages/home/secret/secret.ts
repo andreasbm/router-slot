@@ -26,17 +26,17 @@ export default class SecretComponent extends LitElement implements IPage {
 		const $router = <WebRouter>this.shadowRoot!.querySelector("web-router");
 		$router.setup([
 			{
-				path: /code/,
+				path: "code",
 				component: () => import("./code/code")
 			},
 			{
-				path: /password/,
+				path: "password",
 				component: () => import("./password/password"),
 				guards: [resolveSecretPasswordGuard]
 			},
 			{
-				path: "",
-				redirectTo: "home/secret/code"
+				path: "*",
+				redirectTo: "code"
 			}
 		], this.parentRouter).then();
 	}
