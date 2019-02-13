@@ -10,7 +10,7 @@ function resolveSecretPasswordGuard (): Promise<boolean> {
 		setTimeout(() => {
 			data.secretPassword = `1234`;
 			res(true);
-		}, 4000);
+		}, 1000);
 	});
 }
 
@@ -21,21 +21,21 @@ export default class SecretComponent extends LitElement implements IPage {
 	firstUpdated (changedProperties: PropertyValues) {
 		super.firstUpdated(changedProperties);
 
-		console.log(this.parentRouter.currentRoute);
+		console.log(this.parentRouter.route);
 
 		const $router = <WebRouter>this.shadowRoot!.querySelector("web-router");
 		$router.setup([
 			{
-				path: /.*\/code/,
+				path: /code/,
 				component: () => import("./code/code")
 			},
 			{
-				path: /.*\/password/,
+				path: /password/,
 				component: () => import("./password/password"),
 				guards: [resolveSecretPasswordGuard]
 			},
 			{
-				path: /.*/,
+				path: "",
 				redirectTo: "home/secret/code"
 			}
 		], this.parentRouter).then();

@@ -1,40 +1,61 @@
-export interface IRouterComponent extends EventTarget {
-	readonly currentRoute: IRoute | null;
+export interface IWebRouter extends EventTarget {
+	readonly route: IRoute | null;
 	readonly isChildRouter: boolean;
-	parentRouter: IRouterComponent | null | undefined;
-	setup: ((routes: IRoute[], parentRouter?: IRouterComponent | null, navigate?: boolean) => Promise<void>);
+	readonly pathFragment: PathFragment |null;
+	readonly routeMatch: IRouteMatch |null;
+	parentRouter: IWebRouter | null | undefined;
+	setup: ((routes: IRoute[], parentRouter?: IWebRouter | null, navigate?: boolean) => Promise<void>);
 	clearRoutes: (() => Promise<void>);
 }
 
 export interface IPage extends HTMLElement {
-	parentRouter: IRouterComponent;
+	parentRouter: IWebRouter;
 }
 
-export type IGuard = ((router: IRouterComponent, route: IRoute) => boolean | Promise<boolean>);
-
-export type IResolver = () => Promise<void>;
+export type Guard = ((router: IWebRouter, route: IRoute) => boolean | Promise<boolean>);
+export type CustomResolver = ((router: IWebRouter, route: IResolverRoute) => void | Promise<void>);
 
 export type ModuleResolver = Promise<{default: any}>;
 export type Class = {new (...args: any[]): any;};
+export type Cleanup = (() => void);
+export type Cancel = (() => boolean);
 
-export interface IRoute<T = any> {
+export interface IRouteBase<T = any> {
 
-	/* The path match */
+	/* The path routeMatch */
 	path: RegExp | string;
-
-	/* The component loader (should return a module with a default export) */
-	component?: Class | ModuleResolver | (() => ModuleResolver);
-
-	/* If guard returns false, the navigation is not allowed */
-	guards?: IGuard[];
-
-	/* A redirection route */
-	redirectTo?: string;
 
 	/* Optional metadata */
 	data?: T;
+
+	/* If guard returns false, the navigation is not allowed */
+	guards?: Guard[];
 }
 
+export interface IRedirectRoute extends IRouteBase {
+
+	/* A redirection route */
+	redirectTo: string;
+}
+
+export interface IComponentRoute extends IRouteBase {
+
+	/* The component loader (should return a module with a default export) */
+	component: Class | ModuleResolver | (() => ModuleResolver);
+}
+
+export interface IResolverRoute extends IRouteBase {
+	resolve: CustomResolver;
+}
+
+export type IRoute = IRedirectRoute | IComponentRoute | IResolverRoute;
+export type PathFragment = string;
+
+export interface IRouteMatch {
+	route: IRoute;
+	pathFragment: PathFragment;
+	match: RegExpMatchArray;
+}
 
 /**
  * The router component did change route event.

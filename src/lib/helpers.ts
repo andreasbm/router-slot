@@ -1,4 +1,4 @@
-import { IPage, IRoute, ModuleResolver, Params, RouterComponentEventKind, RouterEventKind } from "./model";
+import { Class, IComponentRoute, IPage, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, ModuleResolver, Params, PathFragment, RouterComponentEventKind, RouterEventKind } from "./model";
 
 /**
  * The current path of the location.
@@ -18,11 +18,23 @@ export function query (): Params {
 }
 
 /**
+ * Strips the slash from the start of a path.
+ * @param path
+ */
+export function stripSlash (path: string): string {
+	if (path.charAt(0) === "/") {
+		return path.slice(1);
+	}
+
+	return path;
+}
+
+/**
  * Determines whether the provided function is a class.
  * @param func
  * @returns {boolean}
  */
-export function isClass (func: Function) {
+export function isClass (func: Function): func is Class {
 	return typeof func === "function" && /^class\s/.test(Function.prototype.toString.call(func));
 }
 
@@ -51,20 +63,6 @@ export function splitQuery (query: string): Params {
 }
 
 /**
- * Normalizes an url.
- * Safari won't navigate if the doesn't start with "/". Other browser vendors do not care.
- * @param {string} url
- * @returns {string}
- */
-export function normalizeUrl (url: string): string {
-	if (url.charAt(0) != "/") {
-		url = `/${url}`;
-	}
-
-	return url;
-}
-
-/**
  * Dispatches a did change route event.
  * @param $elem
  * @param {IRoute} route
@@ -78,12 +76,21 @@ export function dispatchRouteChangeEvent ($elem: HTMLElement, route: IRoute) {
 /**
  * Determines whether a route matches a path.
  * @param routePath
- * @param path
+ * @param fullPath
  */
-export function isPathMatch (routePath: string | RegExp, path: string): boolean {
+export function isPathMatch (routePath: string | RegExp, fullPath: string): boolean {
+	return getPathMatch(routePath, fullPath) != null;
+}
+
+/**
+ * Returns the path routeMatch for a route path and the full path.
+ * @param routePath
+ * @param fullPath
+ */
+export function getPathMatch (routePath: string | RegExp, fullPath: string): RegExpMatchArray | null {
 	// We need to treat empty paths a bit different because an empty string matches every path in the regex.
 	const matchPath = routePath === "" ? /^$/ : routePath;
-	return path.match(matchPath) != null;
+	return fullPath.match(matchPath);
 }
 
 /**
@@ -91,10 +98,17 @@ export function isPathMatch (routePath: string | RegExp, path: string): boolean 
  * @param routes
  * @param path
  */
-export function matchRoutes (routes: IRoute[], path: string): IRoute | null {
+export function matchRoutes (routes: IRoute[], path: string): IRouteMatch | null {
 	for (const route of routes) {
-		if (isPathMatch(route.path, path)) {
-			return route;
+		// We need to treat empty paths a bit different because an empty string matches every path in the regex.
+		const matchPath = route.path === "" ? /^$/ : route.path;
+		const match = path.match(matchPath);
+		if (match != null) {
+			return {
+				route,
+				match,
+				pathFragment: stripSlash(path.slice(match[0].length, path.length))
+			};
 		}
 	}
 
@@ -145,7 +159,7 @@ export function attachCallback (obj: any, name: string, cb: ((...args: any[]) =>
  * If the component provided is a function (and not a class) call the function to get the promise.
  * @param route
  */
-export async function resolvePageComponent (route: IRoute): Promise<IPage> {
+export async function resolvePageComponent (route: IComponentRoute): Promise<IPage> {
 
 	let component = route.component;
 	if (component instanceof Function && !isClass(component)) {
@@ -154,4 +168,20 @@ export async function resolvePageComponent (route: IRoute): Promise<IPage> {
 
 	const module = await Promise.resolve(<ModuleResolver>component);
 	return module.default ? (new module.default()) : new (<any>module)();
+}
+
+/**
+ * Determines if a route is a redirect route.
+ * @param route
+ */
+export function isRedirectRoute (route: IRoute): route is IRedirectRoute {
+	return (<IRedirectRoute>route).redirectTo != null;
+}
+
+/**
+ * Determines if a route is a resolver route.
+ * @param route
+ */
+export function isResolverRoute (route: IRoute): route is IResolverRoute {
+	return (<IResolverRoute>route).resolve != null;
 }

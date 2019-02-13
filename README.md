@@ -40,10 +40,10 @@ import "@appnest/web-router";
 
 ## Step 4 - Add some routes!
 
-Routes are added to the router through the `setup` function. At least one of the routes must always match.
+Routes are added to the router through the `setup` function. At least one of the routes must always routeMatch.
 
 ```typescript
-const router = <IRouterComponent>document.querySelector("web-router");
+const router = <IWebRouter>document.querySelector("web-router");
 await router.setup([
   {
     path: /^login.*/,
@@ -103,11 +103,11 @@ Child routes are routes within another route! It is super simple to add one. All
 ```typescript
 export default class HomeComponent extends LitElement implements IPage {
 
-  parentRouter: IRouterComponent;
+  parentRouter: IWebRouter;
 
   firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
-    const $router = <IRouterComponent>this.shadowRoot!.querySelector("web-router");
+    const $router = <IWebRouter>this.shadowRoot!.querySelector("web-router");
     $router.setup([
       {
         path: /^home\/secret.*/,

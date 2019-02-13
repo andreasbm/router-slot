@@ -1,5 +1,5 @@
-import { currentPath, dispatchRouteChangeEvent, dispatchWindowEvent, ensureHistoryEvents, resolvePageComponent, matchRoutes } from "./helpers";
-import { IRoute, IRouterComponent, RouterComponentEventKind, RouterEventKind } from "./model";
+import { currentPath, dispatchRouteChangeEvent, dispatchWindowEvent, ensureHistoryEvents, isRedirectRoute, isResolverRoute, matchRoutes, resolvePageComponent } from "./helpers";
+import { Cancel, Cleanup, IRoute, IRouteMatch, IWebRouter, PathFragment, RouterComponentEventKind, RouterEventKind } from "./model";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -7,7 +7,7 @@ template.innerHTML = `<slot></slot>`;
 // Patches the history object and ensures the correct events.
 ensureHistoryEvents();
 
-export class WebRouter extends HTMLElement implements IRouterComponent {
+export class WebRouter extends HTMLElement implements IWebRouter {
 
 	/**
 	 * Contains the available routes.
@@ -19,12 +19,12 @@ export class WebRouter extends HTMLElement implements IRouterComponent {
 	 * Is REQUIRED if this router is a child.
 	 * When set, the relevant listeners are added or teared down because they depend on the parent.
 	 */
-	_parentRouter: IRouterComponent | null | undefined;
+	_parentRouter: IWebRouter | null | undefined;
 	get parentRouter () {
 		return this._parentRouter;
 	}
 
-	set parentRouter (router: IRouterComponent | null | undefined) {
+	set parentRouter (router: IWebRouter | null | undefined) {
 		this.detachListeners();
 		this._parentRouter = router;
 		this.attachListeners();
@@ -33,9 +33,23 @@ export class WebRouter extends HTMLElement implements IRouterComponent {
 	/**
 	 * The current route.
 	 */
-	private _currentRoute: IRoute | null;
-	get currentRoute () {
-		return this._currentRoute;
+	get route (): IRoute | null {
+		return this.routeMatch != null ? this.routeMatch.route : null;
+	}
+
+	/**
+	 * The current path fragment.
+	 */
+	get pathFragment (): PathFragment | null {
+		return this.routeMatch != null ? this.routeMatch.pathFragment : null;
+	}
+
+	/**
+	 * The current path routeMatch.
+	 */
+	private _routeMatch: IRouteMatch | null;
+	get routeMatch () {
+		return this._routeMatch;
 	}
 
 	/**
@@ -68,7 +82,7 @@ export class WebRouter extends HTMLElement implements IRouterComponent {
 	 * @param parentRouter
 	 * @param navigate
 	 */
-	async setup (routes: IRoute[], parentRouter?: IRouterComponent | null, navigate = true) {
+	async setup (routes: IRoute[], parentRouter?: IWebRouter | null, navigate = true) {
 
 		// Clean up the current routes
 		await this.clearRoutes();
@@ -122,7 +136,13 @@ export class WebRouter extends HTMLElement implements IRouterComponent {
 	 * @private
 	 */
 	protected async onPathChanged () {
-		await this.loadPath(currentPath());
+
+		// Either choose the parent fragment or the current path if no parent exists.
+		const pathFragment = this.parentRouter != null && this.parentRouter.pathFragment != null
+			? this.parentRouter.pathFragment
+			: currentPath();
+
+		await this.loadPath(pathFragment);
 	}
 
 	/**
@@ -133,76 +153,92 @@ export class WebRouter extends HTMLElement implements IRouterComponent {
 	protected async loadPath (path: string): Promise<boolean> {
 
 		// Find the corresponding route.
-		const route = matchRoutes(this.routes, path);
+		const match = matchRoutes(this.routes, path);
 
-		// Ensure that a route was found.
-		if (route == null) {
-			throw new Error(`No routes matches the path "${path}".`);
+		// Ensure that a route was found, otherwise we just clear the current state of the route.
+		if (match == null) {
+			this._routeMatch = null;
+			return false;
 		}
 
-		// Check whether the component or redirectTo is specified (and that both are not specified)
-		if (route.component == null && route.redirectTo == null && !(route.component != null && route.redirectTo != null)) {
-			throw new Error(`The route "${route.path}" needs to have either a component or a redirectTo set (and not both).`);
-		}
+		const {route} = match;
 
 		try {
 
 			// Only change route if its a new route.
-			const navigate = (this.currentRoute !== route);
+			const navigate = (this.route !== route);
 			if (navigate) {
+
+				// Listen for another push state event. If another push state event happens
+				// while we are about to navigate we have to cancel.
+				let cancelNavigation = false;
+				const newPushStateHandler = () => cancelNavigation = true;
+				window.addEventListener(RouterEventKind.PushState, newPushStateHandler, {once: true});
+
+				// Cleans up the subscriptions
+				const cleanup: Cleanup = () => window.removeEventListener(RouterEventKind.NavigationStart, newPushStateHandler);
+
+				// Cleans up and dispatches a global event that a navigation was cancelled.
+				const cancel: Cancel = () => {
+					cleanup();
+					dispatchWindowEvent(RouterEventKind.NavigationCancel, route);
+					return false;
+				};
 
 				// Dispatch globally that a navigation has started.
 				dispatchWindowEvent(RouterEventKind.NavigationStart, route);
 
-				// Listen for another navigation start event
-				let cancelNavigation = false;
-				const newNavigationHandler = () => cancelNavigation = true;
-				window.addEventListener(RouterEventKind.NavigationStart, newNavigationHandler, {once: true});
-				const cleanup = () => window.removeEventListener(RouterEventKind.NavigationStart, newNavigationHandler);
-
 				// Check whether the guards allow us to go to the new route.
 				if (route.guards != null) {
-
-					// @ts-ignore
 					for (const guard of route.guards) {
 						if (!(await Promise.resolve(guard(this, route)))) {
-							// Dispatch globally that a navigation was cancelled.
-							cleanup();
-							dispatchWindowEvent(RouterEventKind.NavigationCancel, route);
-							return false;
+							return cancel();
 						}
 					}
 				}
 
 				// Redirect if necessary
-				if (route.redirectTo != null) {
+				if (isRedirectRoute(route)) {
 					cleanup();
 					history.replaceState(history.state, "", route.redirectTo);
 					return false;
 				}
 
+				// Handle custom resolving if necessary
+				else if (isResolverRoute(route)) {
+					await Promise.resolve(route.resolve(this, route));
+
+					// Cancel the navigation if another navigation event was sent while this one was loading
+					if (cancelNavigation) {
+						return cancel();
+					}
+				}
+
 				// If the component provided is a function (and not a class) call the function to get the promise.
-				const page = await resolvePageComponent(route);
-				page.parentRouter = this;
+				else {
+					const page = await resolvePageComponent(route);
+					page.parentRouter = this;
+
+					// Cancel the navigation if another navigation event was sent while this one was loading
+					if (cancelNavigation) {
+						return cancel();
+					}
+
+					// Remove the old page
+					if (this.childNodes.length > 0) {
+						const previousPage = this.childNodes[0];
+						this.removeChild(previousPage);
+					}
+
+					// Append the new page
+					this.appendChild(page);
+				}
 
 				cleanup();
-
-				// Cancel the navigation if another navigation event was sent while this one was loading
-				if (cancelNavigation) {
-					dispatchWindowEvent(RouterEventKind.NavigationCancel, route);
-					return false;
-				}
-
-				// Remove the old page
-				if (this.childNodes.length > 0) {
-					const previousPage = this.childNodes[0];
-					this.removeChild(previousPage);
-				}
-
-				// Append the new page
-				this.appendChild(page);
-				this._currentRoute = route;
 			}
+
+			// Store the new route match
+			this._routeMatch = match;
 
 			// Always dispatch the route change event to notify the children that something happened.
 			// This is because the child routes might have to change routes further down the tree.
