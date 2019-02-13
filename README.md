@@ -194,7 +194,7 @@ await router.setup([
 
 ### Params
 
-If you want params in your URL you can do it by using the `:value` syntax. Below is an example on how to specify a path that matches params as well. This route would match urls such as `user/123`, `user/@andreas`, `user/abc` and so on.
+If you want params in your URL you can do it by using the `:name` syntax. Below is an example on how to specify a path that matches params as well. This route would match urls such as `user/123`, `user/@andreas`, `user/abc` and so on.
 
 ```typescript
 ...
