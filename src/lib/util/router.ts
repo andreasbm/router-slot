@@ -1,5 +1,5 @@
-import { CATCH_ALL_WILDCARD, TRAVERSE_FLAG } from "../config";
-import { Class, IComponentRoute, IPage, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IWebRouter, ModuleResolver, PathFragment, RouterTree } from "../model";
+import { CATCH_ALL_WILDCARD, PARAM_IDENTIFIER, TRAVERSE_FLAG } from "../config";
+import { Class, IComponentRoute, IPage, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IWebRouter, ModuleResolver, Params, PathFragment, RouterTree } from "../model";
 import { ensureSlash, stripSlash } from "./url";
 
 /**
@@ -18,25 +18,45 @@ export function isPathActive (path: string | PathFragment, fullPath: string): bo
  */
 export function matchRoute (route: IRoute, path: string | PathFragment): IRouteMatch | null {
 
+
+	// We start by preparing the route path by replacing the param names with a regex that matches everything
+	// until either the end of the path or the next "/". While replacing the param placeholders we make sure
+	// to store the names of the param placeholders.
+	// Whi
+	const paramNames: string[] = [];
+	const routePath = route.path.replace(PARAM_IDENTIFIER, (substring: string, ...args: string[]) => {
+		paramNames.push(args[0]);
+		return "([^\\/]+)";
+	});
+
 	// Construct the regex to match with the path or fragment
 	// If fuzzy we simply need to match the start of the path with the route path.
 	// If not fuzzy we need to match either with the route path and "/" or the route path and the end of the line.
 	const regex = route.path === CATCH_ALL_WILDCARD ? /.*/
 		: route.fuzzy
-			? new RegExp(`^[\/]?${route.path}`)
-			: new RegExp(`(^[\/]?${route.path}[\/])|(^[\/]?${route.path}$)`);
+			? new RegExp(`^[\/]?${routePath}`)
+			: new RegExp(`^[\/]?${routePath}(\/|$)`);
+
 
 	// Check if there's a match
 	const match = path.match(regex);
 	if (match != null) {
 
-		// Split up the path into fragments
+		// Match the param names with the matches. The matches starts from index 1 which is the
+		// reason why we add 1. match[0] is the entire string.
+		const params = paramNames.reduce((acc: Params, name: string, i: number) => {
+			acc[name] = match[i + 1];
+			return acc;
+		}, {});
+
+		// Split up the path into two fragments: the one consumed and the rest.
 		const consumed = stripSlash(path.slice(0, match[0].length));
 		const rest = stripSlash(path.slice(match[0].length, path.length));
 
 		return {
 			route,
 			match,
+			params,
 			fragments: [consumed, rest]
 		};
 	}

@@ -1,19 +1,28 @@
 import { html, LitElement } from "lit-element";
 import { TemplateResult } from "lit-html";
+import { IPage, IWebRouter, Params } from "../../../../lib/model";
 import { sharedStyles } from "../../styles";
 
-export default class UserComponent extends LitElement {
+export default class UserComponent extends LitElement implements IPage {
+	parentRouter: IWebRouter;
+
+	get params (): Params {
+		return this.parentRouter.routeMatch!.params;
+	}
 
 	/**
 	 * Renders the component.
 	 * @returns {TemplateResult}
 	 */
-	_render (): TemplateResult {
+	render (): TemplateResult {
+		const {user, dashId} = this.params;
 		return html`
 			<style>
 				${sharedStyles}
 			</style>
 			<p>UserComponent</p>
+			<p>:user = ${user}</p>
+			<p>:dashId = ${dashId}</p>
 		`;
 	}
 

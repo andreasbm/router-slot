@@ -17,7 +17,7 @@ export default class HomeComponent extends LitElement implements IPage {
 				component: () => import("./secret/secret")
 			},
 			{
-				path: "user",
+				path: "user/:user/dashboard/:dashId",
 				component: () => import("./user/user")
 			},
 			{
@@ -43,7 +43,7 @@ export default class HomeComponent extends LitElement implements IPage {
 			<p></p>
 			<button @click="${() => this.logout()}">Logout</button>
 			<router-link path="secret"><button>Go to SecretComponent</button></router-link>
-			<router-link path="user"><button>Go to UserComponent</button></router-link>
+			<router-link path="user/@andreasbm/dashboard/123"><button>Go to UserComponent</button></router-link>
 			<div id="child">
 				<web-router></web-router>
 			</div>

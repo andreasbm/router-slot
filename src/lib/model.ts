@@ -22,13 +22,17 @@ export type Cancel = (() => boolean);
 
 export type RouterTree = {router: IWebRouter} & {child?: RouterTree} | null | undefined;
 
-export interface IRouteBase<T = any> {
+/**
+ * The base route interface.
+ * D = the data type of the data
+ */
+export interface IRouteBase<D = any> {
 
 	// The path for the route fragment
 	path: PathFragment;
 
 	// Optional metadata
-	data?: T;
+	data?: D;
 
 	// If guard returns false, the navigation is not allowed
 	guards?: Guard[];
@@ -37,18 +41,27 @@ export interface IRouteBase<T = any> {
 	fuzzy?: boolean;
 }
 
+/**
+ * Route type used for redirection.
+ */
 export interface IRedirectRoute extends IRouteBase {
 
 	// The paths the route should redirect to. Can either be relative or absolute.
 	redirectTo: string;
 }
 
+/**
+ * Route type used to resolve and stamp components.
+ */
 export interface IComponentRoute extends IRouteBase {
 
 	// The component loader (should return a module with a default export)
 	component: Class | ModuleResolver | (() => ModuleResolver);
 }
 
+/**
+ * Route type used to take control of how the route should resolve.
+ */
 export interface IResolverRoute extends IRouteBase {
 
 	// A custom resolver that handles the route change
@@ -60,6 +73,7 @@ export type PathFragment = string;
 
 export interface IRouteMatch {
 	route: IRoute;
+	params: Params,
 	fragments: [PathFragment, PathFragment];
 	match: RegExpMatchArray;
 }
