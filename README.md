@@ -1,31 +1,44 @@
-# @appnest/web-router
+<h1 align="center">@appnest/web-router</h1>
+<p align="center">
+  <a href="https://npmcharts.com/compare/@appnest/web-router?minimal=true">
+    <img alt="Downloads per month" src="https://img.shields.io/npm/dm/@appnest/web-router.svg" height="20"></img>
+  </a>
+  <a href="https://david-dm.org/andreasbm/web-router"><img alt="Dependencies" src="https://img.shields.io/david/andreasbm/web-router.svg" height="20"></img></a>
+  <a href="https://www.npmjs.com/package/@appnest/web-router">
+    <img alt="NPM Version" src="https://img.shields.io/npm/v/@appnest/web-router.svg" height="20"></img>
+  </a>
+  <a href="https://github.com/andreasbm/web-router/graphs/contributors">
+    <img alt="Contributors" src="https://img.shields.io/github/contributors/andreasbm/web-router.svg" height="20"></img>
+  </a>
+  <a href="https://opensource.org/licenses/MIT">
+    <img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellow.svg" height="20"></img>
+  </a>
+  <a href="https://www.webcomponents.org/element/@appnest/web-router">
+    <img alt="Published on webcomponents.org" src="https://img.shields.io/badge/webcomponents.org-published-blue.svg" height="20"></img>
+  </a>
+</p>
 
-<a href="https://npmcharts.com/compare/@appnest/web-router?minimal=true"><img alt="Downloads per month" src="https://img.shields.io/npm/dm/@appnest/web-router.svg" height="20"></img></a>
-<a href="https://david-dm.org/andreasbm/web-router"><img alt="Dependencies" src="https://img.shields.io/david/andreasbm/web-router.svg" height="20"></img></a>
-<a href="https://www.npmjs.com/package/@appnest/web-router"><img alt="NPM Version" src="https://img.shields.io/npm/v/@appnest/web-router.svg" height="20"></img></a>
-<a href="https://github.com/andreasbm/web-router/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/andreasbm/web-router.svg" height="20"></img></a>
-<a href="https://opensource.org/licenses/MIT"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellow.svg" height="20"></img></a>
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/@appnest/web-router)
+<p align="center">
+  <b>This library is a powerful web component router</b></br>
+  <sub>A router interprets the browser URL and navigates to a specific views based on the configuration. This router is optimized for routing between web components. Go here to see a demo <a href="https://appnest-demo.firebaseapp.com/web-router">https://appnest-demo.firebaseapp.com/web-router</a>.<sub>
+</p>
 
-## What is this?
+* Lazy loading of routes
+* Web component friendly
+* Easy to use API
+* Specify params in the path
+* Zero dependencies
+* Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
 
-This library is a powerful web component router. Go here to see a demo [https://appnest-demo.firebaseapp.com/web-router](https://appnest-demo.firebaseapp.com/web-router).
+![split](https://github.com/andreasbm/web-config/raw/master/split.png)
 
-A router interprets the browser URL and navigates to a specific views based on the configuration. This router is optimized for routing between web components.
-
-## ❯ Benefits
-- Lazy loading of routes
-- Web component friendly
-- Easy to use API
-- Specify params in the path
-- Zero dependencies
-- Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
-
-## ❯ Install the dependency
+## ❯ Installation
 
 ```node
 npm i @appnest/web-router
 ```
+
+![split](https://github.com/andreasbm/web-config/raw/master/split.png)
 
 ## ❯ The Basics
 
@@ -123,6 +136,8 @@ With the `router-link` component you add `<router-link>` to your markup and spec
 ```
 
 Paths can be specified either in relative or absolute terms. To specify an absolute path you simply pass `/home/secret`. To specify a relative path you first have to be aware of the router context  you are navigating within. The `router-link` component will for navigate based on the nearest `web-router` component. If you give the component a path (without the slash) as path, the navigation will be done in relation to the parent router. You can also specify `../login` to traverse up the router tree.
+
+![split](https://github.com/andreasbm/web-config/raw/master/split.png)
 
 ## ❯ Advanced
 
@@ -331,9 +346,13 @@ window.addEventListener(GlobalRouterEventKind.NavigationEnd, () => {
 });
 ```
 
+![split](https://github.com/andreasbm/web-config/raw/master/split.png)
+
 ## ❯ Be careful when navigating to the root!
 
 From my testing I found that Chrome and Safari treat an empty string as url when navigating differently. As an example `history.pushState(null, null, "")` will navigate to the root of the website in Chrome but in Safari the path won't change. The workaround I found was to simply pass "/" when navigating to the root of the website instead.
+
+![split](https://github.com/andreasbm/web-config/raw/master/split.png)
 
 ## ❯ License
 
