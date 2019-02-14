@@ -319,6 +319,18 @@ window.addEventListener(GlobalRouterEventKind.NavigationSuccess, (e: NavigationS
 });
 ```
 
+#### Scroll to the top
+
+If you want to scroll to the top on each page change to could consider doing the following.
+
+```typescript
+window.addEventListener(GlobalRouterEventKind.NavigationEnd, () => {
+  requestAnimationFrame(() => {
+    window.scrollTo(0, 0);
+  });
+});
+```
+
 ## Be careful when navigating to the root!
 
 From my testing I found that Chrome and Safari treat an empty string as url when navigating differently. As an example `history.pushState(null, null, "")` will navigate to the root of the website in Chrome but in Safari the path won't change. The workaround I found was to simply pass "/" when navigating to the root of the website instead.
