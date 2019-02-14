@@ -22,7 +22,7 @@ export type RouterTree = {router: IRouterSlot} & {child?: RouterTree} | null | u
  * The base route interface.
  * D = the data type of the data
  */
-export interface IRouteBase<D = any> {
+export interface IRouteBase<D = unknown> {
 
 	// The path for the route fragment
 	path: PathFragment;
