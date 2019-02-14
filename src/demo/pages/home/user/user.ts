@@ -1,13 +1,13 @@
 import { html, LitElement } from "lit-element";
 import { TemplateResult } from "lit-html";
-import { IPage, IWebRouter, Params } from "../../../../lib/model";
+import { Params } from "../../../../lib/model";
+import { queryParentRouter } from "../../../../lib/util/shadow";
 import { sharedStyles } from "../../styles";
 
-export default class UserComponent extends LitElement implements IPage {
-	parentRouter: IWebRouter;
+export default class UserComponent extends LitElement {
 
 	get params (): Params {
-		return this.parentRouter.routeMatch!.params;
+		return queryParentRouter(this)!.routeMatch!.params;
 	}
 
 	/**

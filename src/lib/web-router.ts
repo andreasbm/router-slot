@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS } from "./config";
-import { Cancel, Cleanup, EventListenerSubscription, GlobalWebRouterEventKind, IRoute, IRouteMatch, IWebRouter, PathFragment, WebRouterEventKind } from "./model";
-import { addListener, currentPath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, removeListeners, resolvePageComponent } from "./util";
+import { Cancel, EventListenerSubscription, GlobalWebRouterEventKind, IRoute, IRouteMatch, IWebRouter, PathFragment, WebRouterEventKind } from "./model";
+import { addListener, currentPath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, queryParentRouter, removeListeners, resolvePageComponent } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -59,10 +59,10 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	}
 
 	/**
-	 * Whether the router is a child router.
+	 * Whether the router is a root router.
 	 */
-	get isChildRouter () {
-		return this.parentRouter != null;
+	get isRootRouter () {
+		return this.parentRouter == null;
 	}
 
 	constructor () {
@@ -76,39 +76,43 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	}
 
 	/**
-	 * Remove event listeners and clean up.
+	 * Hooks up the component.
+	 */
+	connectedCallback () {
+		this.queryParentRouter();
+	}
+
+	/**
+	 * Tears down the component.
 	 */
 	disconnectedCallback () {
 		this.detachListeners();
 	}
 
 	/**
-	 * Initializes the router.
-	 * @param routes
-	 * @param parentRouter
-	 * @param navigate
+	 * Queries the parent router.
 	 */
-	async setup (routes: IRoute[], parentRouter?: IWebRouter | null, navigate = true) {
+	protected queryParentRouter () {
+		this.parentRouter = queryParentRouter(this);
+	}
 
-		// Clean up the current routes
-		await this.clearRoutes();
+	/**
+	 * Adds routes to the router.
+	 * @param routes
+	 */
+	add (routes: IRoute[]) {
 
 		// Add the routes to the array
 		this.routes = routes;
 
-		// Store the reference to the parent router.
-		this.parentRouter = parentRouter;
-
 		// Register that the path has changed so the correct route can be loaded.
-		if (navigate) {
-			await this.onPathChanged();
-		}
+		this.onPathChanged().then();
 	}
 
 	/**
 	 * Removes all routes.
 	 */
-	async clearRoutes () {
+	clearRoutes () {
 		this.routes.length = 0;
 	}
 
@@ -117,18 +121,20 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	 */
 	protected attachListeners () {
 
-		// Attach child router listeners
-		if (this.isChildRouter) {
+		// Attach root router listeners
+		if (this.isRootRouter) {
+
+			// Add global listeners.
 			this.listeners.push(
-				addListener(this.parentRouter!, WebRouterEventKind.RouteChange, this.onPathChanged)
+				addListener(GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, this.onPathChanged)
 			);
 
 			return;
 		}
 
-		// Add global listeners.
+		// Attach child router listeners
 		this.listeners.push(
-			addListener(GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, this.onPathChanged)
+			addListener(this.parentRouter!, WebRouterEventKind.RouteChange, this.onPathChanged)
 		);
 	}
 
@@ -223,7 +229,6 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 				// If the component provided is a function (and not a class) call the function to get the promise.
 				else {
 					const page = await resolvePageComponent(route);
-					page.parentRouter = this;
 
 					// Cancel the navigation if another navigation event was sent while this one was loading
 					if (navigationInvalidated) {

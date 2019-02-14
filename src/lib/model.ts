@@ -1,24 +1,19 @@
-export interface IWebRouter extends EventTarget {
+export interface IWebRouter extends HTMLElement {
 	readonly route: IRoute | null;
-	readonly isChildRouter: boolean;
+	readonly isRootRouter: boolean;
 	readonly fragments: [PathFragment, PathFragment] | null;
 	readonly routeMatch: IRouteMatch | null;
 	parentRouter: IWebRouter | null | undefined;
-	setup: ((routes: IRoute[], parentRouter?: IWebRouter | null, navigate?: boolean) => Promise<void>);
-	clearRoutes: (() => Promise<void>);
-}
-
-export interface IPage extends HTMLElement {
-	parentRouter: IWebRouter;
+	add: ((routes: IRoute[]) => void);
+	clearRoutes: (() => void);
 }
 
 export type Guard = ((router: IWebRouter, route: IRoute) => boolean | Promise<boolean>);
 export type CustomResolver = ((router: IWebRouter, route: IResolverRoute) => void | Promise<void>);
+export type Cancel = (() => boolean);
 
 export type ModuleResolver = Promise<{default: any}>;
 export type Class = {new (...args: any[]): any;};
-export type Cleanup = (() => void);
-export type Cancel = (() => boolean);
 
 export type RouterTree = {router: IWebRouter} & {child?: RouterTree} | null | undefined;
 

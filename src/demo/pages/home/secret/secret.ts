@@ -1,6 +1,6 @@
 import { html, LitElement, PropertyValues } from "lit-element";
 import { TemplateResult } from "lit-html";
-import { IPage, WebRouter } from "../../../../lib";
+import { IWebRouter } from "../../../../lib";
 import { sharedStyles } from "../../styles";
 import { data } from "./data";
 
@@ -14,15 +14,13 @@ function resolveSecretPasswordGuard (): Promise<boolean> {
 	});
 }
 
-export default class SecretComponent extends LitElement implements IPage {
-
-	parentRouter: WebRouter;
+export default class SecretComponent extends LitElement {
 
 	firstUpdated (changedProperties: PropertyValues) {
 		super.firstUpdated(changedProperties);
 
-		const $router = <WebRouter>this.shadowRoot!.querySelector("web-router");
-		$router.setup([
+		const $router = this.shadowRoot!.querySelector<IWebRouter>("web-router")!;
+		$router.add([
 			{
 				path: "code",
 				component: () => import("./code/code")
@@ -36,7 +34,7 @@ export default class SecretComponent extends LitElement implements IPage {
 				path: "**",
 				redirectTo: "code"
 			}
-		], this.parentRouter).then();
+		]);
 	}
 
 	/**

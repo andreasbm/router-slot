@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, WEB_ROUTER_TAG_NAME } from "./config";
-import { EventListenerSubscription, IWebRouter, PathFragment, GlobalWebRouterEventKind } from "./model";
-import { addListener, constructAbsolutePath, currentPath, isPathActive, removeListeners, queryParentRoots } from "./util";
+import { EventListenerSubscription, GlobalWebRouterEventKind, IWebRouter, PathFragment } from "./model";
+import { addListener, constructAbsolutePath, currentPath, isPathActive, queryParentRoots, queryParentRouter, removeListeners } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `</style><slot></slot>`;
@@ -47,11 +47,25 @@ export class RouterLink extends HTMLElement {
 	 * The current router context.
 	 */
 	get router (): IWebRouter | null {
-		return this._router || queryParentRoots<IWebRouter>(this, WEB_ROUTER_TAG_NAME);
+		return this._router;
 	}
 
 	set router (value: IWebRouter | null) {
 		this._router = value;
+	}
+
+	/**
+	 * Returns the absolute path constructed relative to the router.
+	 * If no router parent was found the path property is the absolute one.
+	 */
+	get absolutePath (): string {
+
+		// If a router context is present, navigate relative to that one
+		if (this.router != null) {
+			return constructAbsolutePath(this.router, this.path);
+		}
+
+		return this.path;
 	}
 
 	constructor () {
@@ -73,6 +87,9 @@ export class RouterLink extends HTMLElement {
 			addListener(this, "click", this.navigate),
 			addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalWebRouterEventKind.NavigationEnd, this.updateActive)
 		);
+
+		// Query the nearest router
+		this.router = queryParentRoots(this, WEB_ROUTER_TAG_NAME);
 	}
 
 	/**
@@ -86,24 +103,10 @@ export class RouterLink extends HTMLElement {
 	 * Updates whether the route is active or not.
 	 */
 	protected updateActive () {
-		const active = isPathActive(this.getAbsolutePath(), currentPath());
+		const active = isPathActive(this.absolutePath, currentPath());
 		if (active !== this.active) {
 			this.active = active;
 		}
-	}
-
-	/**
-	 * Updates the absolute path.
-	 */
-	protected getAbsolutePath () {
-
-		// If a router context is present, navigate relative to that one
-		const router = this.router;
-		if (router != null) {
-			return constructAbsolutePath(router, this.path);
-		}
-
-		return this.path;
 	}
 
 	/**
@@ -118,7 +121,7 @@ export class RouterLink extends HTMLElement {
 			return;
 		}
 
-		history.pushState(null, "", this.getAbsolutePath());
+		history.pushState(null, "", this.absolutePath);
 	}
 
 }

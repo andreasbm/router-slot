@@ -1,4 +1,4 @@
-import { currentPath, ChangeRouteEvent, IRoute, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, PushStateEvent, WebRouter, WebRouterEventKind, GlobalWebRouterEventKind, NavigationSuccessEvent, ReplaceStateEvent } from "../lib";
+import { ChangeRouteEvent, currentPath, GlobalWebRouterEventKind, IRoute, IWebRouter, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, PushStateEvent, ReplaceStateEvent, WebRouter, WebRouterEventKind } from "../lib";
 
 import "./../lib/router-link";
 
@@ -20,7 +20,7 @@ function sessionGuard (router: WebRouter, route: IRoute) {
 
 // Setup the router
 customElements.whenDefined("web-router").then(async () => {
-	const router = <WebRouter>document.querySelector("web-router");
+	const router = document.querySelector<IWebRouter>("web-router")!;
 
 	let hasInitialized = false;
 	router.addEventListener(WebRouterEventKind.RouteChange, (e: ChangeRouteEvent) => {
@@ -63,7 +63,7 @@ customElements.whenDefined("web-router").then(async () => {
 		console.log("Navigation failed", e.detail);
 	});
 
-	await router.setup([
+	await router.add([
 		{
 			path: "login",
 			component: () => import("./pages/login/login")
@@ -79,4 +79,5 @@ customElements.whenDefined("web-router").then(async () => {
 		}
 	]);
 
+	history.pushState(null, "", "/");
 });

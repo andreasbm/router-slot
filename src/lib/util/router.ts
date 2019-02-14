@@ -1,5 +1,5 @@
 import { CATCH_ALL_WILDCARD, PARAM_IDENTIFIER, TRAVERSE_FLAG } from "../config";
-import { Class, IComponentRoute, IPage, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IWebRouter, ModuleResolver, Params, PathFragment, RouterTree } from "../model";
+import { Class, IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IWebRouter, ModuleResolver, Params, PathFragment, RouterTree } from "../model";
 import { ensureSlash, stripSlash } from "./url";
 
 /**
@@ -85,7 +85,7 @@ export function matchRoutes (routes: IRoute[], path: string | PathFragment): IRo
  * If the component provided is a function (and not a class) call the function to get the promise.
  * @param route
  */
-export async function resolvePageComponent (route: IComponentRoute): Promise<IPage> {
+export async function resolvePageComponent (route: IComponentRoute): Promise<Node> {
 
 	let component = route.component;
 	if (component instanceof Function && !isClass(component)) {

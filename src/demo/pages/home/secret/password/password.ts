@@ -1,17 +1,16 @@
 import { html, LitElement } from "lit-element";
 import { TemplateResult } from "lit-html";
-import { IPage, IResolverRoute, IWebRouter } from "../../../../../lib/model";
+import { IResolverRoute, IWebRouter } from "../../../../../lib/model";
 import { sharedStyles } from "../../../styles";
 import { data } from "../data";
 
-export default class PasswordComponent extends LitElement implements IPage {
-	parentRouter: IWebRouter;
+export default class PasswordComponent extends LitElement {
 
 	firstUpdated () {
 		super.connectedCallback();
 
-		const $router = <IWebRouter>this.shadowRoot!.querySelector("web-router");
-		$router.setup([
+		const $router = this.shadowRoot!.querySelector<IWebRouter>("web-router")!;
+		$router.add([
 			{
 				path: "dialog",
 				resolve: ((router: IWebRouter, route: IResolverRoute) => {
@@ -20,7 +19,7 @@ export default class PasswordComponent extends LitElement implements IPage {
 					history.replaceState(null, "", "/home/secret/password");
 				})
 			}
-		], this.parentRouter).then();
+		]);
 	}
 
 	render (): TemplateResult {

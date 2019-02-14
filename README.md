@@ -57,11 +57,11 @@ The `web-router` component acts as a placeholder that marks the spot in the temp
 
 ### Configuration
 
-Routes are added to the router through the `setup` function on a `web-router` component. Specify the parts of the path you want it to math with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
+Routes are added to the router through the `add` function on a `web-router` component. Specify the parts of the path you want it to math with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
 
 ```typescript
 const router = <IWebRouter>document.querySelector("web-router");
-await router.setup([
+await router.add([
   {
     path: "login",
     component: () => import("./pages/login") // Lazy loaded
@@ -83,42 +83,6 @@ You may want to wrap the above in a `whenDefined` callback to ensure the `web-ro
 customElements.whenDefined("web-router").then(async () => {
   ...
 });
-```
-
-#### Child routes
-
-Child routes are routes within another route. All child routes will have the `parentRouter` property set. The `parentRouter` must be passed to the child router through the `setup` method in the child route. In the example below we know that the `HomeComponent` is a child route with the  `home` route specified before being the parent route. The first route in the example would match the `home/secret` path and import the secret component. The second route would match the `home/user` path and the third one would go one route backwards and then navigate to the `login` route as specified in the previous example.
-
-```typescript
-export default class HomeComponent extends LitElement implements IPage {
-
-  parentRouter: IWebRouter;
-
-  firstUpdated(changedProperties: PropertyValues) {
-    super.firstUpdated(changedProperties);
-    const $router = <IWebRouter>this.shadowRoot!.querySelector("web-router");
-    $router.setup([
-      {
-        path: "secret",
-        component: () => import("./pages/secret")
-      },
-      {
-        path: "user",
-        component: () => import("./pages/user")
-      },
-      {
-         path: "**",
-         redirectTo: "../login"
-      }
-     ], this.parentRouter).then();
-  }
-
-  render () {
-    return html`<web-router></web-router>`;
-  }
-}
-
-window.customElements.define("home-component", HomeComponent);
 ```
 
 ### Navigation
@@ -179,11 +143,11 @@ funtion sessionGuard (router: IWebRouter, route: IRoute) {
 }
 ```
 
-Add this guard to the setup function in the `guards` array.
+Add this guard to the add function in the `guards` array.
 
 ```typescript
 ...
-await router.setup([
+await router.add([
   ...
   {
     path: "home",
@@ -200,7 +164,7 @@ If you want params in your URL you can do it by using the `:name` syntax. Below 
 
 ```typescript
 ...
-await router.setup([
+await router.add([
   {
     path: "user/:userId",
     component: UserComponent
@@ -211,11 +175,10 @@ await router.setup([
 To grab the params in the `UserComponent` you can use the `routeMatch` from the parent router as shown in the example below.
 
 ```typescript
-export default class UserComponent extends LitElement implements IPage {
-  parentRouter: IWebRouter;
+export default class UserComponent extends LitElement {
 
   get params (): Params {
-    return this.parentRouter.routeMatch!.params;
+    return queryParentRouter(this)!.routeMatch!.params;
   }
 
   render (): TemplateResult {

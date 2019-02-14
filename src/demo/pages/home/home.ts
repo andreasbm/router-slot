@@ -1,17 +1,15 @@
 import { LitElement, PropertyValues } from "lit-element";
 import { html, TemplateResult } from "lit-html";
-import { IPage, IWebRouter, query, WebRouter } from "../../../lib";
+import { IWebRouter, query, WebRouter } from "../../../lib";
 import { sharedStyles } from "../styles";
 
-export default class HomeComponent extends LitElement implements IPage {
-
-	parentRouter: IWebRouter;
+export default class HomeComponent extends LitElement {
 
 	firstUpdated (changedProperties: PropertyValues) {
 		super.firstUpdated(changedProperties);
 
-		const $router = <WebRouter>this.shadowRoot!.querySelector("web-router");
-		$router.setup([
+		const $router = this.shadowRoot!.querySelector<IWebRouter>("web-router")!;
+		$router.add([
 			{
 				path: "secret",
 				component: () => import("./secret/secret")
@@ -24,7 +22,7 @@ export default class HomeComponent extends LitElement implements IPage {
 				path: "**",
 				redirectTo: "secret"
 			}
-		], this.parentRouter).then();
+		]);
 
 		console.log(query());
 	}
