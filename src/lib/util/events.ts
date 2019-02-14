@@ -1,5 +1,5 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET } from "../config";
-import { EventListenerSubscription, IRoute, WebRouterEventKind, GlobalWebRouterEventKind } from "../model";
+import { EventListenerSubscription, IRoute, RouterEventKind, GlobalRouterEventKind } from "../model";
 
 /**
  * Dispatches a did change route event.
@@ -7,7 +7,7 @@ import { EventListenerSubscription, IRoute, WebRouterEventKind, GlobalWebRouterE
  * @param {IRoute} route
  */
 export function dispatchRouteChangeEvent ($elem: HTMLElement, route: IRoute) {
-	$elem.dispatchEvent(new CustomEvent(WebRouterEventKind.RouteChange, {
+	$elem.dispatchEvent(new CustomEvent(RouterEventKind.RouteChange, {
 		detail: route
 	}));
 }
@@ -17,7 +17,7 @@ export function dispatchRouteChangeEvent ($elem: HTMLElement, route: IRoute) {
  * @param name
  * @param detail
  */
-export function dispatchGlobalRouterEvent<T> (name: GlobalWebRouterEventKind, detail?: T) {
+export function dispatchGlobalRouterEvent<T> (name: GlobalRouterEventKind, detail?: T) {
 	GLOBAL_ROUTER_EVENTS_TARGET.dispatchEvent(new CustomEvent(name, {detail}));
 }
 

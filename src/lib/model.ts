@@ -93,14 +93,14 @@ export type EventListenerSubscription = (() => void);
 /**
  * RouterComponent related events.
  */
-export enum WebRouterEventKind {
+export enum RouterEventKind {
 	RouteChange = "routechange"
 }
 
 /**
  * History related events.
  */
-export enum GlobalWebRouterEventKind {
+export enum GlobalRouterEventKind {
 
 	// An event triggered when a new state is added to the history.
 	PushState = "pushstate",

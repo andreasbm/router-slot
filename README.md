@@ -255,7 +255,7 @@ export interface IResolverRoute extends IRouteBase {
 You are able to listen to the navigation related events that are dispatched each time something important happens. They are dispatched on the `window` object.
 
 ```typescript
-export enum GlobalWebRouterEventKind {
+export enum GlobalRouterEventKind {
 
   // An event triggered when a new state is added to the history.
   PushState = "pushstate",
@@ -286,35 +286,35 @@ export enum GlobalWebRouterEventKind {
 Here's an example of how you can listen to the events.
 
 ```typescript
-window.addEventListener(GlobalWebRouterEventKind.PushState, (e: PushStateEvent) => {
+window.addEventListener(GlobalRouterEventKind.PushState, (e: PushStateEvent) => {
   console.log("On push state", currentPath());
 });
 
-window.addEventListener(GlobalWebRouterEventKind.ReplaceState, (e: ReplaceStateEvent) => {
+window.addEventListener(GlobalRouterEventKind.ReplaceState, (e: ReplaceStateEvent) => {
   console.log("On replace state", currentPath());
 });
 
-window.addEventListener(GlobalWebRouterEventKind.PopState, (e: PopStateEvent) => {
+window.addEventListener(GlobalRouterEventKind.PopState, (e: PopStateEvent) => {
   console.log("On pop state", currentPath());
 });
 
-window.addEventListener(GlobalWebRouterEventKind.NavigationStart, (e: NavigationStartEvent) => {
+window.addEventListener(GlobalRouterEventKind.NavigationStart, (e: NavigationStartEvent) => {
   console.log("Navigation start", e.detail);
 });
 
-window.addEventListener(GlobalWebRouterEventKind.NavigationEnd, (e: NavigationEndEvent) => {
+window.addEventListener(GlobalRouterEventKind.NavigationEnd, (e: NavigationEndEvent) => {
   console.log("Navigation end", e.detail);
 });
 
-window.addEventListener(GlobalWebRouterEventKind.NavigationCancel, (e: NavigationCancelEvent) => {
+window.addEventListener(GlobalRouterEventKind.NavigationCancel, (e: NavigationCancelEvent) => {
   console.log("Navigation cancelled", e.detail);
 });
 
-window.addEventListener(GlobalWebRouterEventKind.NavigationError, (e: NavigationErrorEvent) => {
+window.addEventListener(GlobalRouterEventKind.NavigationError, (e: NavigationErrorEvent) => {
   console.log("Navigation failed", e.detail);
 });
 
-window.addEventListener(GlobalWebRouterEventKind.NavigationSuccess, (e: NavigationSuccessEvent) => {
+window.addEventListener(GlobalRouterEventKind.NavigationSuccess, (e: NavigationSuccessEvent) => {
   console.log("Navigation failed", e.detail);
 });
 ```

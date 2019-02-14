@@ -1,5 +1,5 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
-import { EventListenerSubscription, GlobalWebRouterEventKind, IRouterSlot, PathFragment } from "./model";
+import { EventListenerSubscription, GlobalRouterEventKind, IRouterSlot, PathFragment } from "./model";
 import { addListener, constructAbsolutePath, currentPath, isPathActive, queryParentRoots, removeListeners } from "./util";
 
 const template = document.createElement("template");
@@ -96,7 +96,7 @@ export class RouterLink extends HTMLElement {
 	connectedCallback () {
 		this.listeners.push(
 			addListener(this, "click", this.navigate),
-			addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalWebRouterEventKind.NavigationEnd, this.updateActive)
+			addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind.NavigationEnd, this.updateActive)
 		);
 
 		// Query the nearest router

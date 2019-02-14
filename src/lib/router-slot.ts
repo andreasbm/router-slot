@@ -1,5 +1,5 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, ROUTER_SLOT_TAG_NAME } from "./config";
-import { Cancel, EventListenerSubscription, GlobalWebRouterEventKind, IRoute, IRouteMatch, IRouterSlot, PathFragment, WebRouterEventKind } from "./model";
+import { Cancel, EventListenerSubscription, GlobalRouterEventKind, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterEventKind } from "./model";
 import { addListener, currentPath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, queryParentRouterSlot, removeListeners, resolvePageComponent } from "./util";
 
 const template = document.createElement("template");
@@ -137,7 +137,7 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 
 		// Attach child router listeners
 		this.listeners.push(
-			addListener(this.parent!, WebRouterEventKind.RouteChange, this.onPathChanged)
+			addListener(this.parent!, RouterEventKind.RouteChange, this.onPathChanged)
 		);
 	}
 
@@ -196,12 +196,12 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 				// Cleans up and dispatches a global event that a navigation was cancelled.
 				const cancel: Cancel = () => {
 					cleanup();
-					dispatchGlobalRouterEvent(GlobalWebRouterEventKind.NavigationCancel, route);
+					dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationCancel, route);
 					return false;
 				};
 
 				// Dispatch globally that a navigation has started
-				dispatchGlobalRouterEvent(GlobalWebRouterEventKind.NavigationStart, route);
+				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationStart, route);
 
 				// Use this object for the callbacks to the routes
 				const routingInfo = {slot: this, route, match};
@@ -263,15 +263,15 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 
 			// Dispatch globally that a navigation has ended.
 			if (navigate) {
-				dispatchGlobalRouterEvent(GlobalWebRouterEventKind.NavigationSuccess, route);
-				dispatchGlobalRouterEvent(GlobalWebRouterEventKind.NavigationEnd, route);
+				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationSuccess, route);
+				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationEnd, route);
 			}
 
 			return navigate;
 
 		} catch (e) {
-			dispatchGlobalRouterEvent(GlobalWebRouterEventKind.NavigationError, route);
-			dispatchGlobalRouterEvent(GlobalWebRouterEventKind.NavigationEnd, route);
+			dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationError, route);
+			dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationEnd, route);
 			throw e;
 		}
 	}
