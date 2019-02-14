@@ -5,6 +5,7 @@
 <a href="https://www.npmjs.com/package/@appnest/web-router"><img alt="NPM Version" src="https://img.shields.io/npm/v/@appnest/web-router.svg" height="20"></img></a>
 <a href="https://github.com/andreasbm/web-router/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/andreasbm/web-router.svg" height="20"></img></a>
 <a href="https://opensource.org/licenses/MIT"><img alt="MIT License" src="https://img.shields.io/badge/License-MIT-yellow.svg" height="20"></img></a>
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/@appnest/web-router)
 
 ## What is this?
 
@@ -51,9 +52,9 @@ import "@appnest/web-router";
 The `web-router` component acts as a placeholder that marks the spot in the template where the router should display the components for that route part.
 
 ```html
-<web-router>
+<router-slot>
 	<!-- Routed components will go here -->
-</web-router>
+</router-slot>
 ```
 
 ### Configuration
@@ -61,8 +62,8 @@ The `web-router` component acts as a placeholder that marks the spot in the temp
 Routes are added to the router through the `add` function on a `web-router` component. Specify the parts of the path you want it to math with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
 
 ```typescript
-const router = <IWebRouter>document.querySelector("web-router");
-await router.add([
+const routerSlot = <IWebRouter>document.querySelector("router-slot");
+await routerSlot.add([
   {
     path: "login",
     component: () => import("./pages/login") // Lazy loaded
@@ -81,7 +82,7 @@ await router.add([
 You may want to wrap the above in a `whenDefined` callback to ensure the `web-router` exists before using its logic.
 
 ```javascript
-customElements.whenDefined("web-router").then(async () => {
+customElements.whenDefined("router-slot").then(async () => {
   ...
 });
 ```
@@ -123,7 +124,6 @@ With the `router-link` component you add `<router-link>` to your markup and spec
 
 Paths can be specified either in relative or absolute terms. To specify an absolute path you simply pass `/home/secret`. To specify a relative path you first have to be aware of the router context  you are navigating within. The `router-link` component will for navigate based on the nearest `web-router` component. If you give the component a path (without the slash) as path, the navigation will be done in relation to the parent router. You can also specify `../login` to traverse up the router tree.
 
-
 ## Advanced
 
 You can customize a lot in this library. Continue reading to learn how to handle your new superpowers.
@@ -133,7 +133,7 @@ You can customize a lot in this library. Continue reading to learn how to handle
 A guard is a function that determines whether the route can be activated or not. The example below checks whether the user has a session saved in the local storage and redirects the user to the login page if the access is not provided. If a guard returns false the routing is cancelled.
 
 ```typescript
-funtion sessionGuard (router: IWebRouter, route: IRoute) {
+funtion sessionGuard () {
 
   if (localStorage.getItem("session") == null) {
     history.replaceState(null, "", "/login");
@@ -148,7 +148,7 @@ Add this guard to the add function in the `guards` array.
 
 ```typescript
 ...
-await router.add([
+await routerSlot.add([
   ...
   {
     path: "home",
@@ -165,7 +165,7 @@ If you want params in your URL you can do it by using the `:name` syntax. Below 
 
 ```typescript
 ...
-await router.add([
+await routerSlot.add([
   {
     path: "user/:userId",
     component: UserComponent
@@ -179,7 +179,7 @@ To grab the params in the `UserComponent` you can use the `routeMatch` from the 
 export default class UserComponent extends LitElement {
 
   get params (): Params {
-    return queryParentRouter(this)!.routeMatch!.params;
+    return queryParentRouterSlot(this)!.match!.params;
   }
 
   render (): TemplateResult {
