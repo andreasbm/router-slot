@@ -32,7 +32,8 @@ export function matchRoute (route: IRoute, path: string | PathFragment): IRouteM
 	// Construct the regex to match with the path or fragment
 	// If fuzzy we simply need to match the start of the path with the route path.
 	// If not fuzzy we need to match either with the route path and "/" or the route path and the end of the line.
-	const regex = route.path === CATCH_ALL_WILDCARD ? /.*/
+	// If the path is empty we treat it as a catch all wildcard to ensure it doesn't consume anything
+	const regex = route.path === CATCH_ALL_WILDCARD || route.path === "" ? /^/
 		: route.fuzzy
 			? new RegExp(`^[\/]?${routePath}`)
 			: new RegExp(`^[\/]?${routePath}(\/|$)`);

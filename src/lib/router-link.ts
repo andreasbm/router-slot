@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, WEB_ROUTER_TAG_NAME } from "./config";
 import { EventListenerSubscription, GlobalWebRouterEventKind, IWebRouter, PathFragment } from "./model";
-import { addListener, constructAbsolutePath, currentPath, isPathActive, queryParentRoots, queryParentRouter, removeListeners } from "./util";
+import { addListener, constructAbsolutePath, currentPath, isPathActive, queryParentRoots, removeListeners } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `</style><slot></slot>`;
