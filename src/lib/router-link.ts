@@ -1,5 +1,5 @@
-import { GLOBAL_ROUTER_EVENTS_TARGET, WEB_ROUTER_TAG_NAME } from "./config";
-import { EventListenerSubscription, GlobalWebRouterEventKind, IWebRouter, PathFragment } from "./model";
+import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
+import { EventListenerSubscription, GlobalWebRouterEventKind, IRouterSlot, PathFragment } from "./model";
 import { addListener, constructAbsolutePath, currentPath, isPathActive, queryParentRoots, removeListeners } from "./util";
 
 const template = document.createElement("template");
@@ -8,7 +8,7 @@ template.innerHTML = `</style><slot></slot>`;
 export class RouterLink extends HTMLElement {
 
 	private listeners: EventListenerSubscription[] = [];
-	private _router: IWebRouter | null = null;
+	private _context: IRouterSlot | null = null;
 
 	/**
 	 * The path of the navigation.
@@ -44,25 +44,36 @@ export class RouterLink extends HTMLElement {
 	}
 
 	/**
-	 * The current router context.
+	 * Whether the query should be preserved or not.
 	 */
-	get router (): IWebRouter | null {
-		return this._router;
+	get preserve (): boolean {
+		return this.hasAttribute("preserve");
 	}
 
-	set router (value: IWebRouter | null) {
-		this._router = value;
+	set preserve (value: boolean) {
+		value ? this.setAttribute("preserve", "") : this.removeAttribute("preserve");
 	}
 
 	/**
-	 * Returns the absolute path constructed relative to the router.
+	 * The current router slot context.
+	 */
+	get context (): IRouterSlot | null {
+		return this._context;
+	}
+
+	set context (value: IRouterSlot | null) {
+		this._context = value;
+	}
+
+	/**
+	 * Returns the absolute path constructed relative to the context.
 	 * If no router parent was found the path property is the absolute one.
 	 */
 	get absolutePath (): string {
 
 		// If a router context is present, navigate relative to that one
-		if (this.router != null) {
-			return constructAbsolutePath(this.router, this.path);
+		if (this.context != null) {
+			return constructAbsolutePath(this.context, this.path);
 		}
 
 		return this.path;
@@ -89,7 +100,7 @@ export class RouterLink extends HTMLElement {
 		);
 
 		// Query the nearest router
-		this.router = queryParentRoots(this, WEB_ROUTER_TAG_NAME);
+		this.context = queryParentRoots(this, ROUTER_SLOT_TAG_NAME);
 	}
 
 	/**
@@ -121,7 +132,7 @@ export class RouterLink extends HTMLElement {
 			return;
 		}
 
-		history.pushState(null, "", this.absolutePath);
+		history.pushState(null, "", `${this.absolutePath}${this.preserve ? window.location.search : ""}`);
 	}
 
 }

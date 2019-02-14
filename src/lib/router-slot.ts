@@ -1,6 +1,6 @@
-import { GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS } from "./config";
-import { Cancel, EventListenerSubscription, GlobalWebRouterEventKind, IRoute, IRouteMatch, IWebRouter, PathFragment, WebRouterEventKind } from "./model";
-import { addListener, currentPath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, queryParentRouter, removeListeners, resolvePageComponent } from "./util";
+import { GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, ROUTER_SLOT_TAG_NAME } from "./config";
+import { Cancel, EventListenerSubscription, GlobalWebRouterEventKind, IRoute, IRouteMatch, IRouterSlot, PathFragment, WebRouterEventKind } from "./model";
+import { addListener, currentPath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, queryParentRouterSlot, removeListeners, resolvePageComponent } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -8,7 +8,7 @@ template.innerHTML = `<slot></slot>`;
 // Patches the history object and ensures the correct events.
 ensureHistoryEvents();
 
-export class WebRouter extends HTMLElement implements IWebRouter {
+export class RouterSlot extends HTMLElement implements IRouterSlot {
 
 	/**
 	 * Contains the available routes.
@@ -25,14 +25,14 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	 * Is REQUIRED if this router is a child.
 	 * When set, the relevant listeners are added or teared down because they depend on the parent.
 	 */
-	_parentRouter: IWebRouter | null | undefined;
-	get parentRouter () {
-		return this._parentRouter;
+	_parent: IRouterSlot | null | undefined;
+	get parent () {
+		return this._parent;
 	}
 
-	set parentRouter (router: IWebRouter | null | undefined) {
+	set parent (router: IRouterSlot | null | undefined) {
 		this.detachListeners();
-		this._parentRouter = router;
+		this._parent = router;
 		this.attachListeners();
 	}
 
@@ -40,29 +40,29 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	 * The current route.
 	 */
 	get route (): IRoute | null {
-		return this.routeMatch != null ? this.routeMatch.route : null;
+		return this.match != null ? this.match.route : null;
 	}
 
 	/**
 	 * The current path fragment.
 	 */
 	get fragments (): [PathFragment, PathFragment] | null {
-		return this.routeMatch != null ? this.routeMatch.fragments : null;
+		return this.match != null ? this.match.fragments : null;
 	}
 
 	/**
 	 * The current path routeMatch.
 	 */
 	private _routeMatch: IRouteMatch | null;
-	get routeMatch () {
+	get match () {
 		return this._routeMatch;
 	}
 
 	/**
 	 * Whether the router is a root router.
 	 */
-	get isRootRouter () {
-		return this.parentRouter == null;
+	get isRoot () {
+		return this.parent == null;
 	}
 
 	constructor () {
@@ -93,7 +93,7 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	 * Queries the parent router.
 	 */
 	protected queryParentRouter () {
-		this.parentRouter = queryParentRouter(this);
+		this.parent = queryParentRouterSlot(this);
 	}
 
 	/**
@@ -125,7 +125,7 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	protected attachListeners () {
 
 		// Attach root router listeners
-		if (this.isRootRouter) {
+		if (this.isRoot) {
 
 			// Add global listeners.
 			this.listeners.push(
@@ -137,7 +137,7 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 
 		// Attach child router listeners
 		this.listeners.push(
-			addListener(this.parentRouter!, WebRouterEventKind.RouteChange, this.onPathChanged)
+			addListener(this.parent!, WebRouterEventKind.RouteChange, this.onPathChanged)
 		);
 	}
 
@@ -156,8 +156,8 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	protected async onPathChanged () {
 
 		// Either choose the parent fragment or the current path if no parent exists.
-		const pathFragment = this.parentRouter != null && this.parentRouter.fragments != null
-			? this.parentRouter.fragments[1]
+		const pathFragment = this.parent != null && this.parent.fragments != null
+			? this.parent.fragments[1]
 			: currentPath();
 
 		await this.loadPath(pathFragment);
@@ -203,10 +203,13 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 				// Dispatch globally that a navigation has started
 				dispatchGlobalRouterEvent(GlobalWebRouterEventKind.NavigationStart, route);
 
+				// Use this object for the callbacks to the routes
+				const routingInfo = {slot: this, route, match};
+
 				// Check whether the guards allow us to go to the new route.
 				if (route.guards != null) {
 					for (const guard of route.guards) {
-						if (!(await Promise.resolve(guard(this, route)))) {
+						if (!(await Promise.resolve(guard(routingInfo)))) {
 							return cancel();
 						}
 					}
@@ -221,7 +224,7 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 
 				// Handle custom resolving if necessary
 				else if (isResolverRoute(route)) {
-					await Promise.resolve(route.resolve(this, route));
+					await Promise.resolve(route.resolve(routingInfo));
 
 					// Cancel the navigation if another navigation event was sent while this one was loading
 					if (navigationInvalidated) {
@@ -275,10 +278,10 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 
 }
 
-window.customElements.define("web-router", WebRouter);
+window.customElements.define(ROUTER_SLOT_TAG_NAME, RouterSlot);
 
 declare global {
 	interface HTMLElementTagNameMap {
-		"web-router": WebRouter;
+		"router-slot": RouterSlot;
 	}
 }

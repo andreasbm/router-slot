@@ -1,21 +1,22 @@
-export interface IWebRouter extends HTMLElement {
+export interface IRouterSlot extends HTMLElement {
 	readonly route: IRoute | null;
-	readonly isRootRouter: boolean;
+	readonly isRoot: boolean;
 	readonly fragments: [PathFragment, PathFragment] | null;
-	readonly routeMatch: IRouteMatch | null;
-	parentRouter: IWebRouter | null | undefined;
+	readonly match: IRouteMatch | null;
+	parent: IRouterSlot | null | undefined;
 	add: ((routes: IRoute[], navigate?: boolean) => void);
 	clearRoutes: (() => void);
 }
 
-export type Guard = ((router: IWebRouter, route: IRoute) => boolean | Promise<boolean>);
-export type CustomResolver = ((router: IWebRouter, route: IResolverRoute) => void | Promise<void>);
+export type RoutingInfo = {slot: IRouterSlot, route: IRoute, match: IRouteMatch};
+export type CustomResolver = ((info: RoutingInfo) => void | Promise<void>);
+export type Guard = ((info: RoutingInfo) => boolean | Promise<boolean>);
 export type Cancel = (() => boolean);
 
 export type ModuleResolver = Promise<{default: any}>;
 export type Class = {new (...args: any[]): any;};
 
-export type RouterTree = {router: IWebRouter} & {child?: RouterTree} | null | undefined;
+export type RouterTree = {router: IRouterSlot} & {child?: RouterTree} | null | undefined;
 
 /**
  * The base route interface.

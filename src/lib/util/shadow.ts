@@ -1,12 +1,12 @@
-import { WEB_ROUTER_TAG_NAME } from "../config";
-import { IWebRouter } from "../model";
+import { ROUTER_SLOT_TAG_NAME } from "../config";
+import { IRouterSlot } from "../model";
 
 /**
  * Queries the parent router.
  * @param $elem
  */
-export function queryParentRouter ($elem: Element): IWebRouter | null {
-	return queryParentRoots<IWebRouter>($elem, WEB_ROUTER_TAG_NAME);
+export function queryParentRouterSlot ($elem: Element): IRouterSlot | null {
+	return queryParentRoots<IRouterSlot>($elem, ROUTER_SLOT_TAG_NAME);
 }
 
 /**

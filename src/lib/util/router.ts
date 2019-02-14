@@ -1,5 +1,5 @@
 import { CATCH_ALL_WILDCARD, PARAM_IDENTIFIER, TRAVERSE_FLAG } from "../config";
-import { Class, IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IWebRouter, ModuleResolver, Params, PathFragment, RouterTree } from "../model";
+import { Class, IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IRouterSlot, ModuleResolver, Params, PathFragment, RouterTree } from "../model";
 import { ensureSlash, stripSlash } from "./url";
 
 /**
@@ -117,17 +117,17 @@ export function isResolverRoute (route: IRoute): route is IResolverRoute {
  * Traverses the router tree up to the root route.
  * @param route
  */
-export function traverseRouterTree (route: IWebRouter): {tree: RouterTree, depth: number} {
+export function traverseRouterTree (route: IRouterSlot): {tree: RouterTree, depth: number} {
 
 	// Find the nodes from the route up to the root route
-	let routes: IWebRouter[] = [route];
-	while (route.parentRouter != null) {
-		route = route.parentRouter;
+	let routes: IRouterSlot[] = [route];
+	while (route.parent != null) {
+		route = route.parent;
 		routes.push(route);
 	}
 
 	// Create the tree
-	const tree = routes.reduce((acc: RouterTree, router: IWebRouter) => {
+	const tree = routes.reduce((acc: RouterTree, router: IRouterSlot) => {
 		return {router, child: acc};
 	}, undefined);
 
@@ -146,8 +146,8 @@ export function getFragments (tree: RouterTree, depth: number): PathFragment[] {
 	const fragments: PathFragment[] = [];
 
 	// Look through all of the path fragments
-	while (child != null && child.router.routeMatch != null && depth > 0) {
-		fragments.push(child.router.routeMatch.fragments[0]);
+	while (child != null && child.router.match != null && depth > 0) {
+		fragments.push(child.router.match.fragments[0]);
 		child = child.child;
 		depth--;
 	}
@@ -163,7 +163,7 @@ export function getFragments (tree: RouterTree, depth: number): PathFragment[] {
  * @param router
  * @param path
  */
-export function constructAbsolutePath (router: IWebRouter, path: string | PathFragment): string {
+export function constructAbsolutePath (router: IRouterSlot, path: string | PathFragment): string {
 
 	// Grab the router tree
 	const {tree, depth} = traverseRouterTree(router);
@@ -204,7 +204,7 @@ export function constructAbsolutePath (router: IWebRouter, path: string | PathFr
  * @param router
  * @param route
  */
-export function handleRedirect (router: IWebRouter, route: IRedirectRoute) {
+export function handleRedirect (router: IRouterSlot, route: IRedirectRoute) {
 	history.replaceState(history.state, "", constructAbsolutePath(router, route.redirectTo));
 }
 

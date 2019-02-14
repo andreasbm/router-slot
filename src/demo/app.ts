@@ -1,14 +1,12 @@
-import { ChangeRouteEvent, currentPath, GlobalWebRouterEventKind, IRoute, IWebRouter, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, PushStateEvent, ReplaceStateEvent, WebRouter, WebRouterEventKind } from "../lib";
+import { ChangeRouteEvent, currentPath, GlobalWebRouterEventKind, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, PushStateEvent, ReplaceStateEvent, RoutingInfo, WebRouterEventKind } from "../lib";
+import { ROUTER_SLOT_TAG_NAME } from "../lib/config";
 
 import "./../lib/router-link";
 
 /**
  * Asserts that the user is authenticated.
- * @param router
- * @param {IRoute} route
- * @returns {boolean}
  */
-function sessionGuard (router: WebRouter, route: IRoute) {
+function sessionGuard () {
 
 	if (localStorage.getItem("session") == null) {
 		history.replaceState(null, "", "login");
@@ -19,11 +17,11 @@ function sessionGuard (router: WebRouter, route: IRoute) {
 }
 
 // Setup the router
-customElements.whenDefined("web-router").then(async () => {
-	const router = document.querySelector<IWebRouter>("web-router")!;
+customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
+	const routerSlot = document.querySelector<IRouterSlot>(ROUTER_SLOT_TAG_NAME)!;
 
 	let hasInitialized = false;
-	router.addEventListener(WebRouterEventKind.RouteChange, (e: ChangeRouteEvent) => {
+	routerSlot.addEventListener(WebRouterEventKind.RouteChange, (e: ChangeRouteEvent) => {
 		if (!hasInitialized) {
 			document.body.classList.add("initialized");
 			hasInitialized = true;
@@ -63,7 +61,7 @@ customElements.whenDefined("web-router").then(async () => {
 		console.log("Navigation failed", e.detail);
 	});
 
-	await router.add([
+	await routerSlot.add([
 		{
 			path: "login",
 			component: () => import("./pages/login/login")

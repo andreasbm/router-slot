@@ -1,6 +1,7 @@
 import { html, LitElement, PropertyValues } from "lit-element";
 import { TemplateResult } from "lit-html";
-import { IWebRouter } from "../../../../lib";
+import { IRouterSlot } from "../../../../lib";
+import { ROUTER_SLOT_TAG_NAME } from "../../../../lib/config";
 import { sharedStyles } from "../../styles";
 import { data } from "./data";
 
@@ -19,8 +20,8 @@ export default class SecretComponent extends LitElement {
 	firstUpdated (changedProperties: PropertyValues) {
 		super.firstUpdated(changedProperties);
 
-		const $router = this.shadowRoot!.querySelector<IWebRouter>("web-router")!;
-		$router.add([
+		const $routerSlot = this.shadowRoot!.querySelector<IRouterSlot>(ROUTER_SLOT_TAG_NAME)!;
+		$routerSlot.add([
 			{
 				path: "code",
 				component: () => import("./code/code")
@@ -50,7 +51,7 @@ export default class SecretComponent extends LitElement {
 			<router-link path="code"><button>Go to CodeComponent</button></router-link>
 			<router-link path="password"><button>Go to PasswordComponent (1sec delay)</button></router-link>
 			<div id="child">
-				<web-router></web-router>
+				<router-slot></router-slot>
 			</div>
 		`;
 	}

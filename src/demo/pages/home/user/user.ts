@@ -1,13 +1,13 @@
 import { html, LitElement } from "lit-element";
 import { TemplateResult } from "lit-html";
 import { Params } from "../../../../lib/model";
-import { queryParentRouter } from "../../../../lib/util/shadow";
+import { queryParentRouterSlot } from "../../../../lib/util/shadow";
 import { sharedStyles } from "../../styles";
 
 export default class UserComponent extends LitElement {
 
 	get params (): Params {
-		return queryParentRouter(this)!.routeMatch!.params;
+		return queryParentRouterSlot(this)!.match!.params;
 	}
 
 	/**
