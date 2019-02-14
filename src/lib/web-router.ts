@@ -99,14 +99,17 @@ export class WebRouter extends HTMLElement implements IWebRouter {
 	/**
 	 * Adds routes to the router.
 	 * @param routes
+	 * @param navigate
 	 */
-	add (routes: IRoute[]) {
+	add (routes: IRoute[], navigate: boolean = true) {
 
 		// Add the routes to the array
 		this.routes = routes;
 
 		// Register that the path has changed so the correct route can be loaded.
-		this.onPathChanged().then();
+		if (navigate) {
+			this.onPathChanged().then();
+		}
 	}
 
 	/**

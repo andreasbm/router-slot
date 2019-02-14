@@ -8,7 +8,9 @@
 
 ## What is this?
 
-This library is a powerful web component router. It interprets the browser URL and navigates to a specific views based on the configuration. Go here to see a demo [https://appnest-demo.firebaseapp.com/web-router](https://appnest-demo.firebaseapp.com/web-router).
+This library is a powerful web component router. Go here to see a demo [https://appnest-demo.firebaseapp.com/web-router](https://appnest-demo.firebaseapp.com/web-router).
+
+A router interprets the browser URL and navigates to a specific views based on the configuration. This router is optimized for routing between web components.
 
 ## Benefits
 - Lazy loading of routes
@@ -16,7 +18,6 @@ This library is a powerful web component router. It interprets the browser URL a
 - Easy to use API
 - Specify params in the path
 - Zero dependencies
-- Everything you wish for in a router!
 - Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
 
 ## Install the dependency

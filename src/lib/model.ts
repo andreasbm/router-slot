@@ -4,7 +4,7 @@ export interface IWebRouter extends HTMLElement {
 	readonly fragments: [PathFragment, PathFragment] | null;
 	readonly routeMatch: IRouteMatch | null;
 	parentRouter: IWebRouter | null | undefined;
-	add: ((routes: IRoute[]) => void);
+	add: ((routes: IRoute[], navigate?: boolean) => void);
 	clearRoutes: (() => void);
 }
 

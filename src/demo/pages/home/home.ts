@@ -1,6 +1,6 @@
 import { LitElement, PropertyValues } from "lit-element";
 import { html, TemplateResult } from "lit-html";
-import { IWebRouter, query, WebRouter } from "../../../lib";
+import { IWebRouter, query } from "../../../lib";
 import { sharedStyles } from "../styles";
 
 export default class HomeComponent extends LitElement {
