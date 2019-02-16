@@ -42,12 +42,31 @@
 		"bump:major": "npm version major && git add . && git commit --no-edit --amend --no-verify",
 		"publish:patch": "npm run bump:patch && git push && npm run b:lib && npm run publish",
 		"publish:minor": "npm run bump:minor && git push && npm run b:lib && npm run publish",
-		"publish:major": "npm run bump:major && git push && npm run b:lib && npm run publish"
+		"publish:major": "npm run bump:major && git push && npm run b:lib && npm run publish",
+		"readme": "node node_modules/.bin/readme"
 	},
 	"devDependencies": {
+		"@appnest/readme": "^1.0.3",
 		"@appnest/web-config": "0.3.11",
 		"lit-element": "^2.0.1",
 		"node-typescript-compiler": "^1.1.1",
 		"npm-bump": "0.0.25"
+	},
+	"readme": {
+		"text": "A router interprets the browser URL and navigates to a specific views based on the configuration. This router is optimized for routing between web components.",
+		"demo": "https://appnest-demo.firebaseapp.com/web-router",
+		"ids": {
+			"npm": "@appnest/web-router",
+			"github": "andreasbm/web-router",
+			"webcomponents": "@appnest/web-router"
+		},
+		"bullets": [
+			"Lazy loading of routes",
+			"Web component friendly",
+			"Easy to use API",
+			"Specify params in the path",
+			"Zero dependencies",
+			"Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)"
+		]
 	}
 }
