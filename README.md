@@ -55,8 +55,6 @@
 npm i @appnest/web-router
 ```
 
-![split](https://github.com/andreasbm/web-config/raw/master/split.png)
-
 ![line](https://raw.githubusercontent.com/andreasbm/readme/master/assets/line.png)
 
 ## ❯ The Basics
@@ -155,8 +153,6 @@ With the `router-link` component you add `<router-link>` to your markup and spec
 ```
 
 Paths can be specified either in relative or absolute terms. To specify an absolute path you simply pass `/home/secret`. To specify a relative path you first have to be aware of the router context  you are navigating within. The `router-link` component will for navigate based on the nearest `web-router` component. If you give the component a path (without the slash) as path, the navigation will be done in relation to the parent router. You can also specify `../login` to traverse up the router tree.
-
-![split](https://github.com/andreasbm/web-config/raw/master/split.png)
 
 ![line](https://raw.githubusercontent.com/andreasbm/readme/master/assets/line.png)
 
@@ -366,8 +362,6 @@ window.addEventListener(GlobalRouterEventKind.NavigationEnd, () => {
   });
 });
 ```
-
-![split](https://github.com/andreasbm/web-config/raw/master/split.png)
 
 ![line](https://raw.githubusercontent.com/andreasbm/readme/master/assets/line.png)
 
