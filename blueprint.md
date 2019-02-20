@@ -4,7 +4,7 @@
 
 {{ template:description }}
 
-{{ template:bullets }}
+{{ readme.bullets }}
 
 {{ template:toc }}
 

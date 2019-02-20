@@ -24,10 +24,13 @@
 * Zero dependencies
 * Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
 
-## Table of Contents
 
-* [❯ Installation](#-installation)
-* [❯ The Basics](#-the-basics)
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+
+## ➤ Table of Contents
+
+* [➤ Installation](#-installation)
+* [➤ The Basics](#-the-basics)
 	* [`<base href>`](#base-href)
 	* [Router import](#router-import)
 	* [`web-router`](#web-router)
@@ -35,7 +38,7 @@
 	* [Navigation](#navigation)
 		* [History API](#history-api)
 		* [`router-link`](#router-link)
-* [❯ Advanced](#-advanced)
+* [➤ Advanced](#-advanced)
 	* [Guards](#guards)
 	* [Params](#params)
 	* [Deep dive into the different route kinds](#deep-dive-into-the-different-route-kinds)
@@ -44,20 +47,22 @@
 		* [Resolver routes](#resolver-routes)
 	* [Global navigation events](#global-navigation-events)
 		* [Scroll to the top](#scroll-to-the-top)
-* [❯ Be careful when navigating to the root!](#-be-careful-when-navigating-to-the-root)
-* [❯ License](#-license)
+* [➤ Be careful when navigating to the root!](#-be-careful-when-navigating-to-the-root)
+* [➤ License](#-license)
 
-![line](https://raw.githubusercontent.com/andreasbm/readme/master/assets/line.png)
 
-## ❯ Installation
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+
+## ➤ Installation
 
 ```node
 npm i @appnest/web-router
 ```
 
-![line](https://raw.githubusercontent.com/andreasbm/readme/master/assets/line.png)
 
-## ❯ The Basics
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+
+## ➤ The Basics
 
 This section will introduce the basics of the router.
 
@@ -154,9 +159,10 @@ With the `router-link` component you add `<router-link>` to your markup and spec
 
 Paths can be specified either in relative or absolute terms. To specify an absolute path you simply pass `/home/secret`. To specify a relative path you first have to be aware of the router context  you are navigating within. The `router-link` component will for navigate based on the nearest `web-router` component. If you give the component a path (without the slash) as path, the navigation will be done in relation to the parent router. You can also specify `../login` to traverse up the router tree.
 
-![line](https://raw.githubusercontent.com/andreasbm/readme/master/assets/line.png)
 
-## ❯ Advanced
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+
+## ➤ Advanced
 
 You can customize a lot in this library. Continue reading to learn how to handle your new superpowers.
 
@@ -363,14 +369,16 @@ window.addEventListener(GlobalRouterEventKind.NavigationEnd, () => {
 });
 ```
 
-![line](https://raw.githubusercontent.com/andreasbm/readme/master/assets/line.png)
 
-## ❯ Be careful when navigating to the root!
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+
+## ➤ Be careful when navigating to the root!
 
 From my testing I found that Chrome and Safari treat an empty string as url when navigating differently. As an example `history.pushState(null, null, "")` will navigate to the root of the website in Chrome but in Safari the path won't change. The workaround I found was to simply pass "/" when navigating to the root of the website instead.
 
-![line](https://raw.githubusercontent.com/andreasbm/readme/master/assets/line.png)
 
-## ❯ License
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+
+## ➤ License
 	
 Licensed under [MIT](https://opensource.org/licenses/MIT).
