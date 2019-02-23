@@ -40,7 +40,7 @@ export interface IRouteBase<D = unknown> {
 /**
  * Route type used for redirection.
  */
-export interface IRedirectRoute extends IRouteBase {
+export interface IRedirectRoute<D = unknown> extends IRouteBase<D> {
 
 	// The paths the route should redirect to. Can either be relative or absolute.
 	redirectTo: string;
@@ -49,7 +49,7 @@ export interface IRedirectRoute extends IRouteBase {
 /**
  * Route type used to resolve and stamp components.
  */
-export interface IComponentRoute extends IRouteBase {
+export interface IComponentRoute<D = unknown> extends IRouteBase<D> {
 
 	// The component loader (should return a module with a default export)
 	component: Class | ModuleResolver | (() => ModuleResolver);
@@ -58,13 +58,13 @@ export interface IComponentRoute extends IRouteBase {
 /**
  * Route type used to take control of how the route should resolve.
  */
-export interface IResolverRoute extends IRouteBase {
+export interface IResolverRoute<D = unknown> extends IRouteBase<D> {
 
 	// A custom resolver that handles the route change
 	resolve: CustomResolver;
 }
 
-export type IRoute = IRedirectRoute | IComponentRoute | IResolverRoute;
+export type IRoute<D = unknown> = IRedirectRoute<D> | IComponentRoute<D> | IResolverRoute<D>;
 export type PathFragment = string;
 
 export interface IRouteMatch {
