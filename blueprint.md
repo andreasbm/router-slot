@@ -322,4 +322,5 @@ window.addEventListener(GlobalRouterEventKind.NavigationEnd, () => {
 
 From my testing I found that Chrome and Safari treat an empty string as url when navigating differently. As an example `history.pushState(null, null, "")` will navigate to the root of the website in Chrome but in Safari the path won't change. The workaround I found was to simply pass "/" when navigating to the root of the website instead.
 
+{{ template:contributors }}
 {{ template:license }}

@@ -48,6 +48,7 @@
 	* [Global navigation events](#global-navigation-events)
 		* [Scroll to the top](#scroll-to-the-top)
 * [➤ Be careful when navigating to the root!](#-be-careful-when-navigating-to-the-root)
+* [➤ Contributors](#-contributors)
 * [➤ License](#-license)
 
 
@@ -376,6 +377,14 @@ window.addEventListener(GlobalRouterEventKind.NavigationEnd, () => {
 
 From my testing I found that Chrome and Safari treat an empty string as url when navigating differently. As an example `history.pushState(null, null, "")` will navigate to the root of the website in Chrome but in Safari the path won't change. The workaround I found was to simply pass "/" when navigating to the root of the website instead.
 
+
+![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+
+## ➤ Contributors
+	
+|[<img alt="Andreas Mehlsen" src="https://avatars1.githubusercontent.com/u/6267397?s=460&v=4" width="100">](https://twitter.com/andreasmehlsen) | [<img alt="You?" src="https://joeschmoe.io/api/v1/random" width="100">](https://github.com/andreasbm/web-router/blob/master/CONTRIBUTING.md)|
+|:---: | :---:|
+|[Andreas Mehlsen](https://twitter.com/andreasmehlsen) | [You?](https://github.com/andreasbm/web-router/blob/master/CONTRIBUTING.md)|
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
 

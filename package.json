@@ -46,12 +46,24 @@
 		"readme": "node node_modules/.bin/readme"
 	},
 	"devDependencies": {
-		"@appnest/readme": "^1.0.18",
-		"@appnest/web-config": "0.3.21",
+		"@appnest/readme": "^1.0.21",
+		"@appnest/web-config": "0.3.23",
 		"lit-element": "^2.0.1",
 		"node-typescript-compiler": "^1.1.1",
 		"npm-bump": "0.0.25"
 	},
+	"contributors": [
+		{
+			"name": "Andreas Mehlsen",
+			"url": "https://twitter.com/andreasmehlsen",
+			"img": "https://avatars1.githubusercontent.com/u/6267397?s=460&v=4"
+		},
+		{
+			"name": "You?",
+			"img": "https://joeschmoe.io/api/v1/random",
+			"url": "https://github.com/andreasbm/web-router/blob/master/CONTRIBUTING.md"
+		}
+	],
 	"readme": {
 		"text": "A router interprets the browser URL and navigates to a specific views based on the configuration. This router is optimized for routing between web components.",
 		"demo": "https://appnest-demo.firebaseapp.com/web-router",
