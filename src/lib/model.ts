@@ -67,8 +67,8 @@ export interface IResolverRoute<D = unknown> extends IRouteBase<D> {
 export type IRoute<D = unknown> = IRedirectRoute<D> | IComponentRoute<D> | IResolverRoute<D>;
 export type PathFragment = string;
 
-export interface IRouteMatch {
-	route: IRoute;
+export interface IRouteMatch<D = unknown> {
+	route: IRoute<D>;
 	params: Params,
 	fragments: [PathFragment, PathFragment];
 	match: RegExpMatchArray;
@@ -77,14 +77,14 @@ export interface IRouteMatch {
 /**
  * The router component did change route event.
  */
-export type ChangeRouteEvent = CustomEvent<IRoute>;
+export type ChangeRouteEvent<D = unknown> = CustomEvent<IRoute<D>>;
 export type PushStateEvent = CustomEvent<null>;
 export type ReplaceStateEvent = CustomEvent<null>;
-export type NavigationStartEvent = CustomEvent<IRoute>;
-export type NavigationSuccessEvent = CustomEvent<IRoute>;
-export type NavigationCancelEvent = CustomEvent<IRoute>;
-export type NavigationErrorEvent = CustomEvent<IRoute>;
-export type NavigationEndEvent = CustomEvent<IRoute>;
+export type NavigationStartEvent<D = unknown> = CustomEvent<IRoute<D>>;
+export type NavigationSuccessEvent<D = unknown> = CustomEvent<IRoute<D>>;
+export type NavigationCancelEvent<D = unknown> = CustomEvent<IRoute<D>>;
+export type NavigationErrorEvent<D = unknown> = CustomEvent<IRoute<D>>;
+export type NavigationEndEvent<D = unknown> = CustomEvent<IRoute<D>>;
 
 export type Params = {[key: string]: string};
 
