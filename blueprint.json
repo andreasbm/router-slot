@@ -1,0 +1,17 @@
+{
+	"text": "A router interprets the browser URL and navigates to a specific views based on the configuration. This router is optimized for routing between web components.",
+	"demo": "https://appnest-demo.firebaseapp.com/web-router",
+	"ids": {
+		"npm": "@appnest/web-router",
+		"github": "andreasbm/web-router",
+		"webcomponents": "@appnest/web-router"
+	},
+	"bullets": [
+		"Lazy loading of routes",
+		"Web component friendly",
+		"Easy to use API",
+		"Specify params in the path",
+		"Zero dependencies",
+		"Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)"
+	]
+}

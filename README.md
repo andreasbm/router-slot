@@ -25,7 +25,7 @@
 * Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
 
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#table-of-contents)
 
 ## ➤ Table of Contents
 
@@ -52,7 +52,7 @@
 * [➤ License](#-license)
 
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#installation)
 
 ## ➤ Installation
 
@@ -61,7 +61,7 @@ npm i @appnest/web-router
 ```
 
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#the-basics)
 
 ## ➤ The Basics
 
@@ -161,7 +161,7 @@ With the `router-link` component you add `<router-link>` to your markup and spec
 Paths can be specified either in relative or absolute terms. To specify an absolute path you simply pass `/home/secret`. To specify a relative path you first have to be aware of the router context  you are navigating within. The `router-link` component will for navigate based on the nearest `web-router` component. If you give the component a path (without the slash) as path, the navigation will be done in relation to the parent router. You can also specify `../login` to traverse up the router tree.
 
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#advanced)
 
 ## ➤ Advanced
 
@@ -371,14 +371,14 @@ window.addEventListener(GlobalRouterEventKind.NavigationEnd, () => {
 ```
 
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#be-careful-when-navigating-to-the-root)
 
 ## ➤ Be careful when navigating to the root!
 
 From my testing I found that Chrome and Safari treat an empty string as url when navigating differently. As an example `history.pushState(null, null, "")` will navigate to the root of the website in Chrome but in Safari the path won't change. The workaround I found was to simply pass "/" when navigating to the root of the website instead.
 
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#contributors)
 
 ## ➤ Contributors
 	
@@ -386,7 +386,7 @@ From my testing I found that Chrome and Safari treat an empty string as url when
 |:---: | :---:|
 |[Andreas Mehlsen](https://twitter.com/andreasmehlsen) | [You?](https://github.com/andreasbm/web-router/blob/master/CONTRIBUTING.md)|
 
-![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#license)
 
 ## ➤ License
 	

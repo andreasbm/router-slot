@@ -46,8 +46,8 @@
 		"readme": "node node_modules/.bin/readme"
 	},
 	"devDependencies": {
-		"@appnest/readme": "^1.0.21",
-		"@appnest/web-config": "0.3.23",
+		"@appnest/readme": "^1.1.1",
+		"@appnest/web-config": "0.3.25",
 		"lit-element": "^2.0.1",
 		"node-typescript-compiler": "^1.1.1",
 		"npm-bump": "0.0.25"
@@ -63,22 +63,5 @@
 			"img": "https://joeschmoe.io/api/v1/random",
 			"url": "https://github.com/andreasbm/web-router/blob/master/CONTRIBUTING.md"
 		}
-	],
-	"readme": {
-		"text": "A router interprets the browser URL and navigates to a specific views based on the configuration. This router is optimized for routing between web components.",
-		"demo": "https://appnest-demo.firebaseapp.com/web-router",
-		"ids": {
-			"npm": "@appnest/web-router",
-			"github": "andreasbm/web-router",
-			"webcomponents": "@appnest/web-router"
-		},
-		"bullets": [
-			"Lazy loading of routes",
-			"Web component friendly",
-			"Easy to use API",
-			"Specify params in the path",
-			"Zero dependencies",
-			"Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)"
-		]
-	}
+	]
 }
