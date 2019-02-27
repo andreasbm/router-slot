@@ -46,8 +46,8 @@
 		"readme": "node node_modules/.bin/readme"
 	},
 	"devDependencies": {
-		"@appnest/readme": "^1.1.1",
-		"@appnest/web-config": "0.3.25",
+		"@appnest/readme": "^1.1.2",
+		"@appnest/web-config": "0.3.26",
 		"lit-element": "^2.0.1",
 		"node-typescript-compiler": "^1.1.1",
 		"npm-bump": "0.0.25"
