@@ -22,7 +22,6 @@ export function matchRoute (route: IRoute, path: string | PathFragment): IRouteM
 	// We start by preparing the route path by replacing the param names with a regex that matches everything
 	// until either the end of the path or the next "/". While replacing the param placeholders we make sure
 	// to store the names of the param placeholders.
-	// Whi
 	const paramNames: string[] = [];
 	const routePath = route.path.replace(PARAM_IDENTIFIER, (substring: string, ...args: string[]) => {
 		paramNames.push(args[0]);
@@ -58,7 +57,10 @@ export function matchRoute (route: IRoute, path: string | PathFragment): IRouteM
 			route,
 			match,
 			params,
-			fragments: [consumed, rest]
+			fragments: {
+				consumed,
+				rest
+			}
 		};
 	}
 
@@ -147,7 +149,7 @@ export function getFragments (tree: RouterTree, depth: number): PathFragment[] {
 
 	// Look through all of the path fragments
 	while (child != null && child.router.match != null && depth > 0) {
-		fragments.push(child.router.match.fragments[0]);
+		fragments.push(child.router.match.fragments.consumed);
 		child = child.child;
 		depth--;
 	}

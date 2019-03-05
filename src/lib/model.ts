@@ -1,16 +1,18 @@
 export interface IRouterSlot extends HTMLElement {
 	readonly route: IRoute | null;
 	readonly isRoot: boolean;
-	readonly fragments: [PathFragment, PathFragment] | null;
+	readonly fragments: IPathFragments | null;
 	readonly match: IRouteMatch | null;
 	parent: IRouterSlot | null | undefined;
 	add: ((routes: IRoute[], navigate?: boolean) => void);
 	clearRoutes: (() => void);
+	queryParentRouterSlot: (() => IRouterSlot | null);
+	onPathChanged: (() => Promise<void>);
 }
 
-export type RoutingInfo = {slot: IRouterSlot, route: IRoute, match: IRouteMatch};
-export type CustomResolver = ((info: RoutingInfo) => void | Promise<void>);
-export type Guard = ((info: RoutingInfo) => boolean | Promise<boolean>);
+export type RoutingInfo<D = unknown> = {slot: IRouterSlot, route: IRoute<D>, match: IRouteMatch<D>};
+export type CustomResolver<D = unknown> = ((info: RoutingInfo<D>) => boolean | void | Promise<boolean> | Promise<void>);
+export type Guard<D = unknown> = ((info: RoutingInfo<D>) => boolean | Promise<boolean>);
 export type Cancel = (() => boolean);
 
 export type ModuleResolver = Promise<{default: any}>;
@@ -66,25 +68,29 @@ export interface IResolverRoute<D = unknown> extends IRouteBase<D> {
 
 export type IRoute<D = unknown> = IRedirectRoute<D> | IComponentRoute<D> | IResolverRoute<D>;
 export type PathFragment = string;
+export type IPathFragments = {
+	consumed: PathFragment,
+	rest: PathFragment
+}
 
 export interface IRouteMatch<D = unknown> {
 	route: IRoute<D>;
 	params: Params,
-	fragments: [PathFragment, PathFragment];
+	fragments: IPathFragments;
 	match: RegExpMatchArray;
 }
 
 /**
  * The router component did change route event.
  */
-export type ChangeRouteEvent<D = unknown> = CustomEvent<IRoute<D>>;
+export type ChangeRouteEvent<D = unknown> = CustomEvent<RoutingInfo<D>>;
 export type PushStateEvent = CustomEvent<null>;
 export type ReplaceStateEvent = CustomEvent<null>;
-export type NavigationStartEvent<D = unknown> = CustomEvent<IRoute<D>>;
-export type NavigationSuccessEvent<D = unknown> = CustomEvent<IRoute<D>>;
-export type NavigationCancelEvent<D = unknown> = CustomEvent<IRoute<D>>;
-export type NavigationErrorEvent<D = unknown> = CustomEvent<IRoute<D>>;
-export type NavigationEndEvent<D = unknown> = CustomEvent<IRoute<D>>;
+export type NavigationStartEvent<D = unknown> = CustomEvent<RoutingInfo<D>>;
+export type NavigationSuccessEvent<D = unknown> = CustomEvent<RoutingInfo<D>>;
+export type NavigationCancelEvent<D = unknown> = CustomEvent<RoutingInfo<D>>;
+export type NavigationErrorEvent<D = unknown> = CustomEvent<RoutingInfo<D>>;
+export type NavigationEndEvent<D = unknown> = CustomEvent<RoutingInfo<D>>;
 
 export type Params = {[key: string]: string};
 

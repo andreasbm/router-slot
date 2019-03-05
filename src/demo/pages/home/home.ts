@@ -9,6 +9,8 @@ export default class HomeComponent extends LitElement {
 	firstUpdated (changedProperties: PropertyValues) {
 		super.firstUpdated(changedProperties);
 
+		console.log(query());
+
 		const $routerSlot = this.shadowRoot!.querySelector<IRouterSlot>(ROUTER_SLOT_TAG_NAME)!;
 		$routerSlot.add([
 			{
@@ -25,7 +27,6 @@ export default class HomeComponent extends LitElement {
 			}
 		]);
 
-		console.log(query());
 	}
 
 	private logout () {

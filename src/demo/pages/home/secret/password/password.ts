@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit-element";
 import { TemplateResult } from "lit-html";
 import { ROUTER_SLOT_TAG_NAME } from "../../../../../lib/config";
-import { IRouterSlot, RoutingInfo } from "../../../../../lib/model";
+import { Class, IRouterSlot, RoutingInfo } from "../../../../../lib/model";
 import { sharedStyles } from "../../../styles";
 import { data } from "../data";
 
@@ -14,10 +14,16 @@ export default class PasswordComponent extends LitElement {
 		$routerSlot.add([
 			{
 				path: "dialog",
-				resolve: (({slot, route, match}: RoutingInfo) => {
-					alert("DIALOG");
-					console.log("DIALOG!", slot, route, match);
-					history.replaceState(null, "", "/home/secret/password");
+				resolve: (async ({slot, route, match}: RoutingInfo) => {
+					const DialogComponent: Class = (await import("../../../../dialog/dialog")).default;
+					const $dialog: {parent: IRouterSlot} & HTMLElement = new DialogComponent();
+					$dialog.parent = slot;
+					$dialog.addEventListener("close", () => {
+						history.replaceState(null, "", "/home/secret/password");
+						document.body.removeChild($dialog);
+					});
+
+					document.body.appendChild($dialog);
 				})
 			}
 		]);

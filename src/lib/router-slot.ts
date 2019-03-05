@@ -1,5 +1,5 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, ROUTER_SLOT_TAG_NAME } from "./config";
-import { Cancel, EventListenerSubscription, GlobalRouterEventKind, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterEventKind } from "./model";
+import { Cancel, EventListenerSubscription, GlobalRouterEventKind, IPathFragments, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterEventKind, RoutingInfo } from "./model";
 import { addListener, currentPath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, queryParentRouterSlot, removeListeners, resolvePageComponent } from "./util";
 
 const template = document.createElement("template");
@@ -46,7 +46,7 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 	/**
 	 * The current path fragment.
 	 */
-	get fragments (): [PathFragment, PathFragment] | null {
+	get fragments (): IPathFragments | null {
 		return this.match != null ? this.match.fragments : null;
 	}
 
@@ -54,6 +54,7 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 	 * The current path routeMatch.
 	 */
 	private _routeMatch: IRouteMatch | null;
+
 	get match () {
 		return this._routeMatch;
 	}
@@ -79,7 +80,7 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 	 * Hooks up the component.
 	 */
 	connectedCallback () {
-		this.queryParentRouter();
+		this.parent = this.queryParentRouterSlot();
 	}
 
 	/**
@@ -92,8 +93,8 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 	/**
 	 * Queries the parent router.
 	 */
-	protected queryParentRouter () {
-		this.parent = queryParentRouterSlot(this);
+	queryParentRouterSlot () {
+		return queryParentRouterSlot(this);
 	}
 
 	/**
@@ -120,24 +121,33 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 	}
 
 	/**
+	 * Each time the path changes, load the new path.
+	 * Prevents the event from continuing down the router tree if a navigation was made.
+	 */
+	async onPathChanged () {
+
+		// Either choose the parent fragment or the current path if no parent exists.
+		const pathFragment = this.parent != null && this.parent.fragments != null
+			? this.parent.fragments.rest
+			: currentPath();
+
+		await this.loadPath(pathFragment);
+	}
+
+	/**
 	 * Attaches listeners, either globally or on the parent router.
 	 */
 	protected attachListeners () {
 
-		// Attach root router listeners
-		if (this.isRoot) {
-
-			// Add global listeners.
-			this.listeners.push(
-				addListener(GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, this.onPathChanged)
-			);
-
-			return;
-		}
-
-		// Attach child router listeners
+		// Add listeners that updates the route
 		this.listeners.push(
-			addListener(this.parent!, RouterEventKind.RouteChange, this.onPathChanged)
+			this.isRoot
+
+				// Add global listeners.
+				? addListener(GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, this.onPathChanged)
+
+				// Attach child router listeners
+				: addListener(this.parent!, RouterEventKind.RouteChange, this.onPathChanged)
 		);
 	}
 
@@ -149,24 +159,8 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 	}
 
 	/**
-	 * Each time the path changes, load the new path.
-	 * Prevents the event from continuing down the router tree if a navigation was made.
-	 * @private
-	 */
-	protected async onPathChanged () {
-
-		// Either choose the parent fragment or the current path if no parent exists.
-		const pathFragment = this.parent != null && this.parent.fragments != null
-			? this.parent.fragments[1]
-			: currentPath();
-
-		await this.loadPath(pathFragment);
-	}
-
-	/**
 	 * Loads a new path based on the routes.
 	 * Returns true if a navigation was made to a new page.
-	 * @private
 	 */
 	protected async loadPath (path: string | PathFragment): Promise<boolean> {
 
@@ -180,6 +174,7 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 		}
 
 		const {route} = match;
+		const routingInfo: RoutingInfo = {route, match, slot: this};
 
 		try {
 
@@ -196,15 +191,12 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 				// Cleans up and dispatches a global event that a navigation was cancelled.
 				const cancel: Cancel = () => {
 					cleanup();
-					dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationCancel, route);
+					dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationCancel, routingInfo);
 					return false;
 				};
 
 				// Dispatch globally that a navigation has started
-				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationStart, route);
-
-				// Use this object for the callbacks to the routes
-				const routingInfo = {slot: this, route, match};
+				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationStart, routingInfo);
 
 				// Check whether the guards allow us to go to the new route.
 				if (route.guards != null) {
@@ -224,9 +216,12 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 
 				// Handle custom resolving if necessary
 				else if (isResolverRoute(route)) {
-					await Promise.resolve(route.resolve(routingInfo));
 
-					// Cancel the navigation if another navigation event was sent while this one was loading
+					// The resolve will handle the rest of the navigation. This includes whether or not the navigation
+					// should be cancelled.
+					navigationInvalidated = await Promise.resolve<void | boolean>(route.resolve(routingInfo)) || false;
+
+					// Cancel the navigation if the resolver specifies it.
 					if (navigationInvalidated) {
 						return cancel();
 					}
@@ -259,19 +254,19 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 
 			// Always dispatch the route change event to notify the children that something happened.
 			// This is because the child routes might have to change routes further down the tree.
-			dispatchRouteChangeEvent(this, route);
+			dispatchRouteChangeEvent(this, routingInfo);
 
 			// Dispatch globally that a navigation has ended.
 			if (navigate) {
-				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationSuccess, route);
-				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationEnd, route);
+				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationSuccess, routingInfo);
+				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationEnd, routingInfo);
 			}
 
 			return navigate;
 
 		} catch (e) {
-			dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationError, route);
-			dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationEnd, route);
+			dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationError, routingInfo);
+			dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationEnd, routingInfo);
 			throw e;
 		}
 	}
