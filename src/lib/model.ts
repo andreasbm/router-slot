@@ -5,9 +5,9 @@ export interface IRouterSlot extends HTMLElement {
 	readonly match: IRouteMatch | null;
 	parent: IRouterSlot | null | undefined;
 	add: ((routes: IRoute[], navigate?: boolean) => void);
-	clearRoutes: (() => void);
+	clear: (() => void);
 	queryParentRouterSlot: (() => IRouterSlot | null);
-	onPathChanged: (() => Promise<void>);
+	refresh: (() => Promise<void>);
 }
 
 export type RoutingInfo<D = unknown> = {slot: IRouterSlot, route: IRoute<D>, match: IRouteMatch<D>};
@@ -99,7 +99,7 @@ export type EventListenerSubscription = (() => void);
 /**
  * RouterComponent related events.
  */
-export enum RouterEventKind {
+export enum RouterSlotEventKind {
 	RouteChange = "routechange"
 }
 

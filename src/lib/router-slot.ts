@@ -1,5 +1,5 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, ROUTER_SLOT_TAG_NAME } from "./config";
-import { Cancel, EventListenerSubscription, GlobalRouterEventKind, IPathFragments, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterEventKind, RoutingInfo } from "./model";
+import { Cancel, EventListenerSubscription, GlobalRouterEventKind, IPathFragments, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterSlotEventKind, RoutingInfo } from "./model";
 import { addListener, currentPath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, queryParentRouterSlot, removeListeners, resolvePageComponent } from "./util";
 
 const template = document.createElement("template");
@@ -69,7 +69,7 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 	constructor () {
 		super();
 
-		this.onPathChanged = this.onPathChanged.bind(this);
+		this.refresh = this.refresh.bind(this);
 
 		// Attach the template
 		const shadow = this.attachShadow({mode: "open"});
@@ -102,29 +102,28 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 	 * @param routes
 	 * @param navigate
 	 */
-	add (routes: IRoute[], navigate: boolean = true) {
+	add (routes: IRoute[], navigate: boolean = this.isRoot) {
 
 		// Add the routes to the array
 		this.routes = routes;
 
 		// Register that the path has changed so the correct route can be loaded.
 		if (navigate) {
-			this.onPathChanged().then();
+			this.refresh().then();
 		}
 	}
 
 	/**
 	 * Removes all routes.
 	 */
-	clearRoutes () {
+	clear () {
 		this.routes.length = 0;
 	}
 
 	/**
 	 * Each time the path changes, load the new path.
-	 * Prevents the event from continuing down the router tree if a navigation was made.
 	 */
-	async onPathChanged () {
+	async refresh () {
 
 		// Either choose the parent fragment or the current path if no parent exists.
 		const pathFragment = this.parent != null && this.parent.fragments != null
@@ -144,10 +143,10 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 			this.isRoot
 
 				// Add global listeners.
-				? addListener(GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, this.onPathChanged)
+				? addListener(GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, this.refresh)
 
 				// Attach child router listeners
-				: addListener(this.parent!, RouterEventKind.RouteChange, this.onPathChanged)
+				: addListener(this.parent!, RouterSlotEventKind.RouteChange, this.refresh)
 		);
 	}
 
@@ -254,7 +253,10 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 
 			// Always dispatch the route change event to notify the children that something happened.
 			// This is because the child routes might have to change routes further down the tree.
-			dispatchRouteChangeEvent(this, routingInfo);
+			// The event is dispatched in an animation frame to allow route children to setup listeners first.
+			requestAnimationFrame(() => {
+				dispatchRouteChangeEvent(this, routingInfo);
+			});
 
 			// Dispatch globally that a navigation has ended.
 			if (navigate) {
