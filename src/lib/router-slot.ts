@@ -173,7 +173,7 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 		}
 
 		const {route} = match;
-		const routingInfo: RoutingInfo = {route, match, slot: this};
+		const routingInfo: RoutingInfo = {match, slot: this};
 
 		try {
 

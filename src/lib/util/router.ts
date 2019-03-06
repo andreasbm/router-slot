@@ -1,5 +1,5 @@
 import { CATCH_ALL_WILDCARD, PARAM_IDENTIFIER, TRAVERSE_FLAG } from "../config";
-import { Class, IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IRouterSlot, ModuleResolver, Params, PathFragment, RouterTree } from "../model";
+import { Class, IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IRouterSlot, ModuleResolver, PageComponent, Params, PathFragment, RouterTree } from "../model";
 import { ensureSlash, stripSlash } from "./url";
 
 /**
@@ -88,15 +88,26 @@ export function matchRoutes (routes: IRoute[], path: string | PathFragment): IRo
  * If the component provided is a function (and not a class) call the function to get the promise.
  * @param route
  */
-export async function resolvePageComponent (route: IComponentRoute): Promise<Node> {
+export async function resolvePageComponent (route: IComponentRoute): Promise<PageComponent> {
 
-	let component = route.component;
-	if (component instanceof Function && !isClass(component)) {
-		component = (route.component! as Function)();
+	// Figure out if the component were given as an import or class.
+	let cmp = route.component;
+	if (cmp instanceof Function && !isClass(cmp)) {
+		cmp = (route.component! as Function)();
 	}
 
-	const module = await Promise.resolve(<ModuleResolver>component);
-	return module.default ? (new module.default()) : new (<any>module)();
+	// Load the module or component.
+	const module = await Promise.resolve(<ModuleResolver>cmp);
+
+	// Instantiate the component
+	const component = new (module.default ? <any>module.default : <any>module)();
+
+	// Setup the component using the callback.
+	if (route.setup != null) {
+		route.setup(component);
+	}
+
+	return component;
 }
 
 /**

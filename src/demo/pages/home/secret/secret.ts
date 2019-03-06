@@ -1,6 +1,6 @@
 import { html, LitElement, PropertyValues } from "lit-element";
 import { TemplateResult } from "lit-html";
-import { IRouterSlot } from "../../../../lib";
+import { IRouterSlot, PageComponent } from "../../../../lib";
 import { ROUTER_SLOT_TAG_NAME } from "../../../../lib/config";
 import { sharedStyles } from "../../styles";
 import { data } from "./data";
@@ -24,7 +24,10 @@ export default class SecretComponent extends LitElement {
 		$routerSlot.add([
 			{
 				path: "code",
-				component: () => import("./code/code")
+				component: () => import("./code/code"),
+				setup: (component: PageComponent) => {
+					component.style.color = `yellow`;
+				}
 			},
 			{
 				path: "password",

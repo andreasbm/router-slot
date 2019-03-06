@@ -65,8 +65,6 @@ customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
 		console.log("Navigation failed", e.detail);
 	});
 
-console.log(basePath());
-
 	await routerSlot.add([
 		{
 			path: `${basePath()}login`,
@@ -79,7 +77,7 @@ console.log(basePath());
 		},
 		{
 			path: "**",
-			redirectTo: "home"
+			redirectTo: `${basePath()}home`
 		}
 	]);
 });

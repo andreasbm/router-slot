@@ -10,13 +10,15 @@ export interface IRouterSlot extends HTMLElement {
 	refresh: (() => Promise<void>);
 }
 
-export type RoutingInfo<D = unknown> = {slot: IRouterSlot, route: IRoute<D>, match: IRouteMatch<D>};
+export type RoutingInfo<D = unknown> = {slot: IRouterSlot, match: IRouteMatch<D>};
 export type CustomResolver<D = unknown> = ((info: RoutingInfo<D>) => boolean | void | Promise<boolean> | Promise<void>);
 export type Guard<D = unknown> = ((info: RoutingInfo<D>) => boolean | Promise<boolean>);
 export type Cancel = (() => boolean);
 
-export type ModuleResolver = Promise<{default: any}>;
-export type Class = {new (...args: any[]): any;};
+export type PageComponent = HTMLElement;
+export type ModuleResolver = Promise<{default: any; /*PageComponent*/}>;
+export type Class = {new (...args: any[]): PageComponent;};
+export type Setup = ((component: PageComponent) => void);
 
 export type RouterTree = {router: IRouterSlot} & {child?: RouterTree} | null | undefined;
 
@@ -55,6 +57,9 @@ export interface IComponentRoute<D = unknown> extends IRouteBase<D> {
 
 	// The component loader (should return a module with a default export)
 	component: Class | ModuleResolver | (() => ModuleResolver);
+
+	// A custom setup function for the instance of the component.
+	setup?: Setup;
 }
 
 /**

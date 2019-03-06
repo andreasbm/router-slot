@@ -146,6 +146,18 @@ await routerSlot.add([
 ]);
 ```
 
+### Dialog routes
+
+Sometimes you wish to change the url without triggering the route change. This could for example be when you want an url for your dialog. To change the route without triggering the route change you can use the functions prefixed with `_` on the history object. Below is an example on how to show a dialog without triggering the route change.
+
+```javascript
+history._pushState(null, "", "dialog");
+alert("This is a dialog");
+history._back();
+```
+
+This allows dialogs to have a route which is especially awesome on mobile.
+
 ### Params
 
 If you want params in your URL you can do it by using the `:name` syntax. Below is an example on how to specify a path that matches params as well. This route would match urls such as `user/123`, `user/@andreas`, `user/abc` and so on.
@@ -210,6 +222,9 @@ export interface IComponentRoute extends IRouteBase {
 
   // The component loader (should return a module with a default export)
   component: Class | ModuleResolver | (() => ModuleResolver);
+
+  // A custom setup function for the instance of the component.
+  setup?: Setup;
 }
 ```
 

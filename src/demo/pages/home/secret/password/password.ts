@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit-element";
 import { TemplateResult } from "lit-html";
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "../../../../../lib/config";
-import { Class, GlobalRouterEventKind, IRouterSlot, NavigationEndEvent, RouterSlotEventKind, RoutingInfo } from "../../../../../lib/model";
+import { Class, GlobalRouterEventKind, IRouterSlot, RoutingInfo } from "../../../../../lib/model";
 import { addListener } from "../../../../../lib/util/events";
 import { currentPath } from "../../../../../lib/util/url";
 import { sharedStyles } from "../../../styles";
@@ -16,9 +16,9 @@ export default class PasswordComponent extends LitElement {
 		$routerSlot.add([
 			{
 				path: "dialog",
-				resolve: (async ({slot, route, match}: RoutingInfo) => {
+				resolve: (async ({slot, match}: RoutingInfo) => {
 					const DialogComponent: Class = (await import("../../../../dialog/dialog")).default;
-					const $dialog: {parent: IRouterSlot} & HTMLElement = new DialogComponent();
+					const $dialog = new DialogComponent() as {parent: IRouterSlot | null} & HTMLElement;
 					$dialog.parent = slot;
 
 					function cleanup () {
@@ -26,6 +26,7 @@ export default class PasswordComponent extends LitElement {
 							document.body.removeChild($dialog);
 						}
 					}
+
 					$dialog.addEventListener("close", () => {
 						history.pushState(null, "", "/home/secret/password");
 						cleanup();
