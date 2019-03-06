@@ -44,6 +44,19 @@ export default class PasswordComponent extends LitElement {
 		]);
 	}
 
+	/**
+	 * Opens a dialog without routing inside it.
+	 */
+	private openDialogWithoutRouting () {
+		history._pushState(null, "", `item/1234`);
+		GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.PopState, close, {once: true});
+
+		alert(`This is a dialog!`);
+
+		GLOBAL_ROUTER_EVENTS_TARGET.removeEventListener(GlobalRouterEventKind.PopState, close);
+		history._back();
+	}
+
 	render (): TemplateResult {
 		return html`
 			<style>
@@ -53,7 +66,8 @@ export default class PasswordComponent extends LitElement {
 			<span>Resolved password: ${data.secretPassword}</span>
 			
 			<router-slot></router-slot>
-			<router-link path="/home/secret/password/dialog"><button>Dialog</button></router-link>
+			<router-link path="/home/secret/password/dialog"><button>Open dialog with routes</button></router-link>
+			<button @click="${this.openDialogWithoutRouting}">Open dialog WITHOUT routes</button>
 		`;
 	}
 }
