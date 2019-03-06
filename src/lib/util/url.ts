@@ -9,6 +9,15 @@ export function currentPath (): string {
 }
 
 /**
+ * The base path as defined in the <base> tag in the head.
+ * It will return the base path with slash.
+ * If eg. <base href="/web-router/"> is defined this function will return "/web-router/".
+ */
+export function basePath (): string | null {
+	return document.baseURI && ensureSlash(document.baseURI.substring(location.origin.length)) || null;
+}
+
+/**
  * Returns the params for the current path.
  * @returns Params
  */

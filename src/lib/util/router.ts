@@ -23,10 +23,10 @@ export function matchRoute (route: IRoute, path: string | PathFragment): IRouteM
 	// until either the end of the path or the next "/". While replacing the param placeholders we make sure
 	// to store the names of the param placeholders.
 	const paramNames: string[] = [];
-	const routePath = route.path.replace(PARAM_IDENTIFIER, (substring: string, ...args: string[]) => {
+	const routePath = stripSlash(route.path.replace(PARAM_IDENTIFIER, (substring: string, ...args: string[]) => {
 		paramNames.push(args[0]);
 		return "([^\\/]+)";
-	});
+	}));
 
 	// Construct the regex to match with the path or fragment
 	// If fuzzy we simply need to match the start of the path with the route path.

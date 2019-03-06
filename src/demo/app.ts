@@ -1,4 +1,4 @@
-import { currentPath, GlobalRouterEventKind, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, PushStateEvent, ReplaceStateEvent, RoutingInfo, RouterSlotEventKind, GLOBAL_ROUTER_EVENTS_TARGET, ChangeStateEvent } from "../lib";
+import { currentPath, GlobalRouterEventKind, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, PushStateEvent, ReplaceStateEvent, RoutingInfo, RouterSlotEventKind, GLOBAL_ROUTER_EVENTS_TARGET, ChangeStateEvent, basePath } from "../lib";
 import { ROUTER_SLOT_TAG_NAME } from "../lib/config";
 
 import "./../lib/router-link";
@@ -65,13 +65,15 @@ customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
 		console.log("Navigation failed", e.detail);
 	});
 
+console.log(basePath());
+
 	await routerSlot.add([
 		{
-			path: "login",
+			path: `${basePath()}login`,
 			component: () => import("./pages/login/login")
 		},
 		{
-			path: "home",
+			path: `${basePath()}home`,
 			component: () => import("./pages/home/home"),
 			guards: [sessionGuard]
 		},
