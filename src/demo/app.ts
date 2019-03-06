@@ -1,4 +1,4 @@
-import { ChangeRouteEvent, currentPath, GlobalRouterEventKind, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, PushStateEvent, ReplaceStateEvent, RoutingInfo, RouterSlotEventKind, GLOBAL_ROUTER_EVENTS_TARGET } from "../lib";
+import { currentPath, GlobalRouterEventKind, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, PushStateEvent, ReplaceStateEvent, RoutingInfo, RouterSlotEventKind, GLOBAL_ROUTER_EVENTS_TARGET, ChangeStateEvent } from "../lib";
 import { ROUTER_SLOT_TAG_NAME } from "../lib/config";
 
 import "./../lib/router-link";
@@ -21,7 +21,7 @@ customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
 	const routerSlot = document.querySelector<IRouterSlot>(ROUTER_SLOT_TAG_NAME)!;
 
 	let hasInitialized = false;
-	routerSlot.addEventListener(RouterSlotEventKind.RouteChange, (e: ChangeRouteEvent) => {
+	routerSlot.addEventListener(RouterSlotEventKind.ChangeState, () => {
 		if (!hasInitialized) {
 			document.body.classList.add("initialized");
 			hasInitialized = true;
@@ -38,6 +38,10 @@ customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
 
 	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.PopState, (e: PopStateEvent) => {
 		console.log("On pop state", currentPath(), e.state);
+	});
+
+	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.ChangeState, (e: ChangeStateEvent) => {
+		console.log("On change state", currentPath());
 	});
 
 	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.NavigationStart, (e: NavigationStartEvent) => {

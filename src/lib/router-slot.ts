@@ -1,4 +1,4 @@
-import { GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, ROUTER_SLOT_TAG_NAME } from "./config";
+import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
 import { Cancel, EventListenerSubscription, GlobalRouterEventKind, IPathFragments, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterSlotEventKind, RoutingInfo } from "./model";
 import { addListener, currentPath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, queryParentRouterSlot, removeListeners, resolvePageComponent } from "./util";
 
@@ -143,10 +143,10 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 			this.isRoot
 
 				// Add global listeners.
-				? addListener(GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, this.refresh)
+				? addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind.ChangeState, this.refresh)
 
 				// Attach child router listeners
-				: addListener(this.parent!, RouterSlotEventKind.RouteChange, this.refresh)
+				: addListener(this.parent!, RouterSlotEventKind.ChangeState, this.refresh)
 		);
 	}
 
@@ -185,7 +185,7 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 				// while we are about to navigate we have to cancel.
 				let navigationInvalidated = false;
 				const cancelNavigation = () => navigationInvalidated = true;
-				const cleanup: EventListenerSubscription = addListener(GLOBAL_ROUTER_EVENTS_TARGET, PATH_CHANGING_EVENTS, cancelNavigation, {once: true});
+				const cleanup: EventListenerSubscription = addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind.ChangeState, cancelNavigation, {once: true});
 
 				// Cleans up and dispatches a global event that a navigation was cancelled.
 				const cancel: Cancel = () => {

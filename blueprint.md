@@ -253,6 +253,9 @@ export enum GlobalRouterEventKind {
   // An event triggered when a state in the history is popped from the history.
   PopState = "popstate",
 
+  // An event triggeren when the state changes (eg. pop, push and replace)
+  ChangeState = "changestate",
+
   // An event triggered when navigation starts.
   NavigationStart = "navigationstart",
 
@@ -283,6 +286,10 @@ window.addEventListener(GlobalRouterEventKind.ReplaceState, (e: ReplaceStateEven
 
 window.addEventListener(GlobalRouterEventKind.PopState, (e: PopStateEvent) => {
   console.log("On pop state", currentPath());
+});
+
+window.addEventListener(GlobalRouterEventKind.ChangeState, (e: ChangeStateEvent) => {
+  console.log("On change state", currentPath());
 });
 
 window.addEventListener(GlobalRouterEventKind.NavigationStart, (e: NavigationStartEvent) => {

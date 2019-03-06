@@ -7,7 +7,7 @@ import { EventListenerSubscription, GlobalRouterEventKind, IRoute, IRouteMatch, 
  * @param {IRoute} detail
  */
 export function dispatchRouteChangeEvent<D = unknown> ($elem: HTMLElement, detail: RoutingInfo<D>) {
-	$elem.dispatchEvent(new CustomEvent(RouterSlotEventKind.RouteChange, {detail}));
+	$elem.dispatchEvent(new CustomEvent(RouterSlotEventKind.ChangeState, {detail}));
 }
 
 /**
