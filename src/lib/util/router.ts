@@ -140,8 +140,8 @@ export function traverseRouterTree (route: IRouterSlot): {tree: RouterTree, dept
 	}
 
 	// Create the tree
-	const tree = routes.reduce((acc: RouterTree, router: IRouterSlot) => {
-		return {router, child: acc};
+	const tree: RouterTree = routes.reduce((acc: RouterTree, slot: IRouterSlot) => {
+		return {slot, child: acc};
 	}, undefined);
 
 	const depth = routes.length;
@@ -159,8 +159,8 @@ export function getFragments (tree: RouterTree, depth: number): PathFragment[] {
 	const fragments: PathFragment[] = [];
 
 	// Look through all of the path fragments
-	while (child != null && child.router.match != null && depth > 0) {
-		fragments.push(child.router.match.fragments.consumed);
+	while (child != null && child.slot.match != null && depth > 0) {
+		fragments.push(child.slot.match.fragments.consumed);
 		child = child.child;
 		depth--;
 	}

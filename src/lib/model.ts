@@ -20,7 +20,7 @@ export type ModuleResolver = Promise<{default: any; /*PageComponent*/}>;
 export type Class = {new (...args: any[]): PageComponent;};
 export type Setup = ((component: PageComponent) => void);
 
-export type RouterTree = {router: IRouterSlot} & {child?: RouterTree} | null | undefined;
+export type RouterTree = {slot: IRouterSlot} & {child?: RouterTree} | null | undefined;
 
 /**
  * The base route interface.

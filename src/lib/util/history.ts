@@ -2,7 +2,7 @@ import { GlobalRouterEventKind } from "../model";
 import { dispatchGlobalRouterEvent } from "./events";
 
 // Mapping a history functions to the events they are going to dispatch.
-const patches: [string, GlobalRouterEventKind[]][] = [
+export const historyPatches: [string, GlobalRouterEventKind[]][] = [
 	["pushState", [GlobalRouterEventKind.PushState, GlobalRouterEventKind.ChangeState]],
 	["replaceState", [GlobalRouterEventKind.ReplaceState, GlobalRouterEventKind.ChangeState]],
 	["forward", [GlobalRouterEventKind.PushState, GlobalRouterEventKind.ChangeState]],
@@ -14,7 +14,7 @@ const patches: [string, GlobalRouterEventKind[]][] = [
  * Patches the history object by ensuring correct events are dispatches when the history changes.
  */
 export function ensureHistoryEvents () {
-	for (const [name, events] of patches) {
+	for (const [name, events] of historyPatches) {
 		for (const event of events) {
 			attachCallback(history, name, () => dispatchGlobalRouterEvent(<GlobalRouterEventKind>event));
 		}
