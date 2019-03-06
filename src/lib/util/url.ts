@@ -2,10 +2,10 @@ import { Params } from "../model";
 
 /**
  * The current path of the location.
- * The "/" at the beginning is discarded.
+ * Slashes are always included at the start and end.
  */
 export function currentPath (): string {
-	return window.location.pathname.slice(1);
+	return ensureSlash(window.location.pathname.slice(1));
 }
 
 /**
@@ -29,18 +29,25 @@ export function query (): Params {
 /**
  * Strips the slash from the start and end of a path.
  * @param path
+ * @param start
+ * @param end
  */
-export function stripSlash (path: string): string {
-	path = path.startsWith("/") ? path.slice(1) : path;
-	return path.endsWith("/") ? path.slice(0, path.length - 1) : path;
+export function stripSlash (path: string,
+                            {start, end}: {start: boolean, end: boolean} = {start: true, end: true}): string {
+	path = start && path.startsWith("/") ? path.slice(1) : path;
+	return end && path.endsWith("/") ? path.slice(0, path.length - 1) : path;
 }
 
 /**
- * Ensures the path starts with a slash
+ * Ensures the path starts and ends with a slash
  * @param path
+ * @param start
+ * @param end
  */
-export function ensureSlash (path: string): string {
-	return `${!path.startsWith("/") ? "/" : ""}${path}`;
+export function ensureSlash (path: string,
+                             {start, end}: {start: boolean, end: boolean} = {start: true, end: true}): string {
+	path = start && !path.startsWith("/") ? `/${path}` : path;
+	return end && !path.endsWith("/") ? `${path}/` : path;
 }
 
 /**

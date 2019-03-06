@@ -34,6 +34,7 @@
 		"s:dev": "rollup -c --watch --environment NODE_ENV:dev",
 		"s:prod": "rollup -c --watch --environment NODE_ENV:prod",
 		"s": "npm run s:dev",
+		"test": "karma start",
 		"ncu": "ncu -u -a && npm update && npm install",
 		"b:lib": "node pre-build.js && tsc -p tsconfig.build.json",
 		"publish": "cd dist && npm publish --access=public && cd ..",
@@ -47,7 +48,7 @@
 	},
 	"devDependencies": {
 		"@appnest/readme": "^1.1.2",
-		"@appnest/web-config": "0.3.27",
+		"@appnest/web-config": "0.3.28",
 		"lit-element": "^2.0.1",
 		"node-typescript-compiler": "^1.1.1",
 		"npm-bump": "0.0.25"
