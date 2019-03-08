@@ -17,12 +17,13 @@
 <br />
 
 
-* Lazy loading of routes
-* Web component friendly
-* Easy to use API
-* Specify params in the path
-* Zero dependencies
-* Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
+* 😴 Lazy loading of routes
+* 🎁 Web component friendly
+* 📡 Easy to use API
+* 🛣 Specify params in the path
+* 👌 Zero dependencies
+* 📚 Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
+* 🎉 Support routes for dialogs
 
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#table-of-contents)
@@ -351,7 +352,7 @@ export enum GlobalRouterEventKind {
   // An event triggered when a state in the history is popped from the history.
   PopState = "popstate",
 
-  // An event triggeren when the state changes (eg. pop, push and replace)
+  // An event triggered when the state changes (eg. pop, push and replace)
   ChangeState = "changestate",
 
   // An event triggered when navigation starts.

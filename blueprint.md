@@ -297,7 +297,7 @@ export enum GlobalRouterEventKind {
   // An event triggered when a state in the history is popped from the history.
   PopState = "popstate",
 
-  // An event triggeren when the state changes (eg. pop, push and replace)
+  // An event triggered when the state changes (eg. pop, push and replace)
   ChangeState = "changestate",
 
   // An event triggered when navigation starts.
