@@ -173,7 +173,7 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 		}
 
 		const {route} = match;
-		const routingInfo: RoutingInfo = {match, slot: this};
+		const info: RoutingInfo = {match, slot: this};
 
 		try {
 
@@ -190,17 +190,17 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 				// Cleans up and dispatches a global event that a navigation was cancelled.
 				const cancel: Cancel = () => {
 					cleanup();
-					dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationCancel, routingInfo);
+					dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationCancel, info);
 					return false;
 				};
 
 				// Dispatch globally that a navigation has started
-				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationStart, routingInfo);
+				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationStart, info);
 
 				// Check whether the guards allow us to go to the new route.
 				if (route.guards != null) {
 					for (const guard of route.guards) {
-						if (!(await Promise.resolve(guard(routingInfo)))) {
+						if (!(await Promise.resolve(guard(info)))) {
 							return cancel();
 						}
 					}
@@ -218,7 +218,7 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 
 					// The resolve will handle the rest of the navigation. This includes whether or not the navigation
 					// should be cancelled.
-					navigationInvalidated = await Promise.resolve<void | boolean>(route.resolve(routingInfo)) || false;
+					navigationInvalidated = await Promise.resolve<void | boolean>(route.resolve(info)) || false;
 
 					// Cancel the navigation if the resolver specifies it.
 					if (navigationInvalidated) {
@@ -228,7 +228,7 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 
 				// If the component provided is a function (and not a class) call the function to get the promise.
 				else {
-					const page = await resolvePageComponent(route);
+					const page = await resolvePageComponent(route, info);
 
 					// Cancel the navigation if another navigation event was sent while this one was loading
 					if (navigationInvalidated) {
@@ -255,20 +255,20 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 			// This is because the child routes might have to change routes further down the tree.
 			// The event is dispatched in an animation frame to allow route children to setup listeners first.
 			requestAnimationFrame(() => {
-				dispatchRouteChangeEvent(this, routingInfo);
+				dispatchRouteChangeEvent(this, info);
 			});
 
 			// Dispatch globally that a navigation has ended.
 			if (navigate) {
-				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationSuccess, routingInfo);
-				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationEnd, routingInfo);
+				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationSuccess, info);
+				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationEnd, info);
 			}
 
 			return navigate;
 
 		} catch (e) {
-			dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationError, routingInfo);
-			dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationEnd, routingInfo);
+			dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationError, info);
+			dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationEnd, info);
 			throw e;
 		}
 	}

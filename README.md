@@ -246,6 +246,20 @@ export default class UserComponent extends LitElement {
 window.customElements.define("user-component", UserComponent);
 ```
 
+Alternatively the params could be passed through the setup function when defining the route.
+
+...
+await routerSlot.add([
+  {
+    path: "user/:userId",
+    component: UserComponent,
+    setup: (component: UserComponent, info: RoutingInfo) => {
+      component.params = info.match.params;
+    }
+  }
+]);
+```
+
 ### Deep dive into the different route kinds
 
 There exists three different kinds of routes. We are going to take a look at those different kinds in a bit, but first you should be familiar with what all routes have in common.
