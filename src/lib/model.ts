@@ -48,6 +48,9 @@ export interface IRedirectRoute<D = unknown> extends IRouteBase<D> {
 
 	// The paths the route should redirect to. Can either be relative or absolute.
 	redirectTo: string;
+
+	// Whether the query should be preserved when redirecting.
+	preserveQuery?: boolean;
 }
 
 /**
@@ -95,6 +98,7 @@ export type NavigationErrorEvent<D = unknown> = CustomEvent<RoutingInfo<D>>;
 export type NavigationEndEvent<D = unknown> = CustomEvent<RoutingInfo<D>>;
 
 export type Params = {[key: string]: string};
+export type Query = {[key: string]: string};
 
 export type EventListenerSubscription = (() => void);
 

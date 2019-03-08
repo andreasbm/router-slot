@@ -1,4 +1,4 @@
-import { currentPath, GlobalRouterEventKind, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, PushStateEvent, ReplaceStateEvent, RoutingInfo, RouterSlotEventKind, GLOBAL_ROUTER_EVENTS_TARGET, ChangeStateEvent, basePath } from "../lib";
+import { path, GlobalRouterEventKind, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, PushStateEvent, ReplaceStateEvent, RoutingInfo, RouterSlotEventKind, GLOBAL_ROUTER_EVENTS_TARGET, ChangeStateEvent, basePath } from "../lib";
 import { ROUTER_SLOT_TAG_NAME } from "../lib/config";
 
 import "./../lib/router-link";
@@ -29,19 +29,19 @@ customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
 	});
 
 	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.PushState, (e: PushStateEvent) => {
-		console.log("On push state", `'${currentPath()}'`);
+		console.log("On push state", `'${path()}'`);
 	});
 
 	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.ReplaceState, (e: ReplaceStateEvent) => {
-		console.log("On replace state", currentPath());
+		console.log("On replace state", path());
 	});
 
 	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.PopState, (e: PopStateEvent) => {
-		console.log("On pop state", currentPath(), e.state);
+		console.log("On pop state", path(), e.state);
 	});
 
 	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.ChangeState, (e: ChangeStateEvent) => {
-		console.log("On change state", currentPath());
+		console.log("On change state", path());
 	});
 
 	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.NavigationStart, (e: NavigationStartEvent) => {
@@ -77,7 +77,8 @@ customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
 		},
 		{
 			path: "**",
-			redirectTo: `${basePath()}home`
+			redirectTo: `${basePath()}home`,
+			preserveQuery: true
 		}
 	]);
 });

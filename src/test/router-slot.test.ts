@@ -5,7 +5,7 @@ import "../lib/router-slot";
 import { ensureHistoryEvents } from "../lib/util/history";
 import { traverseRouterTree } from "../lib/util/router";
 import { queryParentRouterSlot } from "../lib/util/shadow";
-import { currentPath } from "../lib/util/url";
+import { path } from "../lib/util/url";
 import { clearHistory } from "./test-helpers";
 
 class RouterElement extends LitElement {
@@ -116,7 +116,7 @@ describe("router-slot", () => {
 
 	it("should redirect properly down the router tree", () => {
 		waitForNavigation(() => {
-			expect(currentPath()).to.equal(`/one/leaf-one/`);
+			expect(path()).to.equal(`/one/leaf-one/`);
 		});
 	});
 
@@ -157,7 +157,7 @@ describe("router-slot", () => {
 			history.pushState(null, "", `two/${param}`);
 
 			waitForNavigation(() => {
-				expect(currentPath()).to.equal(`/two/${param}/leaf-two/`);
+				expect(path()).to.equal(`/two/${param}/leaf-two/`);
 				expect(JSON.stringify($root.$slot.match!.params)).to.equal(JSON.stringify({id: param}));
 				done();
 			});

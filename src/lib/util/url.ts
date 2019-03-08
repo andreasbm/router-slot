@@ -1,5 +1,5 @@
 import { DEFAULT_SLASH_OPTIONS } from "../config";
-import { ISlashOptions, Params } from "../model";
+import { ISlashOptions, Params, Query } from "../model";
 
 
 /**
@@ -7,7 +7,7 @@ import { ISlashOptions, Params } from "../model";
  * As default slashes are included at the start and end.
  * @param options
  */
-export function currentPath (options: ISlashOptions = DEFAULT_SLASH_OPTIONS): string {
+export function path (options: ISlashOptions = DEFAULT_SLASH_OPTIONS): string {
 	return ensureSlash(window.location.pathname.slice(1), options);
 }
 
@@ -22,12 +22,18 @@ export function basePath (options: ISlashOptions = DEFAULT_SLASH_OPTIONS): strin
 }
 
 /**
+ * Returns the query string.
+ */
+export function queryString (): string {
+	return window.location.search;
+}
+
+/**
  * Returns the params for the current path.
  * @returns Params
  */
 export function query (): Params {
-	const query = window.location.search.substr(1);
-	return splitQuery(query);
+	return toQuery(queryString().substr(1));
 }
 
 /**
@@ -53,19 +59,19 @@ export function ensureSlash (path: string, {start, end}: ISlashOptions = DEFAULT
 }
 
 /**
- * Splits a query string and returns the params.
- * @param {string} query (example: ("test=123&hejsa=LOL&wuhuu"))
- * @returns {Params}
+ * Splits a query string and returns the query.
+ * @param {string} queryString (example: ("test=123&hejsa=LOL&wuhuu"))
+ * @returns {Query}
  */
-export function splitQuery (query: string): Params {
+export function toQuery (queryString: string): Query {
 
 	// If the query does not contain anything, return an empty object.
-	if (query.length === 0) {
+	if (queryString.length === 0) {
 		return {};
 	}
 
 	// Grab the atoms (["test=123", "hejsa=LOL", "wuhuu"])
-	const atoms = query.split("&");
+	const atoms = queryString.split("&");
 
 	// Split by the values ([["test", "123"], ["hejsa", "LOL"], ["wuhuu"]])
 	const arrayMap = atoms.map(atom => atom.split("="));
@@ -74,4 +80,12 @@ export function splitQuery (query: string): Params {
 	return Object.assign({}, ...arrayMap.map(arr => ({
 		[decodeURIComponent(arr[0])]: (arr.length > 1 ? decodeURIComponent(arr[1]) : "")
 	})));
+}
+
+/**
+ * Turns a query object into a string query.
+ * @param query
+ */
+export function toQueryString (query: Query): string {
+	return Object.entries(query).map(([key, value]) => `${key}${value != "" ? `=${value}` : ""}`).join("&");
 }

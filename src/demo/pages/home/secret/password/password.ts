@@ -3,7 +3,7 @@ import { TemplateResult } from "lit-html";
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "../../../../../lib/config";
 import { Class, GlobalRouterEventKind, IRouterSlot, RoutingInfo } from "../../../../../lib/model";
 import { addListener } from "../../../../../lib/util/events";
-import { currentPath } from "../../../../../lib/util/url";
+import { path } from "../../../../../lib/util/url";
 import { sharedStyles } from "../../../styles";
 import { data } from "../data";
 
@@ -33,7 +33,7 @@ export default class PasswordComponent extends LitElement {
 					});
 
 					const unsub = addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind.PopState, () => {
-						if (!currentPath().includes("dialog")) {
+						if (!path().includes("dialog")) {
 							cleanup();
 							unsub();
 						}

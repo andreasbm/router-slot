@@ -36,7 +36,8 @@ export default class SecretComponent extends LitElement {
 			},
 			{
 				path: "**",
-				redirectTo: "code"
+				redirectTo: "code",
+				preserveQuery: true
 			}
 		]);
 	}

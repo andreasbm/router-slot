@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
 import { EventListenerSubscription, GlobalRouterEventKind, IRouterSlot, PathFragment } from "./model";
-import { addListener, constructAbsolutePath, currentPath, isPathActive, queryParentRoots, removeListeners } from "./util";
+import { addListener, constructAbsolutePath, path, isPathActive, queryParentRoots, removeListeners, queryString } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -46,12 +46,12 @@ export class RouterLink extends HTMLElement {
 	/**
 	 * Whether the query should be preserved or not.
 	 */
-	get preserve (): boolean {
-		return this.hasAttribute("preserve");
+	get preserveQuery (): boolean {
+		return this.hasAttribute("preservequery");
 	}
 
-	set preserve (value: boolean) {
-		value ? this.setAttribute("preserve", "") : this.removeAttribute("preserve");
+	set preserveQuery (value: boolean) {
+		value ? this.setAttribute("preservequery", "") : this.removeAttribute("preservequery");
 	}
 
 	/**
@@ -121,7 +121,7 @@ export class RouterLink extends HTMLElement {
 	 * Updates whether the route is active or not.
 	 */
 	protected updateActive () {
-		const active = isPathActive(this.absolutePath, currentPath());
+		const active = isPathActive(this.absolutePath, path());
 		if (active !== this.active) {
 			this.active = active;
 		}
@@ -139,7 +139,7 @@ export class RouterLink extends HTMLElement {
 			return;
 		}
 
-		history.pushState(null, "", `${this.absolutePath}${this.preserve ? window.location.search : ""}`);
+		history.pushState(null, "", `${this.absolutePath}${this.preserveQuery ? queryString() : ""}`);
 	}
 
 }

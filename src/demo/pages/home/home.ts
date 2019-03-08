@@ -1,6 +1,6 @@
 import { LitElement, PropertyValues } from "lit-element";
 import { html, TemplateResult } from "lit-html";
-import { IRouterSlot, query } from "../../../lib";
+import { IRouterSlot, query, queryString } from "../../../lib";
 import { ROUTER_SLOT_TAG_NAME } from "../../../lib/config";
 import { sharedStyles } from "../styles";
 
@@ -9,7 +9,10 @@ export default class HomeComponent extends LitElement {
 	firstUpdated (changedProperties: PropertyValues) {
 		super.firstUpdated(changedProperties);
 
-		console.log(query());
+		console.log({
+			query: query(),
+			queryString: queryString()
+		});
 
 		const $routerSlot = this.shadowRoot!.querySelector<IRouterSlot>(ROUTER_SLOT_TAG_NAME)!;
 		$routerSlot.add([
@@ -23,7 +26,8 @@ export default class HomeComponent extends LitElement {
 			},
 			{
 				path: "**",
-				redirectTo: "secret"
+				redirectTo: "secret",
+				preserveQuery: true
 			}
 		]);
 

@@ -1,6 +1,6 @@
 import { CATCH_ALL_WILDCARD, DEFAULT_SLASH_OPTIONS, PARAM_IDENTIFIER, TRAVERSE_FLAG } from "../config";
 import { Class, IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IRouterSlot, ModuleResolver, PageComponent, Params, PathFragment, RouterTree } from "../model";
-import { ensureSlash, stripSlash } from "./url";
+import { ensureSlash, queryString, stripSlash } from "./url";
 
 /**
  * If the full path starts with the path, the path is active.
@@ -220,7 +220,8 @@ export function constructAbsolutePath (router: IRouterSlot, path: string | PathF
  * @param route
  */
 export function handleRedirect (router: IRouterSlot, route: IRedirectRoute) {
-	history.replaceState(history.state, "", constructAbsolutePath(router, route.redirectTo));
+	console.log(`${constructAbsolutePath(router, route.redirectTo)}${route.preserveQuery ? window.location.search : ""}`);
+	history.replaceState(history.state, "", `${constructAbsolutePath(router, route.redirectTo)}${route.preserveQuery ? queryString() : ""}`);
 }
 
 /**

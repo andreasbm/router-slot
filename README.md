@@ -46,6 +46,7 @@
 		* [Component routes](#component-routes)
 		* [Redirection routes](#redirection-routes)
 		* [Resolver routes](#resolver-routes)
+	* [Helper functions](#helper-functions)
 	* [Global navigation events](#global-navigation-events)
 		* [Scroll to the top](#scroll-to-the-top)
 * [➤ Be careful when navigating to the root!](#-be-careful-when-navigating-to-the-root)
@@ -290,6 +291,9 @@ export interface IRedirectRoute extends IRouteBase {
 
   // The paths the route should redirect to. Can either be relative or absolute.
   redirectTo: string;
+
+  // Whether the query should be preserved when redirecting.
+  preserveQuery?: boolean;
 }
 ```
 
@@ -304,6 +308,18 @@ export interface IResolverRoute extends IRouteBase {
   resolve: CustomResolver;
 }
 ```
+
+### Helper functions
+
+The library comes with a set of helper functions. This includes:
+
+* `path()` - The current path of the location.
+* `query()` - The current query as an object.
+* `queryString()` - The current query string
+* `stripSlash(options)` - Strips the slash from the start and end of a path.
+* `ensureSlash(options)` - Ensures the path starts and ends with a slash.
+* `toQueryString(query)` - Turns a query object into a string query.
+* `toQuery(queryString)` - Splits a query string and returns the query.
 
 ### Global navigation events
 
