@@ -246,7 +246,7 @@ export default class UserComponent extends LitElement {
 window.customElements.define("user-component", UserComponent);
 ```
 
-Alternatively the params could be passed through the setup function when defining the route.
+Alternatively the params can be passed through the setup function.
 
 ```javascript
 await routerSlot.add([
@@ -254,7 +254,7 @@ await routerSlot.add([
     path: "user/:userId",
     component: UserComponent,
     setup: (component: UserComponent, info: RoutingInfo) => {
-      component.params = info.match.params;
+      component.userId = info.match.params.userId;
     }
   }
 ]);
