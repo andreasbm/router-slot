@@ -1,6 +1,6 @@
 {
 	"name": "@appnest/web-router",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"description": "A powerful web component router",
 	"author": "Appnest",
 	"bugs": {
