@@ -194,7 +194,7 @@ window.customElements.define("user-component", UserComponent);
 
 Alternatively the params could be passed through the setup function when defining the route.
 
-...
+```javascript
 await routerSlot.add([
   {
     path: "user/:userId",
