@@ -34,9 +34,8 @@ export function matchRoute (route: IRoute, path: string | PathFragment): IRouteM
 	// If the path is empty we treat it as a catch all wildcard to ensure it doesn't consume anything
 	const regex = route.path === CATCH_ALL_WILDCARD || route.path === "" ? /^/
 		: route.fuzzy
-			? new RegExp(`^[\/]?${routePath}`)
+			? new RegExp(`^.*?${routePath}(/|$)`)
 			: new RegExp(`^[\/]?${routePath}(\/|$)`);
-
 
 	// Check if there's a match
 	const match = path.match(regex);
