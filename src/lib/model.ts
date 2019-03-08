@@ -137,3 +137,8 @@ export enum GlobalRouterEventKind {
 	// An event triggered when navigation ends.
 	NavigationEnd = "navigationend"
 }
+
+export interface ISlashOptions {
+	start: boolean;
+	end: boolean;
+}

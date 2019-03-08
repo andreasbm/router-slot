@@ -73,6 +73,10 @@ const mainRoutes: IRoute[] = [
 		component: PageOne
 	},
 	{
+		path: "two/:id",
+		component: PageTwo
+	},
+	{
 		path: "**",
 		redirectTo: "one"
 	}
@@ -144,6 +148,19 @@ describe("router-slot", () => {
 			expect(traverseRouterTree($pageOne.$slot).depth).to.equal(2);
 			expect(traverseRouterTree($root.$slot).depth).to.equal(1);
 			done();
+		});
+	});
+
+	it("should pick up params", (done) => {
+		waitForNavigation(() => {
+			const param = "1234";
+			history.pushState(null, "", `two/${param}`);
+
+			waitForNavigation(() => {
+				expect(currentPath()).to.equal(`/two/${param}/leaf-two/`);
+				expect(JSON.stringify($root.$slot.match!.params)).to.equal(JSON.stringify({id: param}));
+				done();
+			});
 		});
 	});
 });

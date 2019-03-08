@@ -1,4 +1,4 @@
-import { CATCH_ALL_WILDCARD, PARAM_IDENTIFIER, TRAVERSE_FLAG } from "../config";
+import { CATCH_ALL_WILDCARD, DEFAULT_SLASH_OPTIONS, PARAM_IDENTIFIER, TRAVERSE_FLAG } from "../config";
 import { Class, IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IRouterSlot, ModuleResolver, PageComponent, Params, PathFragment, RouterTree } from "../model";
 import { ensureSlash, stripSlash } from "./url";
 
@@ -205,7 +205,10 @@ export function constructAbsolutePath (router: IRouterSlot, path: string | PathF
 		// Grab the fragments and construct the new path, taking the traverse depth into account.
 		// Always subtract at least 1 because we the path is relative to its parent.
 		const fragments = getFragments(tree, depth - 1 - traverseDepth);
-		path = ensureSlash(`${fragments.join("/")}${path != "" ? `/${path}` : ""}`);
+		path = ensureSlash(`${fragments.join("/")}${path != "" ? `/${path}` : ""}`, {
+			...DEFAULT_SLASH_OPTIONS,
+			end: false
+		});
 	}
 
 	return path;

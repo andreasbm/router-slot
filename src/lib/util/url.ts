@@ -1,20 +1,24 @@
-import { Params } from "../model";
+import { DEFAULT_SLASH_OPTIONS } from "../config";
+import { ISlashOptions, Params } from "../model";
+
 
 /**
  * The current path of the location.
- * Slashes are always included at the start and end.
+ * As default slashes are included at the start and end.
+ * @param options
  */
-export function currentPath (): string {
-	return ensureSlash(window.location.pathname.slice(1));
+export function currentPath (options: ISlashOptions = DEFAULT_SLASH_OPTIONS): string {
+	return ensureSlash(window.location.pathname.slice(1), options);
 }
 
 /**
  * The base path as defined in the <base> tag in the head.
- * It will return the base path with slash.
+ * As default tt will return the base path with slashes in front and at the end.
  * If eg. <base href="/web-router/"> is defined this function will return "/web-router/".
+ * @param options
  */
-export function basePath (): string | null {
-	return document.baseURI && ensureSlash(document.baseURI.substring(location.origin.length)) || null;
+export function basePath (options: ISlashOptions = DEFAULT_SLASH_OPTIONS): string | null {
+	return document.baseURI && ensureSlash(document.baseURI.substring(location.origin.length), options) || null;
 }
 
 /**
@@ -32,8 +36,7 @@ export function query (): Params {
  * @param start
  * @param end
  */
-export function stripSlash (path: string,
-                            {start, end}: {start: boolean, end: boolean} = {start: true, end: true}): string {
+export function stripSlash (path: string, {start, end}: ISlashOptions = DEFAULT_SLASH_OPTIONS): string {
 	path = start && path.startsWith("/") ? path.slice(1) : path;
 	return end && path.endsWith("/") ? path.slice(0, path.length - 1) : path;
 }
@@ -44,8 +47,7 @@ export function stripSlash (path: string,
  * @param start
  * @param end
  */
-export function ensureSlash (path: string,
-                             {start, end}: {start: boolean, end: boolean} = {start: true, end: true}): string {
+export function ensureSlash (path: string, {start, end}: ISlashOptions = DEFAULT_SLASH_OPTIONS): string {
 	path = start && !path.startsWith("/") ? `/${path}` : path;
 	return end && !path.endsWith("/") ? `${path}/` : path;
 }

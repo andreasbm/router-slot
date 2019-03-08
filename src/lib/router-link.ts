@@ -3,7 +3,7 @@ import { EventListenerSubscription, GlobalRouterEventKind, IRouterSlot, PathFrag
 import { addListener, constructAbsolutePath, currentPath, isPathActive, queryParentRoots, removeListeners } from "./util";
 
 const template = document.createElement("template");
-template.innerHTML = `</style><slot></slot>`;
+template.innerHTML = `<slot></slot>`;
 
 export class RouterLink extends HTMLElement {
 
@@ -66,17 +66,10 @@ export class RouterLink extends HTMLElement {
 	}
 
 	/**
-	 * Returns the absolute path constructed relative to the context.
-	 * If no router parent was found the path property is the absolute one.
+	 * Returns the absolute path.
 	 */
 	get absolutePath (): string {
-
-		// If a router context is present, navigate relative to that one
-		if (this.context != null) {
-			return constructAbsolutePath(this.context, this.path);
-		}
-
-		return this.path;
+		return this.constructAbsolutePath(this.path);
 	}
 
 	constructor () {
@@ -91,11 +84,25 @@ export class RouterLink extends HTMLElement {
 	}
 
 	/**
+	 * Returns the absolute path constructed relative to the context.
+	 * If no router parent was found the path property is the absolute one.
+	 */
+	constructAbsolutePath (path: string) {
+
+		// If a router context is present, navigate relative to that one
+		if (this.context != null) {
+			return constructAbsolutePath(this.context, path);
+		}
+
+		return path;
+	}
+
+	/**
 	 * Hook up listeners.
 	 */
 	connectedCallback () {
 		this.listeners.push(
-			addListener(this, "click", this.navigate),
+			addListener(this, "click", e => this.navigate(this.path, e)),
 			addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind.NavigationEnd, this.updateActive)
 		);
 
@@ -123,10 +130,10 @@ export class RouterLink extends HTMLElement {
 	/**
 	 * Navigates to the specified path.
 	 */
-	navigate (e: Event) {
+	navigate (path: string, e?: Event) {
 
 		// If disabled, we just prevent the navigation already now.
-		if (this.disabled) {
+		if (e != null && this.disabled) {
 			e.preventDefault();
 			e.stopPropagation();
 			return;
