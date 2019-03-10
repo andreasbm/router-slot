@@ -16,7 +16,7 @@ export function isPathActive (path: string | PathFragment, fullPath: string): bo
  * @param route
  * @param path
  */
-export function matchRoute (route: IRoute, path: string | PathFragment): IRouteMatch | null {
+export function matchRoute<D = unknown> (route: IRoute<D>, path: string | PathFragment): IRouteMatch<D> | null {
 
 
 	// We start by preparing the route path by replacing the param names with a regex that matches everything
@@ -71,7 +71,7 @@ export function matchRoute (route: IRoute, path: string | PathFragment): IRouteM
  * @param routes
  * @param path
  */
-export function matchRoutes (routes: IRoute[], path: string | PathFragment): IRouteMatch | null {
+export function matchRoutes<D = unknown> (routes: IRoute<D>[], path: string | PathFragment): IRouteMatch<D> | null {
 	for (const route of routes) {
 		const match = matchRoute(route, path);
 		if (match != null) {

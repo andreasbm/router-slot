@@ -12,7 +12,7 @@ ensureHistoryEvents();
  * Slot for a node in the router tree.
  * @slot - Default content.
  */
-export class RouterSlot<D = unknown> extends HTMLElement implements IRouterSlot {
+export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements IRouterSlot {
 
 	/**
 	 * Contains the available routes.
@@ -29,12 +29,12 @@ export class RouterSlot<D = unknown> extends HTMLElement implements IRouterSlot 
 	 * Is REQUIRED if this router is a child.
 	 * When set, the relevant listeners are added or teared down because they depend on the parent.
 	 */
-	_parent: IRouterSlot | null | undefined;
+	_parent: IRouterSlot<P> | null | undefined;
 	get parent () {
 		return this._parent;
 	}
 
-	set parent (router: IRouterSlot | null | undefined) {
+	set parent (router: IRouterSlot<P> | null | undefined) {
 		this.detachListeners();
 		this._parent = router;
 		this.attachListeners();
@@ -43,7 +43,7 @@ export class RouterSlot<D = unknown> extends HTMLElement implements IRouterSlot 
 	/**
 	 * The current route.
 	 */
-	get route (): IRoute | null {
+	get route (): IRoute<D> | null {
 		return this.match != null ? this.match.route : null;
 	}
 
@@ -57,7 +57,7 @@ export class RouterSlot<D = unknown> extends HTMLElement implements IRouterSlot 
 	/**
 	 * The current path routeMatch.
 	 */
-	private _routeMatch: IRouteMatch | null;
+	private _routeMatch: IRouteMatch<D> | null;
 
 	get match () {
 		return this._routeMatch;
@@ -73,7 +73,7 @@ export class RouterSlot<D = unknown> extends HTMLElement implements IRouterSlot 
 	constructor () {
 		super();
 
-		this.refresh = this.refresh.bind(this);
+		this.load = this.load.bind(this);
 
 		// Attach the template
 		const shadow = this.attachShadow({mode: "open"});
@@ -98,7 +98,7 @@ export class RouterSlot<D = unknown> extends HTMLElement implements IRouterSlot 
 	 * Queries the parent router.
 	 */
 	queryParentRouterSlot () {
-		return queryParentRouterSlot(this);
+		return queryParentRouterSlot<P>(this);
 	}
 
 	/**
@@ -113,7 +113,7 @@ export class RouterSlot<D = unknown> extends HTMLElement implements IRouterSlot 
 
 		// Register that the path has changed so the correct route can be loaded.
 		if (navigate) {
-			this.refresh().then();
+			this.load().then();
 		}
 	}
 
@@ -127,7 +127,7 @@ export class RouterSlot<D = unknown> extends HTMLElement implements IRouterSlot 
 	/**
 	 * Each time the path changes, load the new path.
 	 */
-	async refresh () {
+	async load () {
 
 		// Either choose the parent fragment or the current path if no parent exists.
 		const pathFragment = this.parent != null && this.parent.fragments != null
@@ -147,10 +147,10 @@ export class RouterSlot<D = unknown> extends HTMLElement implements IRouterSlot 
 			this.isRoot
 
 				// Add global listeners.
-				? addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind.ChangeState, this.refresh)
+				? addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind.ChangeState, this.load)
 
 				// Attach child router listeners
-				: addListener(this.parent!, RouterSlotEventKind.ChangeState, this.refresh)
+				: addListener(this.parent!, RouterSlotEventKind.ChangeState, this.load)
 		);
 	}
 

@@ -1,13 +1,13 @@
-export interface IRouterSlot extends HTMLElement {
-	readonly route: IRoute | null;
+export interface IRouterSlot<D = unknown, P = unknown> extends HTMLElement {
+	readonly route: IRoute<D> | null;
 	readonly isRoot: boolean;
 	readonly fragments: IPathFragments | null;
-	readonly match: IRouteMatch | null;
-	parent: IRouterSlot | null | undefined;
-	add: ((routes: IRoute[], navigate?: boolean) => void);
+	readonly match: IRouteMatch<D> | null;
+	add: ((routes: IRoute<D>[], navigate?: boolean) => void);
 	clear: (() => void);
-	queryParentRouterSlot: (() => IRouterSlot | null);
-	refresh: (() => Promise<void>);
+	load: (() => Promise<void>);
+	parent: IRouterSlot<P> | null | undefined;
+	queryParentRouterSlot: (() => IRouterSlot<P> | null);
 }
 
 export type RoutingInfo<D = unknown> = {slot: IRouterSlot, match: IRouteMatch<D>};
