@@ -101,7 +101,7 @@ The `web-router` component acts as a placeholder that marks the spot in the temp
 Routes are added to the router through the `add` function on a `web-router` component. Specify the parts of the path you want it to math with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
 
 ```typescript
-const routerSlot = <IWebRouter>document.querySelector("router-slot");
+const routerSlot = <RouterSlot>document.querySelector("router-slot");
 await routerSlot.add([
   {
     path: "login",
