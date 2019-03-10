@@ -5,6 +5,10 @@ import { addListener, constructAbsolutePath, path, isPathActive, queryParentRoot
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
 
+/**
+ * Router link.
+ * @slot - Default content.
+ */
 export class RouterLink extends HTMLElement {
 
 	private listeners: EventListenerSubscription[] = [];
@@ -12,6 +16,7 @@ export class RouterLink extends HTMLElement {
 
 	/**
 	 * The path of the navigation.
+	 * @attr
 	 */
 	set path (value: string | PathFragment) {
 		this.setAttribute("path", value);
@@ -23,6 +28,7 @@ export class RouterLink extends HTMLElement {
 
 	/**
 	 * Whether the component is disabled or not.
+	 * @attr
 	 */
 	get disabled (): boolean {
 		return this.hasAttribute("disabled");
@@ -34,6 +40,7 @@ export class RouterLink extends HTMLElement {
 
 	/**
 	 * Whether the component is active or not.
+	 * @attr
 	 */
 	get active (): boolean {
 		return this.hasAttribute("active");
@@ -45,6 +52,7 @@ export class RouterLink extends HTMLElement {
 
 	/**
 	 * Whether the query should be preserved or not.
+	 * @attr
 	 */
 	get preserveQuery (): boolean {
 		return this.hasAttribute("preservequery");

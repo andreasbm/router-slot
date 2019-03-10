@@ -8,12 +8,16 @@ template.innerHTML = `<slot></slot>`;
 // Patches the history object and ensures the correct events.
 ensureHistoryEvents();
 
-export class RouterSlot extends HTMLElement implements IRouterSlot {
+/**
+ * Slot for a node in the router tree.
+ * @slot - Default content.
+ */
+export class RouterSlot<D = unknown> extends HTMLElement implements IRouterSlot {
 
 	/**
 	 * Contains the available routes.
 	 */
-	private routes: IRoute[] = [];
+	private routes: IRoute<D>[] = [];
 
 	/**
 	 * Listeners on the router.
@@ -102,7 +106,7 @@ export class RouterSlot extends HTMLElement implements IRouterSlot {
 	 * @param routes
 	 * @param navigate
 	 */
-	add (routes: IRoute[], navigate: boolean = this.isRoot) {
+	add (routes: IRoute<D>[], navigate: boolean = this.isRoot) {
 
 		// Add the routes to the array
 		this.routes = routes;
