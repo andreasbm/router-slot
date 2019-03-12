@@ -34,9 +34,9 @@ To import the `router` you'll need to import the dependency in your application.
 import "@appnest/web-router";
 ```
 
-### `web-router`
+### `router-slot`
 
-The `web-router` component acts as a placeholder that marks the spot in the template where the router should display the components for that route part.
+The `router-slot` component acts as a placeholder that marks the spot in the template where the router should display the components for that route part.
 
 ```html
 <router-slot>
@@ -46,7 +46,7 @@ The `web-router` component acts as a placeholder that marks the spot in the temp
 
 ### Configuration
 
-Routes are added to the router through the `add` function on a `web-router` component. Specify the parts of the path you want it to math with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
+Routes are added to the router through the `add` function on a `router-slot` component. Specify the parts of the path you want it to math with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
 
 ```typescript
 const routerSlot = <RouterSlot>document.querySelector("router-slot");
@@ -66,7 +66,7 @@ await routerSlot.add([
 ]);
 ```
 
-You may want to wrap the above in a `whenDefined` callback to ensure the `web-router` exists before using its logic.
+You may want to wrap the above in a `whenDefined` callback to ensure the `router-slot` exists before using its logic.
 
 ```javascript
 customElements.whenDefined("router-slot").then(async () => {
@@ -109,7 +109,7 @@ With the `router-link` component you add `<router-link>` to your markup and spec
 </router-link>
 ```
 
-Paths can be specified either in relative or absolute terms. To specify an absolute path you simply pass `/home/secret`. To specify a relative path you first have to be aware of the router context  you are navigating within. The `router-link` component will for navigate based on the nearest `web-router` component. If you give the component a path (without the slash) as path, the navigation will be done in relation to the parent router. You can also specify `../login` to traverse up the router tree.
+Paths can be specified either in relative or absolute terms. To specify an absolute path you simply pass `/home/secret`. To specify a relative path you first have to be aware of the router context  you are navigating within. The `router-link` component will for navigate based on the nearest `router-slot` component. If you give the component a path (without the slash) as path, the navigation will be done in relation to the parent router. You can also specify `../login` to traverse up the router tree.
 
 ## Advanced
 
