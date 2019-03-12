@@ -1,7 +1,8 @@
-import { path, GlobalRouterEventKind, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, PushStateEvent, ReplaceStateEvent, RoutingInfo, RouterSlotEventKind, GLOBAL_ROUTER_EVENTS_TARGET, ChangeStateEvent, basePath } from "../lib";
+import { path, GlobalRouterEventKind, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, PushStateEvent, ReplaceStateEvent, RoutingInfo, RouterSlotEventKind, GLOBAL_ROUTER_EVENTS_TARGET, ChangeStateEvent, basePath, Class, RouterSlot } from "../lib";
 import { ROUTER_SLOT_TAG_NAME } from "../lib/config";
 
 import "./../lib/router-link";
+import LoginComponent from "./pages/login/login";
 
 /**
  * Asserts that the user is authenticated.
@@ -68,12 +69,39 @@ customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
 	await routerSlot.add([
 		{
 			path: `${basePath()}login`,
-			component: () => import("./pages/login/login")
+		    component: () => import("./pages/login/login")
 		},
 		{
 			path: `${basePath()}home`,
 			component: () => import("./pages/home/home"),
 			guards: [sessionGuard]
+		},
+		{
+			// You can give the component as a HTML element if you want
+			path: `${basePath()}div`,
+			component: () => {
+				const $div = document.createElement("div");
+				$div.innerText = `Heres a <div> tag!`;
+
+				const $slot = new RouterSlot();
+				$slot.add([
+					{
+						path: "route",
+						fuzzy: true,
+						component: () => {
+							const $div = document.createElement("div");
+							$div.innerText = `Here's another <div> tag!`;
+							return $div;
+						}
+					},
+					{
+						path: "**",
+						redirectTo: "/div/route"
+					}
+				]);
+				$div.appendChild($slot);
+				return $div;
+			}
 		},
 		{
 			path: "**",

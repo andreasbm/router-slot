@@ -1,5 +1,3 @@
-import { ISlashOptions } from "./model";
-
 export const CATCH_ALL_WILDCARD = "**";
 export const TRAVERSE_FLAG = "\\.\\.\\/";
 export const PARAM_IDENTIFIER = /:([^\\/]+)/g;

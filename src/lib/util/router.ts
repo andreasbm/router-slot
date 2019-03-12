@@ -1,5 +1,5 @@
 import { CATCH_ALL_WILDCARD, PARAM_IDENTIFIER, TRAVERSE_FLAG } from "../config";
-import { Class, IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IRouterSlot, ModuleResolver, PageComponent, Params, PathFragment, RouterTree, RoutingInfo } from "../model";
+import { IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IRouterSlot, ModuleResolver, PageComponent, Params, PathFragment, RouterTree, RoutingInfo } from "../model";
 import { ensureSlash, queryString, stripSlash } from "./url";
 
 /**
@@ -92,22 +92,34 @@ export async function resolvePageComponent (route: IComponentRoute, info: Routin
 
 	// Figure out if the component were given as an import or class.
 	let cmp = route.component;
-	if (cmp instanceof Function && !isClass(cmp)) {
-		cmp = (route.component! as Function)();
+	if (cmp instanceof Function) {
+		try {
+			cmp = (cmp as Function)();
+		} catch (err) {
+
+			// The invocation most likely failed because the function is a class.
+			// If it failed due to the "new" keyword not being used, the error will be of type "TypeError".
+			// This is the most reliable way to check whether the provided function is a class or a function.
+			if (!(err instanceof TypeError)) {
+				throw err;
+			}
+		}
 	}
 
 	// Load the module or component.
 	const module = await Promise.resolve(<ModuleResolver>cmp);
 
 	// Instantiate the component
-	const component = new (module.default ? <any>module.default : <any>module)();
+	if (!(cmp instanceof HTMLElement)) {
+		cmp = new (module.default ? module.default : module)() as PageComponent;
+	}
 
 	// Setup the component using the callback.
 	if (route.setup != null) {
-		route.setup(component, info);
+		route.setup(cmp, info);
 	}
 
-	return component;
+	return cmp;
 }
 
 /**
@@ -224,11 +236,3 @@ export function handleRedirect (router: IRouterSlot, route: IRedirectRoute) {
 	history.replaceState(history.state, "", `${constructAbsolutePath(router, route.redirectTo)}${route.preserveQuery ? queryString() : ""}`);
 }
 
-/**
- * Determines whether the provided function is a class.
- * @param func
- * @returns {boolean}
- */
-export function isClass (func: Function): func is Class {
-	return typeof func === "function" && /^class\s/.test(Function.prototype.toString.call(func));
-}

@@ -277,7 +277,7 @@ export interface IRouteBase<T = any> {
   // If guard returns false, the navigation is not allowed
   guards?: Guard[];
 
-  // Whether the match is fuzzy (eg. "name" would not only match "name" or "name/" but also "nameasdpokasf")
+  // Whether the match is fuzzy (eg. "name" would not only match "name" or "name/" but also "path/to/name")
   fuzzy?: boolean;
 }
 ```
@@ -290,10 +290,10 @@ Component routes resolves a specified component. You can provide the `component`
 export interface IComponentRoute extends IRouteBase {
 
   // The component loader (should return a module with a default export)
-  component: Class | ModuleResolver | (() => ModuleResolver);
+  component: Class | ModuleResolver | PageComponent | (() => Class) | (() => PageComponent) | (() => ModuleResolver);
 
   // A custom setup function for the instance of the component.
-  setup?: Setup;
+  setup?: SetupComponent;
 }
 ```
 
