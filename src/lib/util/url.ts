@@ -1,13 +1,11 @@
-import { DEFAULT_SLASH_OPTIONS } from "../config";
 import { ISlashOptions, Params, Query } from "../model";
-
 
 /**
  * The current path of the location.
  * As default slashes are included at the start and end.
  * @param options
  */
-export function path (options: ISlashOptions = DEFAULT_SLASH_OPTIONS): string {
+export function path (options: Partial<ISlashOptions> = {}): string {
 	return ensureSlash(window.location.pathname.slice(1), options);
 }
 
@@ -17,7 +15,7 @@ export function path (options: ISlashOptions = DEFAULT_SLASH_OPTIONS): string {
  * If eg. <base href="/web-router/"> is defined this function will return "/web-router/".
  * @param options
  */
-export function basePath (options: ISlashOptions = DEFAULT_SLASH_OPTIONS): string | null {
+export function basePath (options: Partial<ISlashOptions> = {}): string | null {
 	return document.baseURI && ensureSlash(document.baseURI.substring(location.origin.length), options) || null;
 }
 
@@ -39,23 +37,23 @@ export function query (): Params {
 /**
  * Strips the slash from the start and end of a path.
  * @param path
- * @param start
- * @param end
+ * @param startSlash
+ * @param endSlash
  */
-export function stripSlash (path: string, {start, end}: ISlashOptions = DEFAULT_SLASH_OPTIONS): string {
-	path = start && path.startsWith("/") ? path.slice(1) : path;
-	return end && path.endsWith("/") ? path.slice(0, path.length - 1) : path;
+export function stripSlash (path: string, {startSlash = true, endSlash = true}: Partial<ISlashOptions> = {}): string {
+	path = startSlash && path.startsWith("/") ? path.slice(1) : path;
+	return endSlash && path.endsWith("/") ? path.slice(0, path.length - 1) : path;
 }
 
 /**
  * Ensures the path starts and ends with a slash
  * @param path
- * @param start
- * @param end
+ * @param startSlash
+ * @param endSlash
  */
-export function ensureSlash (path: string, {start, end}: ISlashOptions = DEFAULT_SLASH_OPTIONS): string {
-	path = start && !path.startsWith("/") ? `/${path}` : path;
-	return end && !path.endsWith("/") ? `${path}/` : path;
+export function ensureSlash (path: string, {startSlash = true, endSlash = true}: Partial<ISlashOptions> = {}): string {
+	path = startSlash && !path.startsWith("/") ? `/${path}` : path;
+	return endSlash && !path.endsWith("/") ? `${path}/` : path;
 }
 
 /**

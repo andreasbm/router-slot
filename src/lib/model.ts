@@ -37,7 +37,7 @@ export interface IRouteBase<D = unknown> {
 	// If guard returns false, the navigation is not allowed
 	guards?: Guard[];
 
-	// Whether the match is fuzzy (eg. "name" would not only match "name" or "name/" but also "nameasdpokasf")
+	// Whether the match is fuzzy (eg. "name" would not only match "name" or "name/" but also "path/to/name")
 	fuzzy?: boolean;
 }
 
@@ -143,6 +143,6 @@ export enum GlobalRouterEventKind {
 }
 
 export interface ISlashOptions {
-	start: boolean;
-	end: boolean;
+	startSlash: boolean;
+	endSlash: boolean;
 }

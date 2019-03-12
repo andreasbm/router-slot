@@ -222,7 +222,7 @@ export interface IRouteBase<T = any> {
   // If guard returns false, the navigation is not allowed
   guards?: Guard[];
 
-  // Whether the match is fuzzy (eg. "name" would not only match "name" or "name/" but also "nameasdpokasf")
+  // Whether the match is fuzzy (eg. "name" would not only match "name" or "name/" but also "path/to/name")
   fuzzy?: boolean;
 }
 ```
