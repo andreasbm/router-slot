@@ -107,19 +107,22 @@ export async function resolvePageComponent (route: IComponentRoute, info: Routin
 	}
 
 	// Load the module or component.
-	const module = await Promise.resolve(<ModuleResolver>cmp);
+	const moduleClassOrPage = await Promise.resolve(<ModuleResolver>cmp);
 
 	// Instantiate the component
-	if (!(cmp instanceof HTMLElement)) {
-		cmp = new (module.default ? module.default : module)() as PageComponent;
+	let component!: PageComponent;
+	if (!(moduleClassOrPage instanceof HTMLElement)) {
+		component = new (moduleClassOrPage.default ? moduleClassOrPage.default : moduleClassOrPage)() as PageComponent;
+	} else {
+		component = cmp as PageComponent;
 	}
 
 	// Setup the component using the callback.
 	if (route.setup != null) {
-		route.setup(cmp, info);
+		route.setup(component, info);
 	}
 
-	return cmp;
+	return component;
 }
 
 /**
