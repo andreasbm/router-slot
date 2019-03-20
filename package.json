@@ -31,8 +31,8 @@
 	"scripts": {
 		"b:demo:dev": "rollup -c rollup.config.ts --environment NODE_ENV:dev",
 		"b:demo:prod": "rollup -c rollup.config.ts --environment NODE_ENV:prod",
-		"s:dev": "rollup -c --watch --environment NODE_ENV:dev",
-		"s:prod": "rollup -c --watch --environment NODE_ENV:prod",
+		"s:dev": "rollup -c rollup.config.ts --watch --environment NODE_ENV:dev",
+		"s:prod": "rollup -c rollup.config.ts --watch --environment NODE_ENV:prod",
 		"s": "npm run s:dev",
 		"test": "karma start",
 		"ncu": "ncu -u -a && npm update && npm install",
