@@ -276,10 +276,10 @@ The library comes with a set of helper functions. This includes:
 * `path()` - The current path of the location.
 * `query()` - The current query as an object.
 * `queryString()` - The current query string
+* `toQuery(queryString)` - Splits a query string and returns the query.
+* `toQueryString(query)` - Turns a query object into a string query.
 * `stripSlash(options)` - Strips the slash from the start and end of a path.
 * `ensureSlash(options)` - Ensures the path starts and ends with a slash.
-* `toQueryString(query)` - Turns a query object into a string query.
-* `toQuery(queryString)` - Splits a query string and returns the query.
 
 ### Global navigation events
 
@@ -321,19 +321,19 @@ Here's an example of how you can listen to the events.
 
 ```typescript
 window.addEventListener(GlobalRouterEventKind.PushState, (e: PushStateEvent) => {
-  console.log("On push state", currentPath());
+  console.log("On push state", path());
 });
 
 window.addEventListener(GlobalRouterEventKind.ReplaceState, (e: ReplaceStateEvent) => {
-  console.log("On replace state", currentPath());
+  console.log("On replace state", path());
 });
 
 window.addEventListener(GlobalRouterEventKind.PopState, (e: PopStateEvent) => {
-  console.log("On pop state", currentPath());
+  console.log("On pop state", path());
 });
 
 window.addEventListener(GlobalRouterEventKind.ChangeState, (e: ChangeStateEvent) => {
-  console.log("On change state", currentPath());
+  console.log("On change state", path());
 });
 
 window.addEventListener(GlobalRouterEventKind.NavigationStart, (e: NavigationStartEvent) => {

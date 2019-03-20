@@ -235,7 +235,6 @@ export function constructAbsolutePath (router: IRouterSlot, path: string | PathF
  * @param route
  */
 export function handleRedirect (router: IRouterSlot, route: IRedirectRoute) {
-	console.log(`${constructAbsolutePath(router, route.redirectTo)}${route.preserveQuery ? window.location.search : ""}`);
 	history.replaceState(history.state, "", `${constructAbsolutePath(router, route.redirectTo)}${route.preserveQuery ? queryString() : ""}`);
 }
 
