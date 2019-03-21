@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
 import { Cancel, EventListenerSubscription, GlobalRouterEventKind, IPathFragments, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterSlotEventKind, RoutingInfo } from "./model";
-import { addListener, path, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, queryParentRouterSlot, removeListeners, resolvePageComponent } from "./util";
+import { addListener, path, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, queryParentRouterSlot, removeListeners, resolvePageComponent, constructAbsolutePath } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -30,7 +30,7 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 	 * When set, the relevant listeners are added or teared down because they depend on the parent.
 	 */
 	_parent: IRouterSlot<P> | null | undefined;
-	get parent () {
+	get parent (): IRouterSlot<P> | null | undefined {
 		return this._parent;
 	}
 
@@ -59,14 +59,14 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 	 */
 	private _routeMatch: IRouteMatch<D> | null;
 
-	get match () {
+	get match (): IRouteMatch<D> | null {
 		return this._routeMatch;
 	}
 
 	/**
 	 * Whether the router is a root router.
 	 */
-	get isRoot () {
+	get isRoot (): boolean {
 		return this.parent == null;
 	}
 
@@ -83,22 +83,30 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 	/**
 	 * Hooks up the component.
 	 */
-	connectedCallback () {
+	connectedCallback (): void {
 		this.parent = this.queryParentRouterSlot();
 	}
 
 	/**
 	 * Tears down the component.
 	 */
-	disconnectedCallback () {
+	disconnectedCallback (): void {
 		this.detachListeners();
 	}
 
 	/**
 	 * Queries the parent router.
 	 */
-	queryParentRouterSlot () {
+	queryParentRouterSlot (): IRouterSlot<P> | null {
 		return queryParentRouterSlot<P>(this);
+	}
+
+	/**
+	 * Returns an absolute path from this router slot.
+	 * @param path
+	 */
+	constructAbsolutePath (path: PathFragment): string {
+		return constructAbsolutePath(this, path);
 	}
 
 	/**
@@ -106,7 +114,7 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 	 * @param routes
 	 * @param navigate
 	 */
-	add (routes: IRoute<D>[], navigate: boolean = this.isRoot) {
+	add (routes: IRoute<D>[], navigate: boolean = this.isRoot): void {
 
 		// Add the routes to the array
 		this.routes = routes;
@@ -120,14 +128,14 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 	/**
 	 * Removes all routes.
 	 */
-	clear () {
+	clear (): void {
 		this.routes.length = 0;
 	}
 
 	/**
 	 * Each time the path changes, load the new path.
 	 */
-	async load () {
+	async load (): Promise<void> {
 
 		// Either choose the parent fragment or the current path if no parent exists.
 		const pathFragment = this.parent != null && this.parent.fragments != null
@@ -140,7 +148,7 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 	/**
 	 * Attaches listeners, either globally or on the parent router.
 	 */
-	protected attachListeners () {
+	protected attachListeners (): void {
 
 		// Add listeners that updates the route
 		this.listeners.push(
@@ -157,7 +165,7 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 	/**
 	 * Detaches the listeners.
 	 */
-	protected detachListeners () {
+	protected detachListeners (): void {
 		removeListeners(this.listeners);
 	}
 
@@ -276,7 +284,6 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 			throw e;
 		}
 	}
-
 }
 
 window.customElements.define(ROUTER_SLOT_TAG_NAME, RouterSlot);

@@ -10,8 +10,8 @@ export function path (options: Partial<ISlashOptions> = {}): string {
 }
 
 /**
- * The base path as defined in the <base> tag in the head.
- * As default tt will return the base path with slashes in front and at the end.
+ * Returns the base path as defined in the <base> tag in the head.
+ * As default it will return the base path with slashes in front and at the end.
  * If eg. <base href="/web-router/"> is defined this function will return "/web-router/".
  * @param options
  */

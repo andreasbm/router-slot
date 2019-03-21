@@ -143,15 +143,15 @@ export function isResolverRoute (route: IRoute): route is IResolverRoute {
 
 /**
  * Traverses the router tree up to the root route.
- * @param route
+ * @param slot
  */
-export function traverseRouterTree (route: IRouterSlot): {tree: RouterTree, depth: number} {
+export function traverseRouterTree (slot: IRouterSlot): {tree: RouterTree, depth: number} {
 
 	// Find the nodes from the route up to the root route
-	let routes: IRouterSlot[] = [route];
-	while (route.parent != null) {
-		route = route.parent;
-		routes.push(route);
+	let routes: IRouterSlot[] = [slot];
+	while (slot.parent != null) {
+		slot = slot.parent;
+		routes.push(slot);
 	}
 
 	// Create the tree
@@ -188,13 +188,13 @@ export function getFragments (tree: RouterTree, depth: number): PathFragment[] {
  * - Handles relative paths: "mypath"
  * - Handles absolute paths: "/mypath"
  * - Handles traversing paths: "../../mypath"
- * @param router
+ * @param slot
  * @param path
  */
-export function constructAbsolutePath (router: IRouterSlot, path: string | PathFragment): string {
+export function constructAbsolutePath (slot: IRouterSlot, path: string | PathFragment): string {
 
 	// Grab the router tree
-	const {tree, depth} = traverseRouterTree(router);
+	const {tree, depth} = traverseRouterTree(slot);
 
 	// If the path starts with "/" its an absolute path
 	if (!path.startsWith("/")) {
@@ -231,10 +231,10 @@ export function constructAbsolutePath (router: IRouterSlot, path: string | PathF
 
 /**
  * Handles a redirect.
- * @param router
+ * @param slot
  * @param route
  */
-export function handleRedirect (router: IRouterSlot, route: IRedirectRoute) {
-	history.replaceState(history.state, "", `${constructAbsolutePath(router, route.redirectTo)}${route.preserveQuery ? queryString() : ""}`);
+export function handleRedirect (slot: IRouterSlot, route: IRedirectRoute) {
+	history.replaceState(history.state, "", `${constructAbsolutePath(slot, route.redirectTo)}${route.preserveQuery ? queryString() : ""}`);
 }
 

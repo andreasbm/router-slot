@@ -17,13 +17,13 @@
 <br />
 
 
-* 😴 Lazy loading of routes
-* 🎁 Web component friendly
-* 📡 Easy to use API
-* 🛣 Specify params in the path
-* 👌 Zero dependencies
-* 📚 Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
-* 🎉 Support routes for dialogs
+* 😴  Lazy loading of routes
+* 🎁  Web component friendly
+* 📡  Easy to use API
+* 🛣  Specify params in the path
+* 👌  Zero dependencies
+* 📚  Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
+* 🎉  Support routes for dialogs
 
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#table-of-contents)
@@ -331,10 +331,10 @@ The library comes with a set of helper functions. This includes:
 * `path()` - The current path of the location.
 * `query()` - The current query as an object.
 * `queryString()` - The current query string
+* `toQuery(queryString)` - Splits a query string and returns the query.
+* `toQueryString(query)` - Turns a query object into a string query.
 * `stripSlash(options)` - Strips the slash from the start and end of a path.
 * `ensureSlash(options)` - Ensures the path starts and ends with a slash.
-* `toQueryString(query)` - Turns a query object into a string query.
-* `toQuery(queryString)` - Splits a query string and returns the query.
 
 ### Global navigation events
 
@@ -376,19 +376,19 @@ Here's an example of how you can listen to the events.
 
 ```typescript
 window.addEventListener(GlobalRouterEventKind.PushState, (e: PushStateEvent) => {
-  console.log("On push state", currentPath());
+  console.log("On push state", path());
 });
 
 window.addEventListener(GlobalRouterEventKind.ReplaceState, (e: ReplaceStateEvent) => {
-  console.log("On replace state", currentPath());
+  console.log("On replace state", path());
 });
 
 window.addEventListener(GlobalRouterEventKind.PopState, (e: PopStateEvent) => {
-  console.log("On pop state", currentPath());
+  console.log("On pop state", path());
 });
 
 window.addEventListener(GlobalRouterEventKind.ChangeState, (e: ChangeStateEvent) => {
-  console.log("On change state", currentPath());
+  console.log("On change state", path());
 });
 
 window.addEventListener(GlobalRouterEventKind.NavigationStart, (e: NavigationStartEvent) => {
@@ -436,9 +436,11 @@ From my testing I found that Chrome and Safari treat an empty string as url when
 
 ## ➤ Contributors
 	
-|[<img alt="Andreas Mehlsen" src="https://avatars1.githubusercontent.com/u/6267397?s=460&v=4" width="100">](https://twitter.com/andreasmehlsen) | [<img alt="You?" src="https://joeschmoe.io/api/v1/random" width="100">](https://github.com/andreasbm/web-router/blob/master/CONTRIBUTING.md)|
-|:---: | :---:|
-|[Andreas Mehlsen](https://twitter.com/andreasmehlsen) | [You?](https://github.com/andreasbm/web-router/blob/master/CONTRIBUTING.md)|
+
+| [<img alt="Andreas Mehlsen" src="https://avatars1.githubusercontent.com/u/6267397?s=460&v=4" width="100">](https://twitter.com/andreasmehlsen) | [<img alt="You?" src="https://joeschmoe.io/api/v1/random" width="100">](https://github.com/andreasbm/web-router/blob/master/CONTRIBUTING.md) |
+|:--------------------------------------------------:|:--------------------------------------------------:|
+| [Andreas Mehlsen](https://twitter.com/andreasmehlsen) | [You?](https://github.com/andreasbm/web-router/blob/master/CONTRIBUTING.md) |
+
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#license)
 

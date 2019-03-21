@@ -7,12 +7,12 @@
 		"webcomponents": "@appnest/web-router"
 	},
 	"bullets": [
-		"😴 Lazy loading of routes",
-		"🎁 Web component friendly",
-		"📡 Easy to use API",
-		"🛣 Specify params in the path",
-		"👌 Zero dependencies",
-		"📚 Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)",
-		"🎉 Support routes for dialogs"
+		"😴  Lazy loading of routes",
+		"🎁  Web component friendly",
+		"📡  Easy to use API",
+		"🛣  Specify params in the path",
+		"👌  Zero dependencies",
+		"📚  Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)",
+		"🎉  Support routes for dialogs"
 	]
 }
