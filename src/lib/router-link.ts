@@ -93,7 +93,7 @@ export class RouterLink extends HTMLElement {
 		this.updateActive = this.updateActive.bind(this);
 
 		// Attach the template
-		const shadow = this.attachShadow({mode: "open"});
+		const shadow = this.attachShadow({mode: "open", delegatesFocus: true});
 		shadow.appendChild(template.content.cloneNode(true));
 	}
 

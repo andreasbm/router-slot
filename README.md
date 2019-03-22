@@ -157,7 +157,7 @@ With the `router-link` component you add `<router-link>` to your markup and spec
 
 ```html
 <router-link path="/home/secret">
-  Go to the secret page!
+  <button>Go to the secret page!</button>
 </router-link>
 ```
 
