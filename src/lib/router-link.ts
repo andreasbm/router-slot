@@ -57,6 +57,18 @@ export class RouterLink extends HTMLElement {
 	}
 
 	/**
+	 * Whether the focus should be delegated.
+	 * @attr
+	 */
+	get delegateFocus (): boolean {
+		return this.hasAttribute("delegateFocus");
+	}
+
+	set delegateFocus (value: boolean) {
+		value ? this.setAttribute("delegateFocus", "") : this.removeAttribute("delegateFocus");
+	}
+
+	/**
 	 * Whether the query should be preserved or not.
 	 * @attr
 	 */
@@ -93,7 +105,7 @@ export class RouterLink extends HTMLElement {
 		this.updateActive = this.updateActive.bind(this);
 
 		// Attach the template
-		const shadow = this.attachShadow({mode: "open"});
+		const shadow = this.attachShadow({mode: "open", delegatesFocus: this.delegateFocus});
 		shadow.appendChild(template.content.cloneNode(true));
 	}
 
@@ -112,6 +124,11 @@ export class RouterLink extends HTMLElement {
 
 		// Set the role to tell the rest of the world that this is a link
 		this.setAttribute("role", "link");
+
+		// Updates the tab index if none has been set by the library user
+		if (!this.hasAttribute("tabindex")) {
+			this.updateTabIndex();
+		}
 	}
 
 	/**
