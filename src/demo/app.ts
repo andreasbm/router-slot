@@ -1,8 +1,7 @@
-import { path, GlobalRouterEventKind, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, PushStateEvent, ReplaceStateEvent, RoutingInfo, RouterSlotEventKind, GLOBAL_ROUTER_EVENTS_TARGET, ChangeStateEvent, basePath, Class, RouterSlot } from "../lib";
+import { basePath, ChangeStateEvent, GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, path, PushStateEvent, ReplaceStateEvent, RouterSlot, RouterSlotEventKind } from "../lib";
 import { ROUTER_SLOT_TAG_NAME } from "../lib/config";
 
 import "./../lib/router-link";
-import LoginComponent from "./pages/login/login";
 
 /**
  * Asserts that the user is authenticated.
@@ -69,7 +68,7 @@ customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
 	await routerSlot.add([
 		{
 			path: `${basePath()}login`,
-		    component: () => import("./pages/login/login")
+			component: () => import("./pages/login/login")
 		},
 		{
 			path: `${basePath()}home`,

@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
 import { EventListenerSubscription, GlobalRouterEventKind, IRouterSlot, PathFragment } from "./model";
-import { addListener, constructAbsolutePath, path, isPathActive, queryParentRoots, removeListeners, queryString } from "./util";
+import { addListener, constructAbsolutePath, isPathActive, path, queryParentRoots, queryString, removeListeners } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -13,6 +13,12 @@ export class RouterLink extends HTMLElement {
 
 	private listeners: EventListenerSubscription[] = [];
 	private _context: IRouterSlot | null = null;
+
+	static get observedAttributes () {
+		return [
+			"disabled"
+		];
+	}
 
 	/**
 	 * The path of the navigation.
@@ -92,6 +98,53 @@ export class RouterLink extends HTMLElement {
 	}
 
 	/**
+	 * Hooks up the element.
+	 */
+	connectedCallback () {
+		this.listeners.push(
+			addListener(this, "click", e => this.navigate(this.path, e)),
+			addListener(this, "keydown", (e: KeyboardEvent) => e.code === "Enter" || e.code === "Space" ? this.navigate(this.path, e) : undefined),
+			addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind.NavigationEnd, this.updateActive)
+		);
+
+		// Query the nearest router
+		this.context = queryParentRoots(this, ROUTER_SLOT_TAG_NAME);
+
+		// Update the initial tabindex if none was set by the library user
+		if (!this.hasAttribute("tabindex")) {
+			this.updateTabIndex();
+		}
+
+		// Set the role to tell the rest of the world that this is a link
+		this.setAttribute("role", "link");
+	}
+
+	/**
+	 * Tear down listeners.
+	 */
+	disconnectedCallback () {
+		removeListeners(this.listeners);
+	}
+
+	/**
+	 * Reacts to attribute changed callback.
+	 * @param name
+	 * @param oldValue
+	 * @param newValue
+	 */
+	attributeChangedCallback (name: string, oldValue: unknown, newValue: unknown) {
+
+		// Updates the tab index when disabled changes
+		if (name === "disabled") {
+			this.updateTabIndex();
+		}
+	}
+
+	private updateTabIndex () {
+		this.tabIndex = this.disabled ? -1 : 0;
+	}
+
+	/**
 	 * Returns the absolute path constructed relative to the context.
 	 * If no router parent was found the path property is the absolute one.
 	 */
@@ -105,25 +158,6 @@ export class RouterLink extends HTMLElement {
 		return path;
 	}
 
-	/**
-	 * Hook up listeners.
-	 */
-	connectedCallback () {
-		this.listeners.push(
-			addListener(this, "click", e => this.navigate(this.path, e)),
-			addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind.NavigationEnd, this.updateActive)
-		);
-
-		// Query the nearest router
-		this.context = queryParentRoots(this, ROUTER_SLOT_TAG_NAME);
-	}
-
-	/**
-	 * Tear down listeners.
-	 */
-	disconnectedCallback () {
-		removeListeners(this.listeners);
-	}
 
 	/**
 	 * Updates whether the route is active or not.
@@ -149,7 +183,6 @@ export class RouterLink extends HTMLElement {
 
 		history.pushState(null, "", `${this.absolutePath}${this.preserveQuery ? queryString() : ""}`);
 	}
-
 }
 
 window.customElements.define("router-link", RouterLink);

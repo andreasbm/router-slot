@@ -5,6 +5,7 @@ import { IRouterSlot } from "../../lib/model";
 import { sharedStyles } from "../pages/styles";
 
 export default class DialogComponent extends LitElement {
+	static styles = [sharedStyles];
 
 	@property({type: Object}) parent: IRouterSlot | null;
 
@@ -43,8 +44,6 @@ export default class DialogComponent extends LitElement {
 	render (): TemplateResult {
 		return html`
 			<style>
-				${sharedStyles}
-				
 				:host {
 					position: fixed;
 					top: 0;
@@ -78,8 +77,9 @@ export default class DialogComponent extends LitElement {
 			<div id="backdrop" @click="${this.close}"></div>
 			<div id="content">
 				<p>Dialog</p>
-				<router-link path="step-one"><button>Go to StepOneComponent</button></router-link>
-				<router-link path="step-two"><button>Go to StepTwoComponent</button></router-link>
+				<router-link path="step-one">Go to StepOneComponent</router-link>
+				<br />
+				<router-link path="step-two">Go to StepTwoComponent</router-link>
 				<router-slot id="dialog"></router-slot>
 				<button @click="${this.close}">Close dialog</button>
 			</div>

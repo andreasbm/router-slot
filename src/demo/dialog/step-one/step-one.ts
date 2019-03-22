@@ -3,11 +3,9 @@ import { TemplateResult } from "lit-html";
 import { sharedStyles } from "../../pages/styles";
 
 export default class StepOneComponent extends LitElement {
+	static styles = [sharedStyles];
 	render (): TemplateResult {
 		return html`
-			<style>
-				${sharedStyles}
-			</style>
 			<p>Step 1</p>
 		`;
 	}

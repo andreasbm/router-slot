@@ -8,6 +8,7 @@ import { sharedStyles } from "../../../styles";
 import { data } from "../data";
 
 export default class PasswordComponent extends LitElement {
+	static styles = [sharedStyles];
 
 	firstUpdated () {
 		super.connectedCallback();
@@ -60,14 +61,11 @@ export default class PasswordComponent extends LitElement {
 
 	render (): TemplateResult {
 		return html`
-			<style>
-				${sharedStyles}
-			</style>
 			<p>PasswordComponent</p>
 			<span>Resolved password: ${data.secretPassword}</span>
 			
 			<router-slot></router-slot>
-			<router-link path="/home/secret/password/dialog"><button>Open dialog with routes</button></router-link>
+			<router-link path="/home/secret/password/dialog">Open dialog with routes</router-link>
 			<button @click="${this.openDialogWithoutRouting}">Open dialog WITHOUT routes</button>
 		`;
 	}

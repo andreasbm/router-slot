@@ -3,11 +3,9 @@ import { TemplateResult } from "lit-html";
 import { sharedStyles } from "../../../styles";
 
 export default class CodeComponent extends LitElement {
+	static styles = [sharedStyles];
 	render (): TemplateResult {
 		return html`
-			<style>
-				${sharedStyles}
-			</style>
 			<p>CodeComponent</p>
 		`;
 	}

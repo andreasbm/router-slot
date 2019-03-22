@@ -16,6 +16,7 @@ function resolveSecretPasswordGuard (): Promise<boolean> {
 }
 
 export default class SecretComponent extends LitElement {
+	static styles = [sharedStyles];
 
 	firstUpdated (changedProperties: PropertyValues) {
 		super.firstUpdated(changedProperties);
@@ -48,12 +49,9 @@ export default class SecretComponent extends LitElement {
 	 */
 	render (): TemplateResult {
 		return html`
-			<style>
-				${sharedStyles}
-			</style>
 			<p>SecretComponent</p>
-			<router-link path="code"><button>Go to CodeComponent</button></router-link>
-			<router-link path="password"><button>Go to PasswordComponent (1sec delay)</button></router-link>
+			<router-link path="code">Go to CodeComponent</router-link>
+			<router-link path="password">Go to PasswordComponent (1sec delay)</router-link>
 			<div id="child">
 				<router-slot></router-slot>
 			</div>

@@ -6,6 +6,7 @@ import { queryParentRouterSlot } from "../../../../lib/util/shadow";
 import { sharedStyles } from "../../styles";
 
 export default class UserComponent extends LitElement {
+	static styles = [sharedStyles];
 
 	get params (): Params {
 		return queryParentRouterSlot(this)!.match!.params;
@@ -30,13 +31,10 @@ export default class UserComponent extends LitElement {
 	render (): TemplateResult {
 		const {user, dashId} = this.params;
 		return html`
-			<style>
-				${sharedStyles}
-			</style>
 			<p>UserComponent</p>
 			<p>:user = <b>${user}</b></p>
 			<p>:dashId = <b>${dashId}</b></p>
-			<router-link path="edit"><button>Go to EditComponent</button></router-link>
+			<router-link path="edit">Go to EditComponent</router-link>
 			<router-slot></router-slot>
 		`;
 	}

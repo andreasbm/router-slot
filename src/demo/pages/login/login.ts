@@ -4,6 +4,8 @@ import { sharedStyles } from "../styles";
 
 export default class LoginComponent extends LitElement {
 
+	static styles = [sharedStyles];
+
 	private login () {
 		localStorage.setItem("session", "secretToken");
 		history.replaceState(null, "", "/");
@@ -15,9 +17,6 @@ export default class LoginComponent extends LitElement {
 	 */
 	render (): TemplateResult {
 		return html`
-			<style>
-				${sharedStyles}
-			</style>
 			<p>Login Component</p>
 			<button @click="${() => this.login()}">Login</button>
 		`;

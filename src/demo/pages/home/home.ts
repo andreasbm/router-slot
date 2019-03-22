@@ -5,6 +5,7 @@ import { ROUTER_SLOT_TAG_NAME } from "../../../lib/config";
 import { sharedStyles } from "../styles";
 
 export default class HomeComponent extends LitElement {
+	static styles = [sharedStyles];
 
 	firstUpdated (changedProperties: PropertyValues) {
 		super.firstUpdated(changedProperties);
@@ -40,14 +41,11 @@ export default class HomeComponent extends LitElement {
 
 	render (): TemplateResult {
 		return html`
-			<style>
-				${sharedStyles}
-			</style>
 			<p>HomeComponent</p>
 			<p></p>
 			<button @click="${() => this.logout()}">Logout</button>
-			<router-link path="secret"><button>Go to SecretComponent</button></router-link>
-			<router-link path="user/@andreasbm/dashboard/123"><button>Go to UserComponent</button></router-link>
+			<router-link path="secret">Go to SecretComponent</router-link>
+			<router-link path="user/@andreasbm/dashboard/123">Go to UserComponent</router-link>
 			<div id="child">
 				<router-slot></router-slot>
 			</div>
