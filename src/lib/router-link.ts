@@ -93,7 +93,7 @@ export class RouterLink extends HTMLElement {
 		this.updateActive = this.updateActive.bind(this);
 
 		// Attach the template
-		const shadow = this.attachShadow({mode: "open", delegatesFocus: true});
+		const shadow = this.attachShadow({mode: "open"});
 		shadow.appendChild(template.content.cloneNode(true));
 	}
 
@@ -109,11 +109,6 @@ export class RouterLink extends HTMLElement {
 
 		// Query the nearest router
 		this.context = queryParentRoots(this, ROUTER_SLOT_TAG_NAME);
-
-		// Update the initial tabindex if none was set by the library user
-		if (!this.hasAttribute("tabindex")) {
-			this.updateTabIndex();
-		}
 
 		// Set the role to tell the rest of the world that this is a link
 		this.setAttribute("role", "link");
