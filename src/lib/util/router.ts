@@ -3,7 +3,7 @@ import { IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, I
 import { ensureSlash, queryString, stripSlash } from "./url";
 
 /**
- * If the full path starts with the path, the path is active.
+ * If the full path starts with the path and is followed by the end of the string or a "/" the path is considered active.
  * @param path
  * @param fullPath
  */
