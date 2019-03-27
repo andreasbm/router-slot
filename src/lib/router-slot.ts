@@ -128,7 +128,7 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 	add (routes: IRoute<D>[], navigate: boolean = this.isRoot): void {
 
 		// Add the routes to the array
-		this._routes = routes;
+		this._routes.push(...routes);
 
 		// Register that the path has changed so the correct route can be loaded.
 		if (navigate) {
