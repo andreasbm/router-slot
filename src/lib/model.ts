@@ -3,6 +3,7 @@ export interface IRouterSlot<D = unknown, P = unknown> extends HTMLElement {
 	readonly isRoot: boolean;
 	readonly fragments: IPathFragments | null;
 	readonly match: IRouteMatch<D> | null;
+	routes: IRoute<D>[];
 	add: ((routes: IRoute<D>[], navigate?: boolean) => void);
 	clear: (() => void);
 	load: (() => Promise<void>);

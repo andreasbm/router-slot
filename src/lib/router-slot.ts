@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
 import { Cancel, EventListenerSubscription, GlobalRouterEventKind, IPathFragments, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterSlotEventKind, RoutingInfo } from "./model";
-import { addListener, path, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, queryParentRouterSlot, removeListeners, resolvePageComponent, constructAbsolutePath } from "./util";
+import { addListener, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, path, queryParentRouterSlot, removeListeners, resolvePageComponent } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -15,14 +15,22 @@ ensureHistoryEvents();
 export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements IRouterSlot {
 
 	/**
-	 * Contains the available routes.
-	 */
-	private routes: IRoute<D>[] = [];
-
-	/**
 	 * Listeners on the router.
 	 */
 	private listeners: EventListenerSubscription[] = [];
+
+	/**
+	 * The available routes.
+	 */
+	private _routes: IRoute<D>[] = [];
+	get routes (): IRoute<D>[] {
+		return this._routes;
+	}
+
+	set routes (routes: IRoute<D>[]) {
+		this.clear();
+		this.add(routes);
+	}
 
 	/**
 	 * The parent router.
@@ -70,6 +78,9 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 		return this.parent == null;
 	}
 
+	/**
+	 * Hooks up the element.
+	 */
 	constructor () {
 		super();
 
@@ -81,14 +92,14 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 	}
 
 	/**
-	 * Hooks up the component.
+	 * Query the parent router slot when the router slot is connected.
 	 */
 	connectedCallback (): void {
 		this.parent = this.queryParentRouterSlot();
 	}
 
 	/**
-	 * Tears down the component.
+	 * Tears down the element.
 	 */
 	disconnectedCallback (): void {
 		this.detachListeners();
@@ -117,7 +128,7 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 	add (routes: IRoute<D>[], navigate: boolean = this.isRoot): void {
 
 		// Add the routes to the array
-		this.routes = routes;
+		this._routes = routes;
 
 		// Register that the path has changed so the correct route can be loaded.
 		if (navigate) {
@@ -129,7 +140,7 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 	 * Removes all routes.
 	 */
 	clear (): void {
-		this.routes.length = 0;
+		this._routes.length = 0;
 	}
 
 	/**
@@ -176,7 +187,7 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 	protected async loadPath (path: string | PathFragment): Promise<boolean> {
 
 		// Find the corresponding route.
-		const match = matchRoutes(this.routes, path);
+		const match = matchRoutes(this._routes, path);
 
 		// Ensure that a route was found, otherwise we just clear the current state of the route.
 		if (match == null) {

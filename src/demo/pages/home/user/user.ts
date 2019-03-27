@@ -25,7 +25,7 @@ export default class UserComponent extends LitElement {
 	}
 
 	/**
-	 * Renders the component.
+	 * Renders the element.
 	 * @returns {TemplateResult}
 	 */
 	render (): TemplateResult {

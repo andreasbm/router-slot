@@ -33,7 +33,7 @@ export class RouterLink extends HTMLElement {
 	}
 
 	/**
-	 * Whether the component is disabled or not.
+	 * Whether the element is disabled or not.
 	 * @attr
 	 */
 	get disabled (): boolean {
@@ -45,7 +45,7 @@ export class RouterLink extends HTMLElement {
 	}
 
 	/**
-	 * Whether the component is active or not.
+	 * Whether the element is active or not.
 	 * @attr
 	 */
 	get active (): boolean {
