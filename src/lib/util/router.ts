@@ -8,7 +8,7 @@ import { ensureSlash, queryString, stripSlash } from "./url";
  * @param fullPath
  */
 export function isPathActive (path: string | PathFragment, fullPath: string): boolean {
-	return stripSlash(fullPath).startsWith(stripSlash(path));
+	return new RegExp(`^${stripSlash(path)}(\/|$)`, "gm").test(stripSlash(fullPath));
 }
 
 /**
