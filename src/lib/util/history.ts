@@ -41,6 +41,12 @@ export function attachCallback (obj: any, name: string, cb: ((...args: any[]) =>
 	const func = obj[name];
 	obj[`_${name}`] = func;
 	obj[name] = (...args: any[]) => {
+
+		// Check if the state should be allowed to change
+		const cancelled = !window.dispatchEvent(new CustomEvent(GlobalRouterEventKind.WillChangeState, {cancelable: true}));
+		if (cancelled) return;
+
+		// Navigate
 		func.apply(obj, args);
 		cb(args);
 	};

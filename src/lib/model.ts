@@ -93,6 +93,7 @@ export interface IRouteMatch<D = unknown> {
 export type PushStateEvent = CustomEvent<null>;
 export type ReplaceStateEvent = CustomEvent<null>;
 export type ChangeStateEvent = CustomEvent<null>;
+export type WillChangeStateEvent = CustomEvent<null>;
 export type NavigationStartEvent<D = unknown> = CustomEvent<RoutingInfo<D>>;
 export type NavigationSuccessEvent<D = unknown> = CustomEvent<RoutingInfo<D>>;
 export type NavigationCancelEvent<D = unknown> = CustomEvent<RoutingInfo<D>>;
@@ -127,6 +128,9 @@ export enum GlobalRouterEventKind {
 
 	// An event triggered when the state changes (eg. pop, push and replace)
 	ChangeState = "changestate",
+
+	// A cancellable event triggered before the history state changes.
+	WillChangeState = "willchangestate",
 
 	// An event triggered when navigation starts.
 	NavigationStart = "navigationstart",
