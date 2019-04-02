@@ -11,6 +11,7 @@ ensureHistoryEvents();
 /**
  * Slot for a node in the router tree.
  * @slot - Default content.
+ * @event changestate - Dispatched when the router slot state changes.
  */
 export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements IRouterSlot {
 
