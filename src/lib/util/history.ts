@@ -1,6 +1,9 @@
 import { GlobalRouterEventKind } from "../model";
 import { dispatchGlobalRouterEvent } from "./events";
 
+// Key for the native methods
+const NATIVE_KEY = `native`;
+
 // Mapping a history functions to the events they are going to dispatch.
 export const historyPatches: [string, GlobalRouterEventKind[]][] = [
 	["pushState", [GlobalRouterEventKind.PushState, GlobalRouterEventKind.ChangeState]],
@@ -9,6 +12,7 @@ export const historyPatches: [string, GlobalRouterEventKind[]][] = [
 	["back", [GlobalRouterEventKind.PopState]],
 	["go", [GlobalRouterEventKind.PushState, GlobalRouterEventKind.ChangeState]]
 ];
+
 
 /**
  * Patches the history object by ensuring correct events are dispatches when the history changes.
@@ -49,7 +53,7 @@ export function ensureHistoryEvents () {
  */
 export function attachCallback (obj: any, name: string, cb: ((...args: any[]) => void)) {
 	const func = obj[name];
-	obj[`_${name}`] = func;
+	saveNativeFunction(obj, name, func);
 	obj[name] = (...args: any[]) => {
 
 		// Check if the state should be allowed to change
@@ -62,6 +66,23 @@ export function attachCallback (obj: any, name: string, cb: ((...args: any[]) =>
 }
 
 /**
+ * Saves the native function on the history object.
+ * @param obj
+ * @param name
+ * @param func
+ */
+export function saveNativeFunction (obj: any, name: string, func: (() => void)) {
+
+	// Ensure that the native object exists.
+	if (obj[NATIVE_KEY] == null) {
+		obj[NATIVE_KEY]= {};
+	}
+
+	// Save the native function.
+	obj[NATIVE_KEY][`${name}`] = func.bind(obj);
+}
+
+/**
  * Dispatches and event and returns whether the state change should be cancelled.
  * The state will be considered as cancelled if the "willChangeState" event was cancelled.
  */
@@ -69,13 +90,15 @@ function shouldCancelChangeState (): boolean {
 	return !window.dispatchEvent(new CustomEvent(GlobalRouterEventKind.WillChangeState, {cancelable: true}));
 }
 
-// Expose the original history functions.
+// Expose the native history functions.
 declare global {
 	interface History {
-		"_back": ((distance?: any) => void);
-		"_forward": ((distance?: any) => void);
-		"_go": ((delta?: any) => void);
-		"_pushState": ((data: any, title?: string, url?: string | null) => void);
-		"_replaceState": ((data: any, title?: string, url?: string | null) => void);
+		"native": {
+			"back": ((distance?: any) => void);
+			"forward": ((distance?: any) => void);
+			"go": ((delta?: any) => void);
+			"pushState": ((data: any, title?: string, url?: string | null) => void);
+			"replaceState": ((data: any, title?: string, url?: string | null) => void);
+		}
 	}
 }

@@ -50,13 +50,13 @@ export default class PasswordComponent extends LitElement {
 	 * Opens a dialog without routing inside it.
 	 */
 	private openDialogWithoutRouting () {
-		history._pushState(null, "", `item/1234`);
+		history.native.pushState(null, "", `item/1234`);
 		GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.PopState, close, {once: true});
 
 		alert(`This is a dialog!`);
 
 		GLOBAL_ROUTER_EVENTS_TARGET.removeEventListener(GlobalRouterEventKind.PopState, close);
-		history._back();
+		history.native.back();
 	}
 
 	render (): TemplateResult {
