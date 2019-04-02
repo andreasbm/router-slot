@@ -25,8 +25,18 @@ export function ensureHistoryEvents () {
 	// is fired also when the hardware back button is used, we make sure to listen for the popstate
 	// event and dispatch a change state event right after. The reason for the setTimeout is because we
 	// want the popstate event to bubble up before the changestate event is dispatched.
-	window.addEventListener("popstate",
-		() => setTimeout(() => dispatchGlobalRouterEvent(GlobalRouterEventKind.ChangeState), 0)
+	window.addEventListener("popstate", (e: PopStateEvent) => {
+
+			// Check if the state should be allowed to change
+			if (shouldCancelChangeState()) {
+				e.preventDefault();
+				e.stopPropagation();
+				return;
+			}
+
+			// Dispatch the global router event to change the routes
+			setTimeout(() => dispatchGlobalRouterEvent(GlobalRouterEventKind.ChangeState), 0)
+		}
 	);
 }
 
@@ -43,13 +53,20 @@ export function attachCallback (obj: any, name: string, cb: ((...args: any[]) =>
 	obj[name] = (...args: any[]) => {
 
 		// Check if the state should be allowed to change
-		const cancelled = !window.dispatchEvent(new CustomEvent(GlobalRouterEventKind.WillChangeState, {cancelable: true}));
-		if (cancelled) return;
+		if (shouldCancelChangeState()) return;
 
 		// Navigate
 		func.apply(obj, args);
 		cb(args);
 	};
+}
+
+/**
+ * Dispatches and event and returns whether the state change should be cancelled.
+ * The state will be considered as cancelled if the "willChangeState" event was cancelled.
+ */
+function shouldCancelChangeState (): boolean {
+	return !window.dispatchEvent(new CustomEvent(GlobalRouterEventKind.WillChangeState, {cancelable: true}));
 }
 
 // Expose the original history functions.
