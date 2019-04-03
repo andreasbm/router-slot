@@ -162,7 +162,7 @@ With the `router-link` component you add `<router-link>` to your markup and spec
 </router-link>
 ```
 
-Paths can be specified either in relative or absolute terms. To specify an absolute path you simply pass `/home/secret`. To specify a relative path you first have to be aware of the router context  you are navigating within. The `router-link` component will for navigate based on the nearest `router-slot` component. If you give the component a path (without the slash) as path, the navigation will be done in relation to the parent router. You can also specify `../login` to traverse up the router tree.
+Paths can be specified either in relative or absolute terms. To specify an absolute path you simply pass `/home/secret`. The slash makes the URL absolute. To specify a relative path you first have to be aware of the `router-slot` context you are navigating within. The `router-link` component will navigate based on the nearest parent `router-slot` element. If you give the component a path (without the slash), the navigation will be done in relation to the parent `router-slot`. You can also specify `../login` to traverse up the router tree.
 
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#advanced)
@@ -245,7 +245,7 @@ export default class UserComponent extends LitElement {
   }
 }
 
-window.customElements.define("user-component", UserComponent);
+customElements.define("user-component", UserComponent);
 ```
 
 Alternatively the params can be passed through the setup function.
