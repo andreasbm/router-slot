@@ -196,7 +196,7 @@ export class AppComponent extends LitElement {
   }
 }
 
-customElements.define("app-component", UserComponent);
+customElements.define("app-component", AppComponent);
 ```
 
 
