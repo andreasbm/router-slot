@@ -174,6 +174,7 @@ The `web-router` works very well with `lit-element`. Check out the example below
 
 ```typescript
 import { LitElement, html } from "lit-element";
+import "@appnest/web-router/router-slot";
 
 const ROUTES = [
  {
