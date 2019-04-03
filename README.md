@@ -47,6 +47,7 @@
 		* [Component routes](#component-routes)
 		* [Redirection routes](#redirection-routes)
 		* [Resolver routes](#resolver-routes)
+	* [Stop the user from navigating away](#stop-the-user-from-navigating-away)
 	* [Helper functions](#helper-functions)
 	* [Global navigation events](#global-navigation-events)
 		* [Scroll to the top](#scroll-to-the-top)
@@ -322,6 +323,24 @@ export interface IResolverRoute extends IRouteBase {
   // A custom resolver that handles the route change
   resolve: CustomResolver;
 }
+```
+
+### Stop the user from navigating away
+
+Let's say you have a page where the user has to enter some important data and suddenly he/she clicks on the back button! Luckily you can cancel the the navigation before it happens by listening for the `willchangestate` event on the `window` object and calling `preventDefault()` on the event.
+
+```javascript
+const confirmNavigation = e => {
+
+  // Check if we should navigate away from this page
+  if (!confirm("You have unsafed data. Do you wish to discard it?")) {
+    e.preventDefault();
+    return;
+  }
+
+  window.removeEventListener("willchangestate", confirmNavigation);
+};
+window.addEventListener("willchangestate", confirmNavigation);
 ```
 
 ### Helper functions
