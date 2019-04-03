@@ -39,6 +39,7 @@
 	* [Navigation](#navigation)
 		* [History API](#history-api)
 		* [`router-link`](#router-link)
+* [➤ `lit-element`](#-lit-element)
 * [➤ Advanced](#-advanced)
 	* [Guards](#guards)
 	* [Dialog routes](#dialog-routes)
@@ -99,7 +100,7 @@ The `router-slot` component acts as a placeholder that marks the spot in the tem
 
 ### Configuration
 
-Routes are added to the router through the `add` function on a `router-slot` component. Specify the parts of the path you want it to math with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
+Routes are added to the router through the `add` function on a `router-slot` component. Specify the parts of the path you want it to math with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. Remember to export the login component as default in the `./pages/login` file like this `export default LoginComponent { ... }`. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
 
 ```javascript
 const routerSlot = document.querySelector("router-slot");
@@ -163,6 +164,40 @@ With the `router-link` component you add `<router-link>` to your markup and spec
 ```
 
 Paths can be specified either in relative or absolute terms. To specify an absolute path you simply pass `/home/secret`. The slash makes the URL absolute. To specify a relative path you first have to be aware of the `router-slot` context you are navigating within. The `router-link` component will navigate based on the nearest parent `router-slot` element. If you give the component a path (without the slash), the navigation will be done in relation to the parent `router-slot`. You can also specify `../login` to traverse up the router tree.
+
+
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#lit-element)
+
+## ➤ `lit-element`
+
+The `web-router` works very well with `lit-element`. Check out the example below to get an idea on how you could use this router in your own `lit-element` based projects.
+
+```typescript
+import { LitElement, html } from "lit-element";
+
+const ROUTES = [
+ {
+   path: "login",
+   component: () => import("./pages/login")
+ },
+ {
+   path: "home",
+   component: () => import("./pages/home")
+ },
+ {
+   path: "**",
+   redirectTo: "home"
+ }
+];
+
+export class AppComponent extends LitElement {
+  render () {
+    return html`<router-slot .routes="${ROUTES}"></router-slot>`;
+  }
+}
+
+customElements.define("app-component", UserComponent);
+```
 
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#advanced)
@@ -231,13 +266,16 @@ await routerSlot.add([
 To grab the params in the `UserComponent` you can use the `routeMatch` from the parent router as shown in the example below.
 
 ```typescript
+import { LitElement, html } from "lit-element";
+import { Params, queryParentRouterSlot } from "@appnest/web-router";
+
 export default class UserComponent extends LitElement {
 
   get params (): Params {
     return queryParentRouterSlot(this)!.match!.params;
   }
 
-  render (): TemplateResult {
+  render () {
     const {userId} = this.params;
     return html`
       <p>:userId = <b>${userId}</b></p>
@@ -357,83 +395,56 @@ The library comes with a set of helper functions. This includes:
 
 ### Global navigation events
 
-You are able to listen to the navigation related events that are dispatched each time something important happens. They are dispatched on the `window` object.
+You are able to listen to the navigation related events that are dispatched every time something important happens. They are dispatched on the `window` object.
 
 ```typescript
-export enum GlobalRouterEventKind {
-
-  // An event triggered when a new state is added to the history.
-  PushState = "pushstate",
-
-  // An event triggered when the current state is replaced in the history.
-  ReplaceState = "replacestate",
-
-  // An event triggered when a state in the history is popped from the history.
-  PopState = "popstate",
-
-  // An event triggered when the state changes (eg. pop, push and replace)
-  ChangeState = "changestate",
-
-  // A cancellable event triggered before the history state changes.
-  WillChangeState = "willchangestate",
-
-  // An event triggered when navigation starts.
-  NavigationStart = "navigationstart",
-
-  // An event triggered when navigation is canceled. This is due to a Route Guard returning false during navigation.
-  NavigationCancel = "navigationcancel",
-
-  // An event triggered when navigation fails due to an unexpected error.
-  NavigationError = "navigationerror",
-
-  // An event triggered when navigation successfully completes.
-  NavigationSuccess = "navigationsuccess",
-
-  // An event triggered when navigation ends.
-  NavigationEnd = "navigationend"
-}
-```
-
-Here's an example of how you can listen to the events.
-
-```typescript
-window.addEventListener(GlobalRouterEventKind.PushState, (e: PushStateEvent) => {
+// An event triggered when a new state is added to the history.
+window.addEventListener("pushstate", (e: PushStateEvent) => {
   console.log("On push state", path());
 });
 
-window.addEventListener(GlobalRouterEventKind.ReplaceState, (e: ReplaceStateEvent) => {
+// An event triggered when the current state is replaced in the history.
+window.addEventListener("replacestate", (e: ReplaceStateEvent) => {
   console.log("On replace state", path());
 });
 
-window.addEventListener(GlobalRouterEventKind.PopState, (e: PopStateEvent) => {
+// An event triggered when a state in the history is popped from the history.
+window.addEventListener("popstate", (e: PopStateEvent) => {
   console.log("On pop state", path());
 });
 
-window.addEventListener(GlobalRouterEventKind.ChangeState, (e: ChangeStateEvent) => {
+// An event triggered when the state changes (eg. pop, push and replace)
+window.addEventListener("changestate", (e: ChangeStateEvent) => {
   console.log("On change state", path());
 });
 
-window.addEventListener(GlobalRouterEventKind.WillChangeState, (e: WillChangeStateEvent) => {
+// A cancellable event triggered before the history state changes.
+window.addEventListener("willchangestate", (e: WillChangeStateEvent) => {
   console.log("Before the state changes. Call 'e.preventDefault()' to prevent the state from changing.");
 });
 
-window.addEventListener(GlobalRouterEventKind.NavigationStart, (e: NavigationStartEvent) => {
+// An event triggered when navigation starts.
+window.addEventListener("navigationstart", (e: NavigationStartEvent) => {
   console.log("Navigation start", e.detail);
 });
 
-window.addEventListener(GlobalRouterEventKind.NavigationEnd, (e: NavigationEndEvent) => {
-  console.log("Navigation end", e.detail);
-});
-
-window.addEventListener(GlobalRouterEventKind.NavigationCancel, (e: NavigationCancelEvent) => {
+// An event triggered when navigation is canceled. This is due to a Route Guard returning false during navigation.
+window.addEventListener("navigationcancel", (e: NavigationCancelEvent) => {
   console.log("Navigation cancelled", e.detail);
 });
 
-window.addEventListener(GlobalRouterEventKind.NavigationError, (e: NavigationErrorEvent) => {
+// An event triggered when navigation ends.
+window.addEventListener("navigationend", (e: NavigationEndEvent) => {
+  console.log("Navigation end", e.detail);
+});
+
+// An event triggered when navigation fails due to an unexpected error.
+window.addEventListener("navigationerror", (e: NavigationErrorEvent) => {
   console.log("Navigation failed", e.detail);
 });
 
-window.addEventListener(GlobalRouterEventKind.NavigationSuccess, (e: NavigationSuccessEvent) => {
+// An event triggered when navigation successfully completes.
+window.addEventListener("navigationsuccess", (e: NavigationSuccessEvent) => {
   console.log("Navigation failed", e.detail);
 });
 ```
