@@ -116,7 +116,7 @@ Paths can be specified either in relative or absolute terms. To specify an absol
 The `web-router` works very well with `lit-element`. Check out the example below to get an idea on how you could use this router in your own `lit-element` based projects.
 
 ```typescript
-import { LitElement, html } from "lit-element";
+import { LitElement, html, RouterSlot } from "lit-element";
 import "@appnest/web-router/router-slot";
 
 const ROUTES = [
@@ -135,8 +135,15 @@ const ROUTES = [
 ];
 
 export class AppComponent extends LitElement {
+  @query("router-slot") $routerSlot!: RouterSlot;
+
+  connectedCallback () {
+    super.connectedCallback();
+    this.$routerSlot.routes = ROUTES;
+  }
+
   render () {
-    return html`<router-slot .routes="${ROUTES}"></router-slot>`;
+    return html`<router-slot></router-slot>`;
   }
 }
 
