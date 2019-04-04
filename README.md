@@ -191,6 +191,7 @@ const ROUTES = [
  }
 ];
 
+@customElement("app-component");
 export class AppComponent extends LitElement {
   @query("router-slot") $routerSlot!: RouterSlot;
 
@@ -203,8 +204,6 @@ export class AppComponent extends LitElement {
     return html`<router-slot></router-slot>`;
   }
 }
-
-customElements.define("app-component", AppComponent);
 ```
 
 
