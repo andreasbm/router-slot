@@ -19,7 +19,7 @@ export type Cancel = (() => boolean);
 
 export type PageComponent = HTMLElement;
 export type ModuleResolver = Promise<{default: any; /*PageComponent*/}>;
-export type Class = {new (...args: any[]): PageComponent;};
+export type Class<T extends PageComponent = PageComponent> = {new (...args: any[]): T;};
 export type SetupComponent<D = unknown> = ((component: PageComponent, info: RoutingInfo<D>) => void);
 
 export type RouterTree = {slot: IRouterSlot} & {child?: RouterTree} | null | undefined;

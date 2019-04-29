@@ -12,9 +12,7 @@ async function preBuild () {
 }
 
 function cleanLib () {
-	return new Promise(res => {
-		rimraf(outLib, res);
-	});
+	return new Promise(res => rimraf(outLib, res));
 }
 
 function copySync (src, dest) {

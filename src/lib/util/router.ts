@@ -238,3 +238,26 @@ export function handleRedirect (slot: IRouterSlot, route: IRedirectRoute) {
 	history.replaceState(history.state, "", `${constructAbsolutePath(slot, route.redirectTo)}${route.preserveQuery ? queryString() : ""}`);
 }
 
+/**
+ * Determines whether the navigation should start based on the current match and the new match.
+ * @param currentMatch
+ * @param newMatch
+ */
+export function shouldNavigate<D> (currentMatch: IRouteMatch<D> | null, newMatch: IRouteMatch<D>) {
+
+	// If the current match is not defined we should always route.
+	if (currentMatch == null) {
+		return true;
+	}
+
+	// Extract information about the matches
+	const {route: currentRoute, fragments: currentFragments} = currentMatch;
+	const {route: newRoute, fragments: newFragments} = newMatch;
+
+	const isSameRoute = currentRoute == newRoute;
+	const isSameFragments = currentFragments.consumed == newFragments.consumed;
+
+	// Only navigate if the URL consumption is new or if the two routes are no longer the same.
+	return !isSameFragments || !isSameRoute;
+}
+

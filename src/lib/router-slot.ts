@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
 import { Cancel, EventListenerSubscription, GlobalRouterEventKind, IPathFragments, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterSlotEventKind, RoutingInfo } from "./model";
-import { addListener, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, path, queryParentRouterSlot, removeListeners, resolvePageComponent } from "./util";
+import { addListener, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, path, queryParentRouterSlot, removeListeners, resolvePageComponent, shouldNavigate } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -202,7 +202,7 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 		try {
 
 			// Only change route if its a new route.
-			const navigate = (this.route !== route);
+			const navigate = shouldNavigate(this.match, match);
 			if (navigate) {
 
 				// Listen for another push state event. If another push state event happens
