@@ -186,7 +186,7 @@ await routerSlot.add([
 
 ### Dialog routes
 
-Sometimes you wish to change the url without triggering the route change. This could for example be when you want an url for your dialog. To change the route without triggering the route change you can use the functions prefixed with `_` on the history object. Below is an example on how to show a dialog without triggering the route change.
+Sometimes you wish to change the url without triggering the route change. This could for example be when you want an url for your dialog. To change the route without triggering the route change you can use the functions on the native object on the history object. Below is an example on how to show a dialog without triggering the route change.
 
 ```javascript
 history.native.pushState(null, "", "dialog");
