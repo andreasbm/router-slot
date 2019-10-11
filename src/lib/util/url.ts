@@ -30,7 +30,7 @@ export function queryString (): string {
  * Returns the params for the current path.
  * @returns Params
  */
-export function query (): Params {
+export function query (): Query {
 	return toQuery(queryString().substr(1));
 }
 
@@ -85,5 +85,5 @@ export function toQuery (queryString: string): Query {
  * @param query
  */
 export function toQueryString (query: Query): string {
-	return Object.entries(query).map(([key, value]) => `${key}${value != "" ? `=${value}` : ""}`).join("&");
+	return Object.entries(query).map(([key, value]) => `${key}${value != "" ? `=${encodeURIComponent(value)}` : ""}`).join("&");
 }
