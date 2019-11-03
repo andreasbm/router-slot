@@ -70,11 +70,11 @@ npm i @appnest/web-router
 
 ## ➤ Usage
 
-This section will introduce the basics of the router.
+This section will introduce how to use the router.
 
 ### 1. Add `<base href="/">`
 
-To turn your app into a single-page-application you first need to add a `<base>` element to the `index.html` in the `<head>`. If your file is located in the root of your server, the `href` value should be the following:
+To turn your app into a single-page-application you first need to add a [`<base>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base) to the `index.html` in the `<head>`. If your file is located in the root of your server, the `href` value should be the following:
 
 ```html
 <base href="/">
