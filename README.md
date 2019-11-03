@@ -31,7 +31,7 @@
 ## ➤ Table of Contents
 
 * [➤ Installation](#-installation)
-* [➤ The Basics](#-the-basics)
+* [➤ Usage](#-usage)
 	* [1. Add `<base href="/">`](#1-add-base-href)
 	* [2. Import the router](#2-import-the-router)
 	* [3. Add the `<router-slot>` element](#3-add-the-router-slot-element)
@@ -66,9 +66,9 @@ npm i @appnest/web-router
 ```
 
 
-[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#the-basics)
+[![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#usage)
 
-## ➤ The Basics
+## ➤ Usage
 
 This section will introduce the basics of the router.
 

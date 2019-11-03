@@ -14,7 +14,7 @@
 npm i @appnest/web-router
 ```
 
-## The Basics
+## Usage
 
 This section will introduce the basics of the router.
 
