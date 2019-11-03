@@ -44,8 +44,8 @@
 		"publish:major": "np major --contents=dist --no-cleanup"
 	},
 	"devDependencies": {
-		"@appnest/readme": "^1.2.3",
-		"@appnest/web-config": "0.4.28",
+		"@appnest/readme": "^1.2.5",
+		"@appnest/web-config": "0.4.31",
 		"lit-element": "^2.2.1",
 		"node-typescript-compiler": "^2.0.0"
 	},

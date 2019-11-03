@@ -18,15 +18,15 @@ npm i @appnest/web-router
 
 This section will introduce the basics of the router.
 
-### `<base href>`
+### 1. Add `<base href="/">`
 
-Your application should add a `<base>` element to the `index.html` in the `<head>` tag. If your file is located in the root, the `href` value should be the following:
+To turn your app into a single-page-application you first need to add a `<base>` element to the `index.html` in the `<head>`. If your file is located in the root of your server, the `href` value should be the following:
 
 ```html
 <base href="/">
 ```
 
-### Router import
+### 2. Import the router
 
 To import the library you'll need to import the dependency in your application.
 
@@ -34,7 +34,7 @@ To import the library you'll need to import the dependency in your application.
 import "@appnest/web-router";
 ```
 
-### `router-slot`
+### 3. Add the `<router-slot>` element
 
 The `router-slot` component acts as a placeholder that marks the spot in the template where the router should display the components for that route part.
 
@@ -44,9 +44,9 @@ The `router-slot` component acts as a placeholder that marks the spot in the tem
 </router-slot>
 ```
 
-### Configuration
+### 4. Configure the router
 
-Routes are added to the router through the `add` function on a `router-slot` component. Specify the parts of the path you want it to math with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. Remember to export the login component as default in the `./pages/login` file like this `export default LoginComponent { ... }`. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
+Routes are added to the router through the `add` function on a `router-slot` component. Specify the parts of the path you want it to match with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. Remember to export the login component as default in the `./pages/login` file like this `export default LoginComponent extends HTMLElement { ... }`. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
 
 ```javascript
 const routerSlot = document.querySelector("router-slot");
@@ -74,7 +74,7 @@ customElements.whenDefined("router-slot").then(async () => {
 });
 ```
 
-### Navigation
+### 5. Navigate using the history API or the `<router-link>` element
 
 In order to change a route you can either use the [`history`](https://developer.mozilla.org/en-US/docs/Web/API/History) API directly or the `router-link` component.
 
@@ -401,7 +401,7 @@ window.addEventListener("navigationsuccess", (e: NavigationSuccessEvent) => {
 If you want to scroll to the top on each page change to could consider doing the following.
 
 ```typescript
-window.addEventListener(GlobalRouterEventKind.NavigationEnd, () => {
+window.addEventListener("navigationend", () => {
   requestAnimationFrame(() => {
     window.scrollTo(0, 0);
   });
