@@ -16,7 +16,7 @@ npm i @appnest/web-router
 
 ## Usage
 
-This section will introduce how to use the router.
+This section will introduce how to use the router. If you hate reading and love coding you can go to the [playgroud](https://codepen.io/andreasbm/pen/XWWZpvM) to try it for yourself.
 
 ### 1. Add `<base href="/">`
 

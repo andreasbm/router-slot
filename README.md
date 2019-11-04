@@ -11,7 +11,7 @@
 
 <p align="center">
   <b>A powerful web component router</b></br>
-  <sub>A router interprets the browser URL and navigates to a specific views based on the configuration. This router is optimized for routing between web components. Go here to see a demo <a href="https://appnest-demo.firebaseapp.com/web-router">https://appnest-demo.firebaseapp.com/web-router</a>.<sub>
+  <sub>A router interprets the browser URL and navigates to a specific views based on the configuration. This router is optimized for routing between web components. If you want to play with it yourself, go to <a href='https://codepen.io/andreasbm/pen/XWWZpvM'>>the playground</a>. Go here to see a demo <a href="https://appnest-demo.firebaseapp.com/web-router">https://appnest-demo.firebaseapp.com/web-router</a>.<sub>
 </p>
 
 <br />
@@ -70,7 +70,7 @@ npm i @appnest/web-router
 
 ## ➤ Usage
 
-This section will introduce how to use the router.
+This section will introduce how to use the router. If you hate reading and love coding you can go to the [playgroud](https://codepen.io/andreasbm/pen/XWWZpvM) to try it for yourself.
 
 ### 1. Add `<base href="/">`
 

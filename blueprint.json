@@ -1,5 +1,5 @@
 {
-	"text": "A router interprets the browser URL and navigates to a specific views based on the configuration. This router is optimized for routing between web components.",
+	"text": "A router interprets the browser URL and navigates to a specific views based on the configuration. This router is optimized for routing between web components. If you want to play with it yourself, go to <a href='https://codepen.io/andreasbm/pen/XWWZpvM'>>the playground</a>.",
 	"demo": "https://appnest-demo.firebaseapp.com/web-router",
 	"ids": {
 		"npm": "@appnest/web-router",
