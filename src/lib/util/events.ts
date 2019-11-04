@@ -6,7 +6,7 @@ import { EventListenerSubscription, GlobalRouterEventKind, IRoute, IRouteMatch, 
  * @param $elem
  * @param {IRoute} detail
  */
-export function dispatchRouteChangeEvent<D = unknown> ($elem: HTMLElement, detail: RoutingInfo<D>) {
+export function dispatchRouteChangeEvent<D = any> ($elem: HTMLElement, detail: RoutingInfo<D>) {
 	$elem.dispatchEvent(new CustomEvent(RouterSlotEventKind.ChangeState, {detail}));
 }
 
@@ -15,7 +15,7 @@ export function dispatchRouteChangeEvent<D = unknown> ($elem: HTMLElement, detai
  * @param name
  * @param detail
  */
-export function dispatchGlobalRouterEvent<D = unknown> (name: GlobalRouterEventKind, detail?: RoutingInfo<D>) {
+export function dispatchGlobalRouterEvent<D = any> (name: GlobalRouterEventKind, detail?: RoutingInfo<D>) {
 	GLOBAL_ROUTER_EVENTS_TARGET.dispatchEvent(new CustomEvent(name, {detail}));
 }
 
@@ -26,13 +26,13 @@ export function dispatchGlobalRouterEvent<D = unknown> (name: GlobalRouterEventK
  * @param listener
  * @param options
  */
-export function addListener ($elem: EventTarget,
+export function addListener<T extends Event> ($elem: EventTarget,
                              type: string[] | string,
-                             listener: ((e?: Event) => void),
+                             listener: ((e: T) => void),
                              options?: boolean | AddEventListenerOptions): EventListenerSubscription {
 	const types = Array.isArray(type) ? type : [type];
-	types.forEach(t => $elem.addEventListener(t, listener, options));
-	return () => types.forEach(t => $elem.removeEventListener(t, listener, options));
+	types.forEach(t => $elem.addEventListener(t, listener as EventListenerOrEventListenerObject, options));
+	return () => types.forEach(t => $elem.removeEventListener(t, listener as EventListenerOrEventListenerObject, options));
 }
 
 

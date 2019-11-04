@@ -5,7 +5,7 @@ import { IRouterSlot } from "../model";
  * Queries the parent router.
  * @param $elem
  */
-export function queryParentRouterSlot<D = unknown> ($elem: Element): IRouterSlot<D> | null {
+export function queryParentRouterSlot<D = any> ($elem: Element): IRouterSlot<D> | null {
 	return queryParentRoots<IRouterSlot<D>>($elem, ROUTER_SLOT_TAG_NAME);
 }
 

@@ -16,7 +16,7 @@ export function isPathActive (path: string | PathFragment, fullPath: string): bo
  * @param route
  * @param path
  */
-export function matchRoute<D = unknown> (route: IRoute<D>, path: string | PathFragment): IRouteMatch<D> | null {
+export function matchRoute<D = any> (route: IRoute<D>, path: string | PathFragment): IRouteMatch<D> | null {
 
 
 	// We start by preparing the route path by replacing the param names with a regex that matches everything
@@ -71,7 +71,7 @@ export function matchRoute<D = unknown> (route: IRoute<D>, path: string | PathFr
  * @param routes
  * @param path
  */
-export function matchRoutes<D = unknown> (routes: IRoute<D>[], path: string | PathFragment): IRouteMatch<D> | null {
+export function matchRoutes<D = any> (routes: IRoute<D>[], path: string | PathFragment): IRouteMatch<D> | null {
 	for (const route of routes) {
 		const match = matchRoute(route, path);
 		if (match != null) {
@@ -191,7 +191,8 @@ export function getFragments (tree: RouterTree, depth: number): PathFragment[] {
  * @param slot
  * @param path
  */
-export function constructAbsolutePath (slot: IRouterSlot, path: string | PathFragment): string {
+export function constructAbsolutePath<D = any, P = any> (slot: IRouterSlot<D, P>,
+                                                                 path: string | PathFragment): string {
 
 	// Grab the router tree
 	const {tree, depth} = traverseRouterTree(slot);

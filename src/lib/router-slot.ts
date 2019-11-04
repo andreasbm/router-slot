@@ -13,7 +13,7 @@ ensureHistoryEvents();
  * @slot - Default content.
  * @event changestate - Dispatched when the router slot state changes.
  */
-export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements IRouterSlot {
+export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouterSlot<D, P> {
 
 	/**
 	 * Listeners on the router.
@@ -66,7 +66,7 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 	/**
 	 * The current path routeMatch.
 	 */
-	private _routeMatch: IRouteMatch<D> | null;
+	private _routeMatch: IRouteMatch<D> | null = null;
 
 	get match (): IRouteMatch<D> | null {
 		return this._routeMatch;
@@ -197,7 +197,7 @@ export class RouterSlot<D = unknown, P = unknown> extends HTMLElement implements
 		}
 
 		const {route} = match;
-		const info: RoutingInfo = {match, slot: this};
+		const info: RoutingInfo<D, P> = {match, slot: this};
 
 		try {
 

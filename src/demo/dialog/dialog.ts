@@ -7,7 +7,7 @@ import { sharedStyles } from "../pages/styles";
 export default class DialogComponent extends LitElement {
 	static styles = [sharedStyles];
 
-	@property({type: Object}) parent: IRouterSlot | null;
+	@property({type: Object}) parent: IRouterSlot | null = null;
 
 	firstUpdated (changedProperties: PropertyValues) {
 		super.firstUpdated(changedProperties);

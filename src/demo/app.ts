@@ -16,6 +16,7 @@ function sessionGuard () {
 	return true;
 }
 
+
 // Setup the router
 customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
 	const routerSlot = document.querySelector<IRouterSlot>(ROUTER_SLOT_TAG_NAME)!;
