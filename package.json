@@ -2,7 +2,11 @@
 	"name": "@appnest/web-router",
 	"version": "1.3.9",
 	"description": "A powerful web component router",
-	"author": "Appnest",
+	"license": "MIT",
+	"author": "Andreas Mehlsen",
+	"types": "index.d.ts",
+	"module": "index.js",
+	"main": "index.js",
 	"bugs": {
 		"url": "https://github.com/andreasbm/web-router/issues"
 	},
@@ -27,7 +31,6 @@
 		"navigation",
 		"zero dependencies"
 	],
-	"license": "MIT",
 	"scripts": {
 		"b:demo:dev": "rollup -c rollup.config.ts --environment NODE_ENV:dev",
 		"b:demo:prod": "rollup -c rollup.config.ts --environment NODE_ENV:prod",
