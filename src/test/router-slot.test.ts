@@ -9,7 +9,7 @@ import { path } from "../lib/util/url";
 import { clearHistory } from "./test-helpers";
 
 class RouterElement extends LitElement {
-	@query("#slot") $slot: RouterSlot;
+	@query("#slot") $slot!: RouterSlot;
 
 	protected routes!: IRoute[];
 
