@@ -57,7 +57,7 @@ export function ensureSlash (path: string, {startSlash = true, endSlash = true}:
 }
 
 /**
- * Splits a query string and returns the query.
+ * Turns a query string into an object.
  * @param {string} queryString (example: ("test=123&hejsa=LOL&wuhuu"))
  * @returns {Query}
  */

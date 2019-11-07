@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit-element";
 import { TemplateResult } from "lit-html";
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "../../../../../lib/config";
-import { Class, GlobalRouterEventKind, IRouterSlot, RoutingInfo } from "../../../../../lib/model";
+import { Class, IRouterSlot, RoutingInfo } from "../../../../../lib/model";
 import { addListener } from "../../../../../lib/util/events";
 import { path } from "../../../../../lib/util/url";
 import { sharedStyles } from "../../../styles";
@@ -33,7 +33,7 @@ export default class PasswordComponent extends LitElement {
 						cleanup();
 					});
 
-					const unsub = addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind.PopState, () => {
+					const unsub = addListener(GLOBAL_ROUTER_EVENTS_TARGET, "popstate", () => {
 						if (!path().includes("dialog")) {
 							cleanup();
 							unsub();
@@ -51,11 +51,11 @@ export default class PasswordComponent extends LitElement {
 	 */
 	private openDialogWithoutRouting () {
 		history.native.pushState(null, "", `item/1234`);
-		GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.PopState, close, {once: true});
+		GLOBAL_ROUTER_EVENTS_TARGET.addEventListener("popstate", close, {once: true});
 
 		alert(`This is a dialog!`);
 
-		GLOBAL_ROUTER_EVENTS_TARGET.removeEventListener(GlobalRouterEventKind.PopState, close);
+		GLOBAL_ROUTER_EVENTS_TARGET.removeEventListener("popstate", close);
 		history.native.back();
 	}
 

@@ -48,7 +48,7 @@
 	},
 	"devDependencies": {
 		"@appnest/readme": "^1.2.5",
-		"@appnest/web-config": "0.4.31",
+		"@appnest/web-config": "0.4.32",
 		"lit-element": "^2.2.1",
 		"node-typescript-compiler": "^2.0.0"
 	},

@@ -106,54 +106,51 @@ export type Query = {[key: string]: string};
 export type EventListenerSubscription = (() => void);
 
 /**
- * RouterComponent related events.
+ * RouterSlot related events.
  */
-export enum RouterSlotEventKind {
-	ChangeState = "changestate"
-}
+export type RouterSlotEvent = "changestate";
 
 /**
  * History related events.
  */
-export enum GlobalRouterEventKind {
+export type GlobalRouterEvent =
 
-	// An event triggered when a new state is added to the history.
-	PushState = "pushstate",
+// An event triggered when a new state is added to the history.
+	"pushstate"
 
 	// An event triggered when the current state is replaced in the history.
-	ReplaceState = "replacestate",
+	| "replacestate"
 
 	// An event triggered when a state in the history is popped from the history.
-	PopState = "popstate",
+	| "popstate"
 
 	// An event triggered when the state changes (eg. pop, push and replace)
-	ChangeState = "changestate",
+	| "changestate"
 
 	// A cancellable event triggered before the history state changes.
-	WillChangeState = "willchangestate",
+	| "willchangestate"
 
 	// An event triggered when navigation starts.
-	NavigationStart = "navigationstart",
+	| "navigationstart"
 
 	// An event triggered when navigation is canceled. This is due to a route guard returning false during navigation.
-	NavigationCancel = "navigationcancel",
+	| "navigationcancel"
 
 	// An event triggered when navigation fails due to an unexpected error.
-	NavigationError = "navigationerror",
+	| "navigationerror"
 
 	// An event triggered when navigation successfully completes.
-	NavigationSuccess = "navigationsuccess",
+	| "navigationsuccess"
 
 	// An event triggered when navigation ends.
-	NavigationEnd = "navigationend"
-}
+	| "navigationend";
 
 export interface ISlashOptions {
 	startSlash: boolean;
 	endSlash: boolean;
 }
 
-/* Extend the global event hanlers map with the router related events */
+/* Extend the global event handlers map with the router related events */
 declare global {
 	interface GlobalEventHandlersEventMap {
 		"pushstate": PushStateEvent,

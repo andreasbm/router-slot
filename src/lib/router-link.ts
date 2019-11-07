@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
-import { EventListenerSubscription, GlobalRouterEventKind, IRouterSlot, PathFragment } from "./model";
-import { addListener, constructAbsolutePath, isPathActive, path, queryParentRoots, queryString, removeListeners } from "./util";
+import { EventListenerSubscription, GlobalRouterEvent, IRouterSlot, PathFragment } from "./model";
+import { addListener, constructAbsolutePath, isPathActive, queryParentRoots, queryString, removeListeners } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -116,7 +116,8 @@ export class RouterLink extends HTMLElement {
 		this.listeners.push(
 			addListener(this, "click", e => this.navigate(this.path, e)),
 			addListener(this, "keydown", (e: KeyboardEvent) => e.code === "Enter" || e.code === "Space" ? this.navigate(this.path, e) : undefined),
-			addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind.NavigationEnd, this.updateActive)
+			addListener<Event, GlobalRouterEvent>(GLOBAL_ROUTER_EVENTS_TARGET, "navigationend", this.updateActive),
+			addListener<Event, GlobalRouterEvent>(GLOBAL_ROUTER_EVENTS_TARGET, "changestate", this.updateActive)
 		);
 
 		// Query the nearest router
@@ -175,7 +176,7 @@ export class RouterLink extends HTMLElement {
 	 * Updates whether the route is active or not.
 	 */
 	protected updateActive () {
-		const active = isPathActive(this.absolutePath, path());
+		const active = isPathActive(this.absolutePath);
 		if (active !== this.active) {
 			this.active = active;
 		}

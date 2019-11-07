@@ -1,13 +1,14 @@
 import { CATCH_ALL_WILDCARD, PARAM_IDENTIFIER, TRAVERSE_FLAG } from "../config";
 import { IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IRouterSlot, ModuleResolver, PageComponent, Params, PathFragment, RouterTree, RoutingInfo } from "../model";
-import { ensureSlash, queryString, stripSlash } from "./url";
+import { ensureSlash, path as getPath, queryString, stripSlash } from "./url";
 
 /**
+ * Determines whether the path is active.
  * If the full path starts with the path and is followed by the end of the string or a "/" the path is considered active.
  * @param path
  * @param fullPath
  */
-export function isPathActive (path: string | PathFragment, fullPath: string): boolean {
+export function isPathActive (path: string | PathFragment, fullPath: string = getPath()): boolean {
 	return new RegExp(`^${stripSlash(path)}(\/|$)`, "gm").test(stripSlash(fullPath));
 }
 
@@ -192,7 +193,7 @@ export function getFragments (tree: RouterTree, depth: number): PathFragment[] {
  * @param path
  */
 export function constructAbsolutePath<D = any, P = any> (slot: IRouterSlot<D, P>,
-                                                                 path: string | PathFragment): string {
+                                                         path: string | PathFragment): string {
 
 	// Grab the router tree
 	const {tree, depth} = traverseRouterTree(slot);

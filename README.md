@@ -36,9 +36,11 @@
 	* [2. Import the router](#2-import-the-router)
 	* [3. Add the `<router-slot>` element](#3-add-the-router-slot-element)
 	* [4. Configure the router](#4-configure-the-router)
-	* [5. Navigate using the history API or the `<router-link>` element](#5-navigate-using-the-history-api-or-the-router-link-element)
+	* [5. Navigate using the history API, anchor tag or the `<router-link>` component](#5-navigate-using-the-history-api-anchor-tag-or-the-router-link-component)
 		* [History API](#history-api)
+		* [Anchor element](#anchor-element)
 		* [`router-link`](#router-link)
+	* [6. Overview](#6-overview)
 * [➤ `lit-element`](#-lit-element)
 * [➤ Advanced](#-advanced)
 	* [Guards](#guards)
@@ -107,7 +109,7 @@ const routerSlot = document.querySelector("router-slot");
 await routerSlot.add([
   {
     path: "login",
-    component: () => import("./pages/login") // Lazy loaded
+    component: () => import("./path/to/login/component") // Lazy loaded
   },
   {
     path: "home",
@@ -128,42 +130,93 @@ customElements.whenDefined("router-slot").then(async () => {
 });
 ```
 
-### 5. Navigate using the history API or the `<router-link>` element
+### 5. Navigate using the history API, anchor tag or the `<router-link>` component
 
-In order to change a route you can either use the [`history`](https://developer.mozilla.org/en-US/docs/Web/API/History) API directly or the `router-link` component.
+In order to change a route you can either use the [`history API`](https://developer.mozilla.org/en-US/docs/Web/API/History), use an anchor element or use the `router-link` component.
 
 #### History API
 
-Here's an example on how to navigate.
+To push a new state into the history and change the URL you can use the `.pushState(...)` function on the history object.
 
 ```javascript
 history.pushState(null, "", "/login");
 ```
 
-Or (if you want to replace the state and not keep the current one in the history)
+If you want to replace the current URL with another one you can use the `.replaceState(...)` function on the history object instead.
 
 ```javascript
 history.replaceState(null, "", "/login");
 ```
 
-You can also go back and forth between the states!
+You can also go back and forth between the states by using the `.back()` and `.forward()` functions.
 
 ```javascript
 history.back();
 history.forward();
 ```
 
+Go [`here`](https://developer.mozilla.org/en-US/docs/Web/API/History) to read more about the history API.
+
+#### Anchor element
+
+Normally an [`anchor element`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a) reloads the page when clicked. This library however changes the default behavior of all anchor element to use the history API instead.
+
+```html
+<a href="/home">Go to home!</a>
+```
+
+There are many advantages of using an anchor element, the main one being accessibility.
+
 #### `router-link`
 
 With the `router-link` component you add `<router-link>` to your markup and specify a path. Whenever the component is clicked it will navigate to the specified path. Whenever the path of the router link is active the active attribute is set.
 
 ```html
-<router-link path="/home/secret">
-  <button>Go to the secret page!</button>
+<router-link path="/login">
+  <button>Go to login page!</button>
 </router-link>
 ```
 
 Paths can be specified either in relative or absolute terms. To specify an absolute path you simply pass `/home/secret`. The slash makes the URL absolute. To specify a relative path you first have to be aware of the `router-slot` context you are navigating within. The `router-link` component will navigate based on the nearest parent `router-slot` element. If you give the component a path (without the slash), the navigation will be done in relation to the parent `router-slot`. You can also specify `../login` to traverse up the router tree.
+
+### 6. Overview
+
+So to recap the above steps, here's how to use the router.
+
+```html
+<html>
+  <head>
+    <base href="/" />
+  </head>
+  <body>
+    <router-slot></router-slot>
+
+    <a href="/home">Go to home</a>
+    <a href="/login">Go to login</a>
+
+    <script type="module">
+        import "path/to/@appnest/web-router";
+        customElements.whenDefined("router-slot").then(async () => {
+            const routerSlot = document.querySelector("router-slot");
+            await routerSlot.add([
+              {
+                path: "login",
+                component: () => import("./path/to/login-component") 
+              },
+              {
+                path: "home",
+                component: () => import("./path/to/home-component") 
+              },
+              {
+                path: "**",
+                redirectTo: "home"
+              }
+            ]);
+        });
+    </script>
+  </body>
+</html>
+```
 
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#lit-element)
@@ -174,7 +227,7 @@ The `web-router` works very well with `lit-element`. Check out the example below
 
 ```typescript
 import { LitElement, html, query, PropertyValues } from "lit-element";
-import { RouterSlot } from "@appnest/web-router/router-slot"
+import { RouterSlot } from "@appnest/web-router"
 
 const ROUTES = [
  {
@@ -197,7 +250,7 @@ export class AppComponent extends LitElement {
 
   firstUpdated (props: PropertyValues) {
     super.firstUpdated(props);
-    this.$routerSlot.routes = ROUTES;
+    this.$routerSlot.add(ROUTES);
   }
 
   render () {
@@ -218,7 +271,7 @@ You can customize a lot in this library. Continue reading to learn how to handle
 A guard is a function that determines whether the route can be activated or not. The example below checks whether the user has a session saved in the local storage and redirects the user to the login page if the access is not provided. If a guard returns false the routing is cancelled.
 
 ```typescript
-funtion sessionGuard () {
+function sessionGuard () {
 
   if (localStorage.getItem("session") == null) {
     history.replaceState(null, "", "/login");
@@ -343,6 +396,20 @@ export interface IComponentRoute extends IRouteBase {
 }
 ```
 
+Here's an example on how that could look in practice.
+
+```typescript
+...
+await routerSlot.add([
+  ...
+  {
+    path: "home",
+    redirectTo: HomeComponent
+  }
+  ...
+]);
+```
+
 #### Redirection routes
 
 A redirection route is good to use to catch all of the paths that the routes before did not catch. This could for example be used to handle "404 - Page not found" cases.
@@ -358,9 +425,23 @@ export interface IRedirectRoute extends IRouteBase {
 }
 ```
 
+Here's an example on how that could look in practice.
+
+```typescript
+...
+await routerSlot.add([
+  ...
+  {
+    path: "**",
+    redirectTo: "404",
+    preserveQuery: true
+  }
+]);
+```
+
 #### Resolver routes
 
-Use the resolver routes when you want to customize what should happen when the path matches the route. This is good to use if you for example want to show a dialog instead of navigating to a new component.
+Use the resolver routes when you want to customize what should happen when the path matches the route. This is good to use if you for example want to show a dialog instead of navigating to a new component. If the custom resolver returns false the navigation will be cancelled.
 
 ```typescript
 export interface IResolverRoute extends IRouteBase {
@@ -370,12 +451,31 @@ export interface IResolverRoute extends IRouteBase {
 }
 ```
 
+Here's an example on how that could look in practice.
+
+```typescript
+...
+await routerSlot.add([
+  ...
+  {
+    path: "home",
+    setup: HomeComponent,
+    resolve: (async ({slot, match}: RoutingInfo) => {
+      const $page = document.createElement("div");
+      $page.appendChild(document.createTextNode("This is a custom home page!"));
+      document.body.appendChild($page);
+    })
+  },
+  ...
+]);
+```
+
 ### Stop the user from navigating away
 
 Let's say you have a page where the user has to enter some important data and suddenly he/she clicks on the back button! Luckily you can cancel the the navigation before it happens by listening for the `willchangestate` event on the `window` object and calling `preventDefault()` on the event.
 
 ```javascript
-const confirmNavigation = e => {
+window.addEventListener("willchangestate", e => {
 
   // Check if we should navigate away from this page
   if (!confirm("You have unsafed data. Do you wish to discard it?")) {
@@ -383,9 +483,7 @@ const confirmNavigation = e => {
     return;
   }
 
-  window.removeEventListener("willchangestate", confirmNavigation);
-};
-window.addEventListener("willchangestate", confirmNavigation);
+}, {once: true});
 ```
 
 ### Helper functions
@@ -394,11 +492,12 @@ The library comes with a set of helper functions. This includes:
 
 * `path()` - The current path of the location.
 * `query()` - The current query as an object.
-* `queryString()` - The current query string
-* `toQuery(queryString)` - Splits a query string and returns the query.
-* `toQueryString(query)` - Turns a query object into a string query.
-* `stripSlash(options)` - Strips the slash from the start and end of a path.
-* `ensureSlash(options)` - Ensures the path starts and ends with a slash.
+* `queryString()` - The current query as a string.
+* `toQuery(queryString)` - Turns a query string into a an object.
+* `toQueryString(query)` - Turns a query object into a string.
+* `stripSlash({ startSlash?: boolean, endSlash?: boolean; })` - Strips the slash from the start and/or end of a path.
+* `ensureSlash({ startSlash?: boolean, endSlash?: boolean; })` - Ensures the path starts and/or ends with a slash.
+* `isPathActive (path: string | PathFragment, fullPath: string = getPath())` - Determines whether the path is active compared to the full path.
 
 ### Global navigation events
 

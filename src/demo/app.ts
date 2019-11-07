@@ -1,5 +1,6 @@
-import { basePath, ChangeStateEvent, GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, path, PushStateEvent, ReplaceStateEvent, RouterSlot, RouterSlotEventKind } from "../lib";
+import { basePath, ChangeStateEvent, GLOBAL_ROUTER_EVENTS_TARGET, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, path, PushStateEvent, ReplaceStateEvent, RouterSlot } from "../lib";
 import { ROUTER_SLOT_TAG_NAME } from "../lib/config";
+
 
 import "./../lib/router-link";
 
@@ -22,47 +23,47 @@ customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
 	const routerSlot = document.querySelector<IRouterSlot>(ROUTER_SLOT_TAG_NAME)!;
 
 	let hasInitialized = false;
-	routerSlot.addEventListener(RouterSlotEventKind.ChangeState, () => {
+	routerSlot.addEventListener("changestate", () => {
 		if (!hasInitialized) {
 			document.body.classList.add("initialized");
 			hasInitialized = true;
 		}
 	});
 
-	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.PushState, (e: PushStateEvent) => {
+	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener("pushstate", (e: PushStateEvent) => {
 		console.log("On push state", `'${path()}'`);
 	});
 
-	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.ReplaceState, (e: ReplaceStateEvent) => {
+	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener("replacestate", (e: ReplaceStateEvent) => {
 		console.log("On replace state", path());
 	});
 
-	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.PopState, (e: PopStateEvent) => {
+	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener("popstate", (e: PopStateEvent) => {
 		console.log("On pop state", path(), e.state);
 	});
 
-	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.ChangeState, (e: ChangeStateEvent) => {
+	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener("changestate", (e: ChangeStateEvent) => {
 		console.log("On change state", path());
 	});
 
-	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.NavigationStart, (e: NavigationStartEvent) => {
+	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener("navigationstart", (e: NavigationStartEvent) => {
 		console.log("Navigation start", e.detail);
 	});
 
-	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.NavigationEnd, (e: NavigationEndEvent) => {
+	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener("navigationend", (e: NavigationEndEvent) => {
 		window.scrollTo({top: 0, left: 0, behavior: "smooth"});
 		console.log("Navigation end", e.detail);
 	});
 
-	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.NavigationSuccess, (e: NavigationSuccessEvent) => {
+	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener("navigationsuccess", (e: NavigationSuccessEvent) => {
 		console.log("Navigation success", e.detail);
 	});
 
-	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.NavigationCancel, (e: NavigationCancelEvent) => {
+	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener("navigationcancel", (e: NavigationCancelEvent) => {
 		console.log("Navigation cancelled", e.detail);
 	});
 
-	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.NavigationError, (e: NavigationErrorEvent) => {
+	GLOBAL_ROUTER_EVENTS_TARGET.addEventListener("navigationerror", (e: NavigationErrorEvent) => {
 		console.log("Navigation failed", e.detail);
 	});
 

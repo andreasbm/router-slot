@@ -1,16 +1,16 @@
-import { GlobalRouterEventKind } from "../model";
+import { GLOBAL_ROUTER_EVENTS_TARGET, HISTORY_PATCH_NATIVE_KEY } from "../config";
+import { GlobalRouterEvent } from "../model";
 import { dispatchGlobalRouterEvent } from "./events";
 
-// Key for the native methods
-const NATIVE_KEY = `native`;
-
 // Mapping a history functions to the events they are going to dispatch.
-export const historyPatches: [string, GlobalRouterEventKind[]][] = [
-	["pushState", [GlobalRouterEventKind.PushState, GlobalRouterEventKind.ChangeState]],
-	["replaceState", [GlobalRouterEventKind.ReplaceState, GlobalRouterEventKind.ChangeState]],
-	["forward", [GlobalRouterEventKind.PushState, GlobalRouterEventKind.ChangeState]],
-	["back", [GlobalRouterEventKind.PopState]],
-	["go", [GlobalRouterEventKind.PushState, GlobalRouterEventKind.ChangeState]]
+export const historyPatches: [string, GlobalRouterEvent[]][] = [
+	["pushState", ["pushstate", "changestate"]],
+	["replaceState", ["replacestate", "changestate"]],
+	["forward", ["pushstate", "changestate"]],
+	["go", ["pushstate", "changestate"]],
+
+	// We need to handle the popstate a little differently when it comes to the change state event.
+	["back", ["popstate"]],
 ];
 
 
@@ -20,7 +20,7 @@ export const historyPatches: [string, GlobalRouterEventKind[]][] = [
 export function ensureHistoryEvents () {
 	for (const [name, events] of historyPatches) {
 		for (const event of events) {
-			attachCallback(history, name, () => dispatchGlobalRouterEvent(<GlobalRouterEventKind>event));
+			attachCallback(history, name, () => dispatchGlobalRouterEvent(event));
 		}
 	}
 
@@ -38,8 +38,8 @@ export function ensureHistoryEvents () {
 				return;
 			}
 
-			// Dispatch the global router event to change the routes
-			setTimeout(() => dispatchGlobalRouterEvent(GlobalRouterEventKind.ChangeState), 0)
+			// Dispatch the global router event to change the routes after the popstate has bubbled up
+			setTimeout(() => dispatchGlobalRouterEvent("changestate"), 0)
 		}
 	);
 }
@@ -74,12 +74,12 @@ export function attachCallback (obj: any, name: string, cb: ((...args: any[]) =>
 export function saveNativeFunction (obj: any, name: string, func: (() => void)) {
 
 	// Ensure that the native object exists.
-	if (obj[NATIVE_KEY] == null) {
-		obj[NATIVE_KEY]= {};
+	if (obj[HISTORY_PATCH_NATIVE_KEY] == null) {
+		obj[HISTORY_PATCH_NATIVE_KEY]= {};
 	}
 
 	// Save the native function.
-	obj[NATIVE_KEY][`${name}`] = func.bind(obj);
+	obj[HISTORY_PATCH_NATIVE_KEY][`${name}`] = func.bind(obj);
 }
 
 /**
@@ -87,7 +87,7 @@ export function saveNativeFunction (obj: any, name: string, func: (() => void)) 
  * The state will be considered as cancelled if the "willChangeState" event was cancelled.
  */
 function shouldCancelChangeState (): boolean {
-	return !window.dispatchEvent(new CustomEvent(GlobalRouterEventKind.WillChangeState, {cancelable: true}));
+	return !GLOBAL_ROUTER_EVENTS_TARGET.dispatchEvent(new CustomEvent("willchangestate", {cancelable: true}));
 }
 
 // Expose the native history functions.

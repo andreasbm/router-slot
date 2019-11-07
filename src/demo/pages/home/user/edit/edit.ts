@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit-element";
 import { TemplateResult } from "lit-html";
 import { GLOBAL_ROUTER_EVENTS_TARGET } from "../../../../../lib/config";
-import { GlobalRouterEventKind, WillChangeStateEvent } from "../../../../../lib/model";
+import { WillChangeStateEvent } from "../../../../../lib/model";
 import { sharedStyles } from "../../../styles";
 
 export default class EditComponent extends LitElement {
@@ -17,9 +17,9 @@ export default class EditComponent extends LitElement {
 				return;
 			}
 
-			GLOBAL_ROUTER_EVENTS_TARGET.removeEventListener(GlobalRouterEventKind.WillChangeState, confirmNavigation);
+			GLOBAL_ROUTER_EVENTS_TARGET.removeEventListener("willchangestate", confirmNavigation);
 		};
-		GLOBAL_ROUTER_EVENTS_TARGET.addEventListener(GlobalRouterEventKind.WillChangeState, confirmNavigation);
+		GLOBAL_ROUTER_EVENTS_TARGET.addEventListener("willchangestate", confirmNavigation);
 	}
 
 	render (): TemplateResult {

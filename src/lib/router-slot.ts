@@ -1,12 +1,15 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
-import { Cancel, EventListenerSubscription, GlobalRouterEventKind, IPathFragments, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterSlotEventKind, RoutingInfo } from "./model";
-import { addListener, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, path, queryParentRouterSlot, removeListeners, resolvePageComponent, shouldNavigate } from "./util";
+import { Cancel, EventListenerSubscription, GlobalRouterEvent, IPathFragments, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterSlotEvent, RoutingInfo } from "./model";
+import { addListener, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureAnchorHistory, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, path, queryParentRouterSlot, removeListeners, resolvePageComponent, shouldNavigate } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
 
 // Patches the history object and ensures the correct events.
 ensureHistoryEvents();
+
+// Ensure the anchor tags uses the history API
+ensureAnchorHistory();
 
 /**
  * Slot for a node in the router tree.
@@ -150,11 +153,13 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	async load (): Promise<void> {
 
 		// Either choose the parent fragment or the current path if no parent exists.
+		// The root router slot will always use the entire path.
 		const pathFragment = this.parent != null && this.parent.fragments != null
 			? this.parent.fragments.rest
 			: path();
 
-		await this.loadPath(pathFragment);
+		// Route to the path
+		await this.routeToPath(pathFragment);
 	}
 
 	/**
@@ -167,10 +172,10 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 			this.isRoot
 
 				// Add global listeners.
-				? addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind.ChangeState, this.load)
+				? addListener<Event, GlobalRouterEvent>(GLOBAL_ROUTER_EVENTS_TARGET, "changestate", this.load)
 
 				// Attach child router listeners
-				: addListener(this.parent!, RouterSlotEventKind.ChangeState, this.load)
+				: addListener<Event, RouterSlotEvent>(this.parent!, "changestate", this.load)
 		);
 	}
 
@@ -185,7 +190,7 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	 * Loads a new path based on the routes.
 	 * Returns true if a navigation was made to a new page.
 	 */
-	protected async loadPath (path: string | PathFragment): Promise<boolean> {
+	protected async routeToPath (path: string | PathFragment): Promise<boolean> {
 
 		// Find the corresponding route.
 		const match = matchRoutes(this._routes, path);
@@ -209,22 +214,22 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 				// while we are about to navigate we have to cancel.
 				let navigationInvalidated = false;
 				const cancelNavigation = () => navigationInvalidated = true;
-				const cleanup: EventListenerSubscription = addListener(GLOBAL_ROUTER_EVENTS_TARGET, GlobalRouterEventKind.ChangeState, cancelNavigation, {once: true});
+				const cleanup: EventListenerSubscription = addListener<Event, GlobalRouterEvent>(GLOBAL_ROUTER_EVENTS_TARGET, "changestate", cancelNavigation, {once: true});
 
 				// Cleans up and dispatches a global event that a navigation was cancelled.
 				const cancel: Cancel = () => {
 					cleanup();
-					dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationCancel, info);
+					dispatchGlobalRouterEvent("navigationcancel", info);
 					return false;
 				};
 
 				// Dispatch globally that a navigation has started
-				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationStart, info);
+				dispatchGlobalRouterEvent("navigationstart", info);
 
 				// Check whether the guards allow us to go to the new route.
 				if (route.guards != null) {
 					for (const guard of route.guards) {
-						if (!(await Promise.resolve(guard(info)))) {
+						if (!(await guard(info))) {
 							return cancel();
 						}
 					}
@@ -241,11 +246,8 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 				else if (isResolverRoute(route)) {
 
 					// The resolve will handle the rest of the navigation. This includes whether or not the navigation
-					// should be cancelled.
-					navigationInvalidated = await Promise.resolve<void | boolean>(route.resolve(info)) || false;
-
-					// Cancel the navigation if the resolver specifies it.
-					if (navigationInvalidated) {
+					// should be cancelled. If the resolve function returns false we cancel the navigation.
+					if ((await route.resolve(info)) === false) {
 						return cancel();
 					}
 				}
@@ -259,40 +261,40 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 						return cancel();
 					}
 
-					// Remove the old page
-					if (this.childNodes.length > 0) {
-						const previousPage = this.childNodes[0];
-						this.removeChild(previousPage);
+					// Remove the old page by clearing the slot
+					while (this.firstChild != null) {
+						this.firstChild.remove();
 					}
 
 					// Append the new page
 					this.appendChild(page);
 				}
 
+				// Remember to cleanup after the navigation
 				cleanup();
 			}
 
-			// Store the new route match
+			// Store the new route match.
 			this._routeMatch = match;
 
 			// Always dispatch the route change event to notify the children that something happened.
 			// This is because the child routes might have to change routes further down the tree.
-			// The event is dispatched in an animation frame to allow route children to setup listeners first.
+			// The event is dispatched in an animation frame to allow route children to make the initial render first.
 			requestAnimationFrame(() => {
 				dispatchRouteChangeEvent(this, info);
 			});
 
 			// Dispatch globally that a navigation has ended.
 			if (navigate) {
-				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationSuccess, info);
-				dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationEnd, info);
+				dispatchGlobalRouterEvent("navigationsuccess", info);
+				dispatchGlobalRouterEvent("navigationend", info);
 			}
 
 			return navigate;
 
 		} catch (e) {
-			dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationError, info);
-			dispatchGlobalRouterEvent(GlobalRouterEventKind.NavigationEnd, info);
+			dispatchGlobalRouterEvent("navigationerror", info);
+			dispatchGlobalRouterEvent("navigationend", info);
 			throw e;
 		}
 	}

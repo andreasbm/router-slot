@@ -1,7 +1,6 @@
 import { LitElement, PropertyValues } from "lit-element";
 import { html, TemplateResult } from "lit-html";
-import { IRouterSlot, query, queryString } from "../../../lib";
-import { ROUTER_SLOT_TAG_NAME } from "../../../lib/config";
+import { GLOBAL_ROUTER_EVENTS_TARGET, isPathActive, query, queryString } from "../../../lib";
 import { sharedStyles } from "../styles";
 
 const ROUTES = [
@@ -30,6 +29,8 @@ export default class HomeComponent extends LitElement {
 			query: query(),
 			queryString: queryString()
 		});
+
+		GLOBAL_ROUTER_EVENTS_TARGET.addEventListener("changestate", () => this.requestUpdate());
 	}
 
 	private logout () {
@@ -42,8 +43,10 @@ export default class HomeComponent extends LitElement {
 			<p>HomeComponent</p>
 			<p></p>
 			<button @click="${() => this.logout()}">Logout</button>
-			<router-link path="secret">Go to SecretComponent</router-link>
-			<router-link path="user/@andreasbm/dashboard/123">Go to UserComponent</router-link>
+			
+			<a href="home/secret/code${queryString()}" ?data-active="${isPathActive("home/secret/code")}">Go to SecretComponent</a>
+			<a href="home/user/@andreasbm/dashboard/123${queryString()}" ?data-active="${isPathActive("home/user/@andreasbm/dashboard/123")}">Go to UserComponent</a>
+			
 			<div id="child">
 				<router-slot .routes="${ROUTES}"></router-slot>
 			</div>
