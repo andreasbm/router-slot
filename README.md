@@ -463,7 +463,7 @@ await routerSlot.add([
   {
     path: "home",
     setup: HomeComponent,
-    resolve: (async ({slot, match}: RoutingInfo) => {
+    resolve: (({slot, match}: RoutingInfo) => {
       const $page = document.createElement("div");
       $page.appendChild(document.createTextNode("This is a custom home page!"));
       document.body.appendChild($page);
