@@ -24,6 +24,9 @@
 * 👌  Zero dependencies
 * 📚  Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
 * 🎉  Support routes for dialogs
+* 🛡  Add guards to routes
+* ⚓️  Use the anchor tag for navigating
+* ⚙️  Very customizable
 
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#table-of-contents)
