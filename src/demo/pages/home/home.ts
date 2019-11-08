@@ -1,7 +1,9 @@
-import { LitElement, PropertyValues } from "lit-element";
+import { css, LitElement, PropertyValues } from "lit-element";
 import { html, TemplateResult } from "lit-html";
+import "weightless/nav";
 import { basePath, GLOBAL_ROUTER_EVENTS_TARGET, IRoute, isPathActive, PageComponent, query, queryString, RoutingInfo } from "../../../lib";
 import { sharedStyles } from "../styles";
+import "weightless/button";
 
 const ROUTES: IRoute[] = [
 	{
@@ -24,7 +26,16 @@ const ROUTES: IRoute[] = [
 ];
 
 export default class HomeComponent extends LitElement {
-	static styles = [sharedStyles];
+	static styles = [sharedStyles, css`
+		#child {
+		    margin: 70px 0 0 0;
+            padding: 30px;
+		}
+		
+		a, button, wl-button {
+			margin: 0 12px 0 0;
+		}
+	`];
 
 	firstUpdated (changedProperties: PropertyValues) {
 		super.firstUpdated(changedProperties);
@@ -44,13 +55,14 @@ export default class HomeComponent extends LitElement {
 
 	render (): TemplateResult {
 		return html`
-			<p>HomeComponent</p>
-			<p></p>
-			<button @click="${() => this.logout()}">Logout</button>
-			
-			<a href="home/secret/code${queryString()}" ?data-active="${isPathActive(`${basePath()}home/secret`)}">Go to SecretComponent</a>
-			<a href="home/user/@andreasbm/dashboard/123${queryString()}" ?data-active="${isPathActive(`${basePath()}home/user/@andreasbm/dashboard/123`)}">Go to UserComponent</a>
-			
+			<wl-nav fixed shadow>
+			   <h1 slot="title">@appnest/web-router</h1>
+			   <div slot="right">
+			        <a href="home/secret/code${queryString()}" ?data-active="${isPathActive(`${basePath()}home/secret`)}">Go to SecretComponent</a>
+					<a href="home/user/@andreasbm/dashboard/123${queryString()}" ?data-active="${isPathActive(`${basePath()}home/user/@andreasbm/dashboard/123`)}">Go to UserComponent</a>
+					<wl-button @click="${() => this.logout()}" inverted flat>Logout</wl-button>
+			   </div>
+			</wl-nav>
 			<div id="child">
 				<router-slot .routes="${ROUTES}"></router-slot>
 			</div>

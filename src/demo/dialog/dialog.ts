@@ -1,5 +1,7 @@
 import { html, LitElement, property, PropertyValues } from "lit-element";
 import { TemplateResult } from "lit-html";
+import "weightless/dialog";
+import "weightless/title";
 import { ROUTER_SLOT_TAG_NAME } from "../../lib/config";
 import { IRouterSlot } from "../../lib/model";
 import { sharedStyles } from "../pages/styles";
@@ -34,7 +36,7 @@ export default class DialogComponent extends LitElement {
 	}
 
 	private close () {
-		this.dispatchEvent(new CustomEvent("close"))
+		this.dispatchEvent(new CustomEvent("close"));
 	}
 
 	/**
@@ -43,46 +45,18 @@ export default class DialogComponent extends LitElement {
 	 */
 	render (): TemplateResult {
 		return html`
-			<style>
-				:host {
-					position: fixed;
-					top: 0;
-					left: 0;
-					width: 100%;
-					height: 100%;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					z-index: 123456;
-				}
-				
-				#backdrop {
-					background: rgba(0, 0, 0, 0.6);
-					position: absolute;
-					top: 0;
-					left: 0;
-					width: 100%;
-					height: 100%;
-				}
-				
-				#content {
-					background: white;
-					position: relative;
-					z-index: 1;
-					padding: 10px;
-					width: 200px;
-					height: 200px;
-				}
-			</style>
-			<div id="backdrop" @click="${this.close}"></div>
-			<div id="content">
-				<p>Dialog</p>
-				<router-link path="step-one">Go to StepOneComponent</router-link>
-				<br />
-				<router-link path="step-two">Go to StepTwoComponent</router-link>
-				<router-slot id="dialog"></router-slot>
-				<button @click="${this.close}">Close dialog</button>
-			</div>
+			<wl-dialog open fixed backdrop id="content" @didHide="${this.close}" size="large">
+			   <wl-title level="3" slot="header">This is a dialog</wl-title>
+			   <div slot="content">
+					<router-link path="step-one">Go to StepOneComponent</router-link>
+					<br />
+					<router-link path="step-two">Go to StepTwoComponent</router-link>
+					<router-slot id="dialog"></router-slot>
+			   </div>
+			   <div slot="footer">
+					<wl-button @click="${this.close}" inverted flat>Close dialog</wl-button>
+			   </div>
+			</wl-dialog>
 		`;
 	}
 

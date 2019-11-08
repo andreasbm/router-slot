@@ -1,6 +1,10 @@
 import { unsafeCSS } from "lit-element";
 
 export const sharedStyles = unsafeCSS`
+	:host {
+		
+	}
+
 	router-link {
 	    border-bottom: 2px solid currentColor;
 	    outline: none;

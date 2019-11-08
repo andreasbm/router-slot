@@ -1,5 +1,6 @@
 import { html, LitElement } from "lit-element";
 import { TemplateResult } from "lit-html";
+import { showDialog } from "weightless";
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "../../../../../lib/config";
 import { Class, IRouterSlot, RoutingInfo } from "../../../../../lib/model";
 import { addListener } from "../../../../../lib/util/events";
@@ -49,11 +50,20 @@ export default class PasswordComponent extends LitElement {
 	/**
 	 * Opens a dialog without routing inside it.
 	 */
-	private openDialogWithoutRouting () {
+	private async openDialogWithoutRouting () {
 		history.native.pushState(null, "", `item/1234`);
 		GLOBAL_ROUTER_EVENTS_TARGET.addEventListener("popstate", close, {once: true});
 
-		alert(`This is a dialog!`);
+		const {result} = await showDialog({
+			fixed: true,
+			backdrop: true,
+			blockScrolling: true,
+			container: document.body,
+			duration: 200,
+			template: html`<p slot="content">This is a dialog with a special path!</p>`
+		});
+
+		await result;
 
 		GLOBAL_ROUTER_EVENTS_TARGET.removeEventListener("popstate", close);
 		history.native.back();
