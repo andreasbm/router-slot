@@ -11,6 +11,7 @@ export function queryParentRouterSlot<D = any> ($elem: Element): IRouterSlot<D> 
 
 /**
  * Traverses the roots and returns the first match.
+ * The minRoots parameter indicates how many roots should be traversed before we started matching with the query.
  * @param $elem
  * @param query
  * @param minRoots

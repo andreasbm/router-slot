@@ -249,23 +249,25 @@ alert("This is a dialog");
 history.native.back();
 ```
 
-This allows dialogs to have a route which is especially awesome on mobile.
+This allow dialogs to have a route which is especially awesome on mobile.
 
 ### Params
 
-If you want params in your URL you can do it by using the `:name` syntax. Below is an example on how to specify a path that matches params as well. This route would match urls such as `user/123`, `user/@andreas`, `user/abc` and so on.
+If you want params in your URL you can do it by using the `:name` syntax. Below is an example on how to specify a path that matches params as well. This route would match urls such as `user/123`, `user/@andreas`, `user/abc` and so on. The preferred way of setting the value of the params is by setting it through the setup function.
 
 ```typescript
-...
 await routerSlot.add([
   {
     path: "user/:userId",
-    component: UserComponent
+    component: UserComponent,
+    setup: (component: UserComponent, info: RoutingInfo) => {
+      component.userId = info.match.params.userId;
+    }
   }
 ]);
 ```
 
-To grab the params in the `UserComponent` you can use the `routeMatch` from the parent router as shown in the example below.
+Alternatively you can get the params in the `UserComponent` by using the `queryParentRouterSlot(...)` function.
 
 ```typescript
 import { LitElement, html } from "lit-element";
@@ -286,20 +288,6 @@ export default class UserComponent extends LitElement {
 }
 
 customElements.define("user-component", UserComponent);
-```
-
-Alternatively the params can be passed through the setup function.
-
-```javascript
-await routerSlot.add([
-  {
-    path: "user/:userId",
-    component: UserComponent,
-    setup: (component: UserComponent, info: RoutingInfo) => {
-      component.userId = info.match.params.userId;
-    }
-  }
-]);
 ```
 
 ### Deep dive into the different route kinds
@@ -386,6 +374,10 @@ Here's an example on how that could look in practice.
 routerSlot.add([
   ...
   {
+    path: "404",
+    component: document.createTextNode(`404 - The page you are looking for wasn't found.`)
+  }
+  {
     path: "**",
     redirectTo: "404",
     preserveQuery: true
@@ -411,12 +403,14 @@ Here's an example on how that could look in practice.
 routerSlot.add([
   {
     path: "home",
-    resolve: routingInfo => {
+    resolve: (info: RoutingInfo) => {
       const $page = document.createElement("div");
       $page.appendChild(document.createTextNode("This is a custom home page!"));
 
       // You can for example add the page to the body instead of the
       // default behavior where it is added to the router-slot.
+      // If you want a router-slot inside the element you are adding here
+      // you need to set the parent of that router-slot to info.slot.
       document.body.appendChild($page);
     })
   }

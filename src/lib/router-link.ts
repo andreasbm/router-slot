@@ -1,6 +1,6 @@
-import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
+import { GLOBAL_ROUTER_EVENTS_TARGET } from "./config";
 import { EventListenerSubscription, GlobalRouterEvent, IRouterSlot, PathFragment } from "./model";
-import { addListener, constructAbsolutePath, isPathActive, queryParentRoots, queryString, removeListeners } from "./util";
+import { addListener, constructAbsolutePath, isPathActive, queryParentRouterSlot, queryString, removeListeners } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -121,7 +121,7 @@ export class RouterLink extends HTMLElement {
 		);
 
 		// Query the nearest router
-		this.context = queryParentRoots(this, ROUTER_SLOT_TAG_NAME);
+		this.context = queryParentRouterSlot(this);
 
 		// Set the role to tell the rest of the world that this is a link
 		this.setAttribute("role", "link");

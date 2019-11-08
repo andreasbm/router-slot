@@ -1,16 +1,20 @@
 import { LitElement, PropertyValues } from "lit-element";
 import { html, TemplateResult } from "lit-html";
-import { GLOBAL_ROUTER_EVENTS_TARGET, isPathActive, query, queryString } from "../../../lib";
+import { GLOBAL_ROUTER_EVENTS_TARGET, IRoute, isPathActive, PageComponent, query, queryString, RoutingInfo } from "../../../lib";
 import { sharedStyles } from "../styles";
 
-const ROUTES = [
+const ROUTES: IRoute[] = [
 	{
 		path: "secret",
 		component: () => import("./secret/secret")
 	},
 	{
 		path: "user/:user/dashboard/:dashId",
-		component: () => import("./user/user")
+		component: () => import("./user/user"),
+		setup: (page: PageComponent, info: RoutingInfo) => {
+			//page.userId = info.match.params.userId;
+			console.log({page, info});
+		}
 	},
 	{
 		path: "**",

@@ -6,7 +6,7 @@ export interface IRouterSlot<D = any, P = any> extends HTMLElement {
 	routes: IRoute<D>[];
 	add: ((routes: IRoute<D>[], navigate?: boolean) => void);
 	clear: (() => void);
-	load: (() => Promise<void>);
+	render: (() => Promise<void>);
 	constructAbsolutePath: ((path: PathFragment) => string);
 	parent: IRouterSlot<P> | null | undefined;
 	queryParentRouterSlot: (() => IRouterSlot<P> | null);

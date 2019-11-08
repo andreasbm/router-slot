@@ -16,7 +16,7 @@ export function path (options: Partial<ISlashOptions> = {}): string {
  * @param options
  */
 export function basePath (options: Partial<ISlashOptions> = {}): string | null {
-	return document.baseURI && ensureSlash(document.baseURI.substring(location.origin.length), options) || null;
+	return document.baseURI != null ? ensureSlash(document.baseURI.substring(location.origin.length), options) : null;
 }
 
 /**

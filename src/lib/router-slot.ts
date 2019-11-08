@@ -88,7 +88,7 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	constructor () {
 		super();
 
-		this.load = this.load.bind(this);
+		this.render = this.render.bind(this);
 
 		// Attach the template
 		const shadow = this.attachShadow({mode: "open"});
@@ -126,17 +126,18 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 
 	/**
 	 * Adds routes to the router.
+	 * Navigates automatically if the router slot is the root and is connected.
 	 * @param routes
 	 * @param navigate
 	 */
-	add (routes: IRoute<D>[], navigate: boolean = this.isRoot): void {
+	add (routes: IRoute<D>[], navigate: boolean = this.isRoot && this.isConnected): void {
 
 		// Add the routes to the array
 		this._routes.push(...routes);
 
 		// Register that the path has changed so the correct route can be loaded.
 		if (navigate) {
-			this.load().then();
+			this.render().then();
 		}
 	}
 
@@ -147,10 +148,11 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 		this._routes.length = 0;
 	}
 
+	private idasd = Math.random();
 	/**
 	 * Each time the path changes, load the new path.
 	 */
-	async load (): Promise<void> {
+	async render (): Promise<void> {
 
 		// Either choose the parent fragment or the current path if no parent exists.
 		// The root router slot will always use the entire path.
@@ -159,7 +161,7 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 			: path();
 
 		// Route to the path
-		await this.routeToPath(pathFragment);
+		await this.renderPath(pathFragment);
 	}
 
 	/**
@@ -169,13 +171,13 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 
 		// Add listeners that updates the route
 		this.listeners.push(
-			this.isRoot
-
-				// Add global listeners.
-				? addListener<Event, GlobalRouterEvent>(GLOBAL_ROUTER_EVENTS_TARGET, "changestate", this.load)
+			this.parent != null
 
 				// Attach child router listeners
-				: addListener<Event, RouterSlotEvent>(this.parent!, "changestate", this.load)
+				? addListener<Event, RouterSlotEvent>(this.parent, "changestate", this.render)
+
+				// Add global listeners.
+				: addListener<Event, GlobalRouterEvent>(GLOBAL_ROUTER_EVENTS_TARGET, "changestate", this.render)
 		);
 	}
 
@@ -190,7 +192,7 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	 * Loads a new path based on the routes.
 	 * Returns true if a navigation was made to a new page.
 	 */
-	protected async routeToPath (path: string | PathFragment): Promise<boolean> {
+	protected async renderPath (path: string | PathFragment): Promise<boolean> {
 
 		// Find the corresponding route.
 		const match = matchRoutes(this._routes, path);
@@ -279,7 +281,8 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 
 			// Always dispatch the route change event to notify the children that something happened.
 			// This is because the child routes might have to change routes further down the tree.
-			// The event is dispatched in an animation frame to allow route children to make the initial render first.
+			// The event is dispatched in an animation frame to allow route children to make the initial
+			// render first and hook up the new router slot.
 			requestAnimationFrame(() => {
 				dispatchRouteChangeEvent(this, info);
 			});

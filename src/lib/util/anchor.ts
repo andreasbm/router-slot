@@ -18,8 +18,9 @@ export function ensureAnchorHistory () {
 
 		// Make sure the path is relative to the origin or abort
 		// We want to allow links to absolute paths without
-		// using the history API.
-		if (!href.startsWith(location.origin)) {
+		// using the history API. Also, if the target is not this frame we
+		// allow the default behavior (eg. if it should open in a new tab)
+		if (!href.startsWith(location.origin) || ($anchor.target !== "" && $anchor.target !== "_self")) {
 			return;
 		}
 
