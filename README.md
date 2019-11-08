@@ -508,8 +508,9 @@ The library comes with a set of helper functions. This includes:
 * `queryString()` - The current query as a string.
 * `toQuery(queryString)` - Turns a query string into a an object.
 * `toQueryString(query)` - Turns a query object into a string.
-* `stripSlash({ startSlash?: boolean, endSlash?: boolean; })` - Strips the slash from the start and/or end of a path.
-* `ensureSlash({ startSlash?: boolean, endSlash?: boolean; })` - Ensures the path starts and/or ends with a slash.
+* `slashify({ startSlash?: boolean, endSlash?: boolean; })` - Makes sure that the start and end slashes are present or not depending on the options.
+* `stripSlash()` - Strips the slash from the start and/or end of a path.
+* `ensureSlash()` - Ensures the path starts and/or ends with a slash.
 * `isPathActive (path: string | PathFragment, fullPath: string = getPath())` - Determines whether the path is active compared to the full path.
 
 ### Global navigation events
@@ -610,7 +611,7 @@ window.addEventListener("changestate", () => {
 
 ## ➤ ⚠️ Be careful when navigating to the root!
 
-From my testing I found that Chrome and Safari treat an empty string as url when navigating differently. As an example `history.pushState(null, null, "")` will navigate to the root of the website in Chrome but in Safari the path won't change. The workaround I found was to simply pass "/" when navigating to the root of the website instead.
+From my testing I found that Chrome and Safari, when navigating, treat an empty string as url differently. As an example `history.pushState(null, null, "")` will navigate to the root of the website in Chrome but in Safari the path won't change. The workaround I found was to simply pass "/" when navigating to the root of the website instead.
 
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#contributors)
