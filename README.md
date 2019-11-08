@@ -104,7 +104,7 @@ The `router-slot` component acts as a placeholder that marks the spot in the tem
 
 ```html
 <router-slot>
-	<!-- Routed components will go here -->
+  <!-- Routed components will go here -->
 </router-slot>
 ```
 
