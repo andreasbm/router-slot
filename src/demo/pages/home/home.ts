@@ -1,6 +1,6 @@
 import { LitElement, PropertyValues } from "lit-element";
 import { html, TemplateResult } from "lit-html";
-import { GLOBAL_ROUTER_EVENTS_TARGET, IRoute, isPathActive, PageComponent, query, queryString, RoutingInfo } from "../../../lib";
+import { basePath, GLOBAL_ROUTER_EVENTS_TARGET, IRoute, isPathActive, PageComponent, query, queryString, RoutingInfo } from "../../../lib";
 import { sharedStyles } from "../styles";
 
 const ROUTES: IRoute[] = [
@@ -48,8 +48,8 @@ export default class HomeComponent extends LitElement {
 			<p></p>
 			<button @click="${() => this.logout()}">Logout</button>
 			
-			<a href="home/secret/code${queryString()}" ?data-active="${isPathActive("home/secret/code")}">Go to SecretComponent</a>
-			<a href="home/user/@andreasbm/dashboard/123${queryString()}" ?data-active="${isPathActive("home/user/@andreasbm/dashboard/123")}">Go to UserComponent</a>
+			<a href="home/secret/code${queryString()}" ?data-active="${isPathActive(`${basePath()}home/secret`)}">Go to SecretComponent</a>
+			<a href="home/user/@andreasbm/dashboard/123${queryString()}" ?data-active="${isPathActive(`${basePath()}home/user/@andreasbm/dashboard/123`)}">Go to UserComponent</a>
 			
 			<div id="child">
 				<router-slot .routes="${ROUTES}"></router-slot>

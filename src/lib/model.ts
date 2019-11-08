@@ -146,8 +146,8 @@ export type GlobalRouterEvent =
 	| "navigationend";
 
 export interface ISlashOptions {
-	startSlash: boolean;
-	endSlash: boolean;
+	start: boolean;
+	end: boolean;
 }
 
 /* Extend the global event handlers map with the router related events */

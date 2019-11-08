@@ -6,7 +6,15 @@ import { ISlashOptions, Params, Query } from "../model";
  * @param options
  */
 export function path (options: Partial<ISlashOptions> = {}): string {
-	return ensureSlash(window.location.pathname.slice(1), options);
+	return slashify(window.location.pathname, options);
+}
+
+/**
+ * Returns the path without the base path.
+ * @param options
+ */
+export function pathWithoutBasePath (options: Partial<ISlashOptions> = {}): string {
+	return slashify(stripStart(path(), basePath()), options);
 }
 
 /**
@@ -15,8 +23,17 @@ export function path (options: Partial<ISlashOptions> = {}): string {
  * If eg. <base href="/web-router/"> is defined this function will return "/web-router/".
  * @param options
  */
-export function basePath (options: Partial<ISlashOptions> = {}): string | null {
-	return document.baseURI != null ? ensureSlash(document.baseURI.substring(location.origin.length), options) : null;
+export function basePath (options: Partial<ISlashOptions> = {}): string {
+	return slashify((document.baseURI || "").substring(location.origin.length), options);
+}
+
+/**
+ * Removes the start of the path that matches the part.
+ * @param path
+ * @param part
+ */
+export function stripStart (path: string, part: string) {
+	return path.replace(new RegExp(`^${part}`), "");
 }
 
 /**
@@ -37,23 +54,28 @@ export function query (): Query {
 /**
  * Strips the slash from the start and end of a path.
  * @param path
- * @param startSlash
- * @param endSlash
  */
-export function stripSlash (path: string, {startSlash = true, endSlash = true}: Partial<ISlashOptions> = {}): string {
-	path = startSlash && path.startsWith("/") ? path.slice(1) : path;
-	return endSlash && path.endsWith("/") ? path.slice(0, path.length - 1) : path;
+export function stripSlash (path: string): string {
+	return slashify(path, {start: false, end: false});
 }
 
 /**
  * Ensures the path starts and ends with a slash
  * @param path
- * @param startSlash
- * @param endSlash
  */
-export function ensureSlash (path: string, {startSlash = true, endSlash = true}: Partial<ISlashOptions> = {}): string {
-	path = startSlash && !path.startsWith("/") ? `/${path}` : path;
-	return endSlash && !path.endsWith("/") ? `${path}/` : path;
+export function ensureSlash (path: string): string {
+	return slashify(path, {start: true, end: true});
+}
+
+/**
+ * Makes sure that the start and end slashes are present or not depending on the options.
+ * @param path
+ * @param start
+ * @param end
+ */
+export function slashify (path: string, {start = true, end = true}: Partial<ISlashOptions> = {}): string {
+	path = start && !path.startsWith("/") ? `/${path}` : (!start && path.startsWith("/") ? path.slice(1) : path);
+	return end && !path.endsWith("/") ? `${path}/` : (!end && path.endsWith("/") ? path.slice(0, path.length - 1) : path);
 }
 
 /**
@@ -85,5 +107,7 @@ export function toQuery (queryString: string): Query {
  * @param query
  */
 export function toQueryString (query: Query): string {
-	return Object.entries(query).map(([key, value]) => `${key}${value != "" ? `=${encodeURIComponent(value)}` : ""}`).join("&");
+	return Object.entries(query)
+	             .map(([key, value]) => `${key}${value != "" ? `=${encodeURIComponent(value)}` : ""}`)
+	             .join("&");
 }

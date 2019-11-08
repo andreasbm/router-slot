@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
 import { Cancel, EventListenerSubscription, GlobalRouterEvent, IPathFragments, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterSlotEvent, RoutingInfo } from "./model";
-import { addListener, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureAnchorHistory, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, path, queryParentRouterSlot, removeListeners, resolvePageComponent, shouldNavigate } from "./util";
+import { addListener, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureAnchorHistory, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, pathWithoutBasePath, queryParentRouterSlot, removeListeners, resolvePageComponent, shouldNavigate } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -117,7 +117,7 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	}
 
 	/**
-	 * Returns an absolute path from this router slot.
+	 * Returns an absolute path relative to the router slot.
 	 * @param path
 	 */
 	constructAbsolutePath (path: PathFragment): string {
@@ -149,6 +149,7 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	}
 
 	private idasd = Math.random();
+
 	/**
 	 * Each time the path changes, load the new path.
 	 */
@@ -158,7 +159,7 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 		// The root router slot will always use the entire path.
 		const pathFragment = this.parent != null && this.parent.fragments != null
 			? this.parent.fragments.rest
-			: path();
+			: pathWithoutBasePath();
 
 		// Route to the path
 		await this.renderPath(pathFragment);

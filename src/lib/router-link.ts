@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET } from "./config";
 import { EventListenerSubscription, GlobalRouterEvent, IRouterSlot, PathFragment } from "./model";
-import { addListener, constructAbsolutePath, isPathActive, queryParentRouterSlot, queryString, removeListeners } from "./util";
+import { addListener, ensureSlash, isPathActive, queryParentRouterSlot, queryString, removeListeners, slashify } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -165,10 +165,10 @@ export class RouterLink extends HTMLElement {
 
 		// If a router context is present, navigate relative to that one
 		if (this.context != null) {
-			return constructAbsolutePath(this.context, path);
+			return this.context.constructAbsolutePath(path);
 		}
 
-		return path;
+		return slashify(path, {end: false});
 	}
 
 

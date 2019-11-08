@@ -69,17 +69,17 @@ customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
 
 	await routerSlot.add([
 		{
-			path: `${basePath()}login`,
+			path: `login`,
 			component: () => import("./pages/login/login")
 		},
 		{
-			path: `${basePath()}home`,
+			path: `home`,
 			component: () => import("./pages/home/home"),
 			guards: [sessionGuard]
 		},
 		{
 			// You can give the component as a HTML element if you want
-			path: `${basePath()}div`,
+			path: `div`,
 			component: () => {
 				const $div = document.createElement("div");
 				$div.innerText = `Heres a <div> tag!`;
@@ -106,7 +106,7 @@ customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
 		},
 		{
 			path: "**",
-			redirectTo: `${basePath()}home`,
+			redirectTo: `home`,
 			preserveQuery: true
 		}
 	]);

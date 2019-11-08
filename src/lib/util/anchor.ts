@@ -2,6 +2,8 @@
  * Hook up a click listener to the window that, for all anchor tags
  * that has a relative HREF, uses the history API instead.
  */
+import { stripStart } from "./url";
+
 export function ensureAnchorHistory () {
 	window.addEventListener("click", (e: MouseEvent) => {
 
@@ -25,7 +27,7 @@ export function ensureAnchorHistory () {
 		}
 
 		// Remove the origin from the start of the HREF to get the path
-		const path = href.replace(new RegExp(`^${location.origin}`), "");
+		const path = stripStart(href, location.origin);
 
 		// Prevent the default behavior
 		e.preventDefault();

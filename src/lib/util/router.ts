@@ -1,6 +1,6 @@
 import { CATCH_ALL_WILDCARD, PARAM_IDENTIFIER, TRAVERSE_FLAG } from "../config";
 import { IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IRouterSlot, ModuleResolver, PageComponent, Params, PathFragment, RouterTree, RoutingInfo } from "../model";
-import { ensureSlash, path as getPath, queryString, stripSlash } from "./url";
+import { basePath, ensureSlash, path as getPath, queryString, slashify, stripSlash } from "./url";
 
 /**
  * Determines whether the path is active.
@@ -18,7 +18,6 @@ export function isPathActive (path: string | PathFragment, fullPath: string = ge
  * @param path
  */
 export function matchRoute<D = any> (route: IRoute<D>, path: string | PathFragment): IRouteMatch<D> | null {
-
 
 	// We start by preparing the route path by replacing the param names with a regex that matches everything
 	// until either the end of the path or the next "/". While replacing the param placeholders we make sure
@@ -193,12 +192,13 @@ export function getFragments (tree: RouterTree, depth: number): PathFragment[] {
  * @param path
  */
 export function constructAbsolutePath<D = any, P = any> (slot: IRouterSlot<D, P>,
-                                                         path: string | PathFragment): string {
+                                                         path: string | PathFragment = ""): string {
 
 	// Grab the router tree
 	const {tree, depth} = traverseRouterTree(slot);
 
-	// If the path starts with "/" its an absolute path
+	// If the path starts with "/" we treat it as an absolute path
+	// and therefore don't continue because it is already absolute.
 	if (!path.startsWith("/")) {
 		let traverseDepth = 0;
 
@@ -213,9 +213,11 @@ export function constructAbsolutePath<D = any, P = any> (slot: IRouterSlot<D, P>
 		if (match != null) {
 
 			// If the path matched with the traverse flag we know that we have to construct
-			// a route until a certain depth. The traverse depth will is the amount of "../" in the path
+			// a route until a certain depth. The traverse depth is the amount of "../" in the path
 			// and the depth is the part of the path we a slicing away.
 			traverseDepth = match.length;
+
+			// Count the amount of characters that the matches add up to and remove it from the path.
 			const length = match.reduce((acc: number, m: string) => acc + m.length, 0);
 			path = path.slice(length);
 		}
@@ -223,12 +225,10 @@ export function constructAbsolutePath<D = any, P = any> (slot: IRouterSlot<D, P>
 		// Grab the fragments and construct the new path, taking the traverse depth into account.
 		// Always subtract at least 1 because we the path is relative to its parent.
 		const fragments = getFragments(tree, depth - 1 - traverseDepth);
-		path = ensureSlash(`${fragments.join("/")}${path != "" ? `/${path}` : ""}`, {
-			endSlash: false
-		});
+		path = `${basePath()}${fragments.join("/")}${fragments.length > 0 ? "/" : ""}${path}`;
 	}
 
-	return path;
+	return slashify(path, {end: false});
 }
 
 /**
