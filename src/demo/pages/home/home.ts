@@ -56,7 +56,7 @@ export default class HomeComponent extends LitElement {
 	render (): TemplateResult {
 		return html`
 			<wl-nav fixed shadow>
-			   <h1 slot="title">@appnest/web-router</h1>
+			   <h1 slot="title">router-slot</h1>
 			   <div slot="right">
 			        <a href="home/secret/code${queryString()}" ?data-active="${isPathActive(`${basePath()}home/secret`)}">Go to SecretComponent</a>
 					<a href="home/user/@andreasbm/dashboard/123${queryString()}" ?data-active="${isPathActive(`${basePath()}home/user/@andreasbm/dashboard/123`)}">Go to UserComponent</a>

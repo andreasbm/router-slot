@@ -2,9 +2,9 @@
 	"text": "A router interprets the browser URL and navigates to a specific views based on the configuration. This router is optimized for routing between web components. If you want to play with it yourself, go to <a href='https://codepen.io/andreasbm/pen/XWWZpvM'>the playground</a>.",
 	"demo": "https://appnest-demo.firebaseapp.com/web-router",
 	"ids": {
-		"npm": "@appnest/web-router",
+		"npm": "router-slot",
 		"github": "andreasbm/web-router",
-		"webcomponents": "@appnest/web-router"
+		"webcomponents": "router-slot"
 	},
 	"bullets": [
 		"😴  Lazy loading of routes",
@@ -13,9 +13,10 @@
 		"🛣  Specify params in the path",
 		"👌  Zero dependencies",
 		"📚  Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)",
-		"🎉  Support routes for dialogs",
-		"🛡  Add guards to routes",
-		"⚓️  Use the anchor tag for navigating",
-		"⚙️  Very customizable"
+		"🎉  Supports routes for dialogs",
+		"🛡  Supports guards for routes",
+		"⚓️  Allows the anchor element for navigating",
+		"⚙️  Very customizable",
+		"🤐  2kb gzipped"
 	]
 }

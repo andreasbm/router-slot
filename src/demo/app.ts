@@ -1,6 +1,5 @@
-import { basePath, ChangeStateEvent, GLOBAL_ROUTER_EVENTS_TARGET, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, path, PushStateEvent, ReplaceStateEvent, RouterSlot } from "../lib";
+import { ChangeStateEvent, GLOBAL_ROUTER_EVENTS_TARGET, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, path, PushStateEvent, ReplaceStateEvent, RouterSlot } from "../lib";
 import { ROUTER_SLOT_TAG_NAME } from "../lib/config";
-
 
 import "./../lib/router-link";
 

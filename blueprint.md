@@ -15,7 +15,7 @@
 ## Installation
 
 ```node
-npm i @appnest/web-router
+npm i router-slot
 ```
 
 ## Usage
@@ -35,7 +35,7 @@ To turn your app into a single-page-application you first need to add a [`<base>
 To import the library you'll need to import the dependency in your application.
 
 ```javascript
-import "@appnest/web-router";
+import "router-slot";
 ```
 
 ### 3. Add the `<router-slot>` element
@@ -143,7 +143,7 @@ So to recap the above steps, here's how to use the router.
     <a href="/login">Go to login</a>
 
     <script type="module">
-        import "https://unpkg.com/@appnest/web-router?module";
+        import "https://unpkg.com/router-slot?module";
         customElements.whenDefined("router-slot").then(async () => {
             const routerSlot = document.querySelector("router-slot");
             await routerSlot.add([
@@ -172,7 +172,7 @@ The `web-router` works very well with `lit-element`. Check out the example below
 
 ```typescript
 import { LitElement, html, query, PropertyValues } from "lit-element";
-import { RouterSlot } from "@appnest/web-router"
+import { RouterSlot } from "router-slot"
 
 const ROUTES = [
  {
@@ -271,7 +271,7 @@ Alternatively you can get the params in the `UserComponent` by using the `queryP
 
 ```typescript
 import { LitElement, html } from "lit-element";
-import { Params, queryParentRouterSlot } from "@appnest/web-router";
+import { Params, queryParentRouterSlot } from "router-slot";
 
 export default class UserComponent extends LitElement {
 
@@ -520,7 +520,7 @@ window.addEventListener("navigationend", () => {
 If you want to style the active link you can do it by using the `isPathActive(...)` function along with listning to the `changestate` event.
 
 ```javascript
-import {isPathActive} from "@appnest/web-router";
+import {isPathActive} from "router-slot";
 
 const $links = Array.from(document.querySelectorAll("a"));
 window.addEventListener("changestate", () => {

@@ -1,11 +1,11 @@
-<h1 align="center">@appnest/web-router</h1>
+<h1 align="center">router-slot</h1>
 
 <p align="center">
-		<a href="https://npmcharts.com/compare/@appnest/web-router?minimal=true"><img alt="Downloads per month" src="https://img.shields.io/npm/dm/@appnest/web-router.svg" height="20"/></a>
-<a href="https://www.npmjs.com/package/@appnest/web-router"><img alt="NPM Version" src="https://img.shields.io/npm/v/@appnest/web-router.svg" height="20"/></a>
+		<a href="https://npmcharts.com/compare/router-slot?minimal=true"><img alt="Downloads per month" src="https://img.shields.io/npm/dm/router-slot.svg" height="20"/></a>
+<a href="https://www.npmjs.com/package/router-slot"><img alt="NPM Version" src="https://img.shields.io/npm/v/router-slot.svg" height="20"/></a>
 <a href="https://david-dm.org/andreasbm/web-router"><img alt="Dependencies" src="https://img.shields.io/david/andreasbm/web-router.svg" height="20"/></a>
 <a href="https://github.com/andreasbm/web-router/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/andreasbm/web-router.svg" height="20"/></a>
-<a href="https://www.webcomponents.org/element/@appnest/web-router"><img alt="Published on webcomponents.org" src="https://img.shields.io/badge/webcomponents.org-published-blue.svg" height="20"/></a>
+<a href="https://www.webcomponents.org/element/router-slot"><img alt="Published on webcomponents.org" src="https://img.shields.io/badge/webcomponents.org-published-blue.svg" height="20"/></a>
 	</p>
 
 
@@ -23,10 +23,11 @@
 * 🛣  Specify params in the path
 * 👌  Zero dependencies
 * 📚  Uses the [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
-* 🎉  Support routes for dialogs
-* 🛡  Add guards to routes
-* ⚓️  Use the anchor tag for navigating
+* 🎉  Supports routes for dialogs
+* 🛡  Supports guards for routes
+* ⚓️  Allows the anchor element for navigating
 * ⚙️  Very customizable
+* 🤐  2kb gzipped
 
 <details>
 <summary>📖 Table of Contents</summary>
@@ -72,7 +73,7 @@
 ## ➤ Installation
 
 ```node
-npm i @appnest/web-router
+npm i router-slot
 ```
 
 
@@ -95,7 +96,7 @@ To turn your app into a single-page-application you first need to add a [`<base>
 To import the library you'll need to import the dependency in your application.
 
 ```javascript
-import "@appnest/web-router";
+import "router-slot";
 ```
 
 ### 3. Add the `<router-slot>` element
@@ -203,7 +204,7 @@ So to recap the above steps, here's how to use the router.
     <a href="/login">Go to login</a>
 
     <script type="module">
-        import "https://unpkg.com/@appnest/web-router?module";
+        import "https://unpkg.com/router-slot?module";
         customElements.whenDefined("router-slot").then(async () => {
             const routerSlot = document.querySelector("router-slot");
             await routerSlot.add([
@@ -235,7 +236,7 @@ The `web-router` works very well with `lit-element`. Check out the example below
 
 ```typescript
 import { LitElement, html, query, PropertyValues } from "lit-element";
-import { RouterSlot } from "@appnest/web-router"
+import { RouterSlot } from "router-slot"
 
 const ROUTES = [
  {
@@ -337,7 +338,7 @@ Alternatively you can get the params in the `UserComponent` by using the `queryP
 
 ```typescript
 import { LitElement, html } from "lit-element";
-import { Params, queryParentRouterSlot } from "@appnest/web-router";
+import { Params, queryParentRouterSlot } from "router-slot";
 
 export default class UserComponent extends LitElement {
 
@@ -586,7 +587,7 @@ window.addEventListener("navigationend", () => {
 If you want to style the active link you can do it by using the `isPathActive(...)` function along with listning to the `changestate` event.
 
 ```javascript
-import {isPathActive} from "@appnest/web-router";
+import {isPathActive} from "router-slot";
 
 const $links = Array.from(document.querySelectorAll("a"));
 window.addEventListener("changestate", () => {
