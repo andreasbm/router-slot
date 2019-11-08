@@ -20,7 +20,7 @@ export type Cancel = (() => boolean);
 export type PageComponent = HTMLElement;
 export type ModuleResolver = Promise<{default: any; /*PageComponent*/}>;
 export type Class<T extends PageComponent = PageComponent> = {new (...args: any[]): T;};
-export type SetupComponent<D = any> = ((component: PageComponent, info: RoutingInfo<D>) => void);
+export type Setup<D = any> = ((component: PageComponent, info: RoutingInfo<D>) => void);
 
 export type RouterTree<D = any, P = any> = {slot: IRouterSlot<D, P>} & {child?: RouterTree} | null | undefined;
 
@@ -64,7 +64,7 @@ export interface IComponentRoute<D = any> extends IRouteBase<D> {
 	component: Class | ModuleResolver | PageComponent | (() => Class) | (() => PageComponent) | (() => ModuleResolver);
 
 	// A custom setup function for the instance of the component.
-	setup?: SetupComponent;
+	setup?: Setup;
 }
 
 /**

@@ -6,7 +6,11 @@
 
 {{ bullets }}
 
+<details>
+<summary>📖 Table of Contents</summary>
+<br />
 {{ template:toc }}
+</details>
 
 ## Installation
 
@@ -123,7 +127,7 @@ With the `router-link` component you add `<router-link>` to your markup and spec
 
 Paths can be specified either in relative or absolute terms. To specify an absolute path you simply pass `/home/secret`. The slash makes the URL absolute. To specify a relative path you first have to be aware of the `router-slot` context you are navigating within. The `router-link` component will navigate based on the nearest parent `router-slot` element. If you give the component a path (without the slash), the navigation will be done in relation to the parent `router-slot`. You can also specify `../login` to traverse up the router tree.
 
-### 6. Overview
+### 6. Putting it all together
 
 So to recap the above steps, here's how to use the router.
 
@@ -139,7 +143,7 @@ So to recap the above steps, here's how to use the router.
     <a href="/login">Go to login</a>
 
     <script type="module">
-        import "path/to/@appnest/web-router";
+        import "https://unpkg.com/@appnest/web-router?module";
         customElements.whenDefined("router-slot").then(async () => {
             const routerSlot = document.querySelector("router-slot");
             await routerSlot.add([
@@ -321,30 +325,43 @@ export interface IRouteBase<T = any> {
 
 #### Component routes
 
-Component routes resolves a specified component. You can provide the `component` property with either a class that instantiates a `web component` or a function that imports the component lazily.
+Component routes resolves a specified component. You can provide the `component` property with either a class that extends HTMLElement (aka a `web component`), a module that exports the `web component` as default or a DOM element. These three different ways of doing it can be done lazily by returning it a function instead.
 
 ```typescript
 export interface IComponentRoute extends IRouteBase {
 
-  // The component loader (should return a module with a default export)
+  // The component loader (should return a module with a default export if it is a module)
   component: Class | ModuleResolver | PageComponent | (() => Class) | (() => PageComponent) | (() => ModuleResolver);
 
   // A custom setup function for the instance of the component.
-  setup?: SetupComponent;
+  setup?: Setup;
 }
 ```
 
 Here's an example on how that could look in practice.
 
 ```typescript
-...
-await routerSlot.add([
-  ...
+routerSlot.add([
   {
     path: "home",
-    redirectTo: HomeComponent
+    component: HomeComponent
+  },
+  {
+    path: "terms",
+    component: () => import("/path/to/terms-module")
+  },
+  {
+    path: "login",
+    component: () => {
+      const $div = document.createElement("div");
+      $div.innerHTML = `🔑 This is the login page`;
+      return $div;
+    }
+  },
+  {
+    path: "video",
+    component: document.createElement("video")
   }
-  ...
 ]);
 ```
 
@@ -366,8 +383,7 @@ export interface IRedirectRoute extends IRouteBase {
 Here's an example on how that could look in practice.
 
 ```typescript
-...
-await routerSlot.add([
+routerSlot.add([
   ...
   {
     path: "**",
@@ -392,19 +408,18 @@ export interface IResolverRoute extends IRouteBase {
 Here's an example on how that could look in practice.
 
 ```typescript
-...
-await routerSlot.add([
-  ...
+routerSlot.add([
   {
     path: "home",
-    setup: HomeComponent,
-    resolve: (({slot, match}: RoutingInfo) => {
+    resolve: routingInfo => {
       const $page = document.createElement("div");
       $page.appendChild(document.createTextNode("This is a custom home page!"));
+
+      // You can for example add the page to the body instead of the
+      // default behavior where it is added to the router-slot.
       document.body.appendChild($page);
     })
-  },
-  ...
+  }
 ]);
 ```
 
@@ -505,7 +520,32 @@ window.addEventListener("navigationend", () => {
 });
 ```
 
-## Be careful when navigating to the root!
+#### Style the active link
+
+If you want to style the active link you can do it by using the `isPathActive(...)` function along with listning to the `changestate` event.
+
+```javascript
+import {isPathActive} from "@appnest/web-router";
+
+const $links = Array.from(document.querySelectorAll("a"));
+window.addEventListener("changestate", () => {
+  for (const $link of $links) {
+
+    // Check whether the path is active
+    const isActive = isPathActive($link.getAttribute("href"));
+
+    // Set the data active attribute if the path is active, otherwise remove it.
+    if (isActive) {
+      $link.setAttribute("data-active", "");
+
+    } else {
+      $link.removeAttribute("data-active");
+    }
+  }
+});
+```
+
+## ⚠️ Be careful when navigating to the root!
 
 From my testing I found that Chrome and Safari treat an empty string as url when navigating differently. As an example `history.pushState(null, null, "")` will navigate to the root of the website in Chrome but in Safari the path won't change. The workaround I found was to simply pass "/" when navigating to the root of the website instead.
 
