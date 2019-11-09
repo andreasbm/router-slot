@@ -181,7 +181,7 @@ There are many advantages of using an anchor element, the main one being accessi
 With the `router-link` component you add `<router-link>` to your markup and specify a path. Whenever the component is clicked it will navigate to the specified path. Whenever the path of the router link is active the active attribute is set.
 
 ```html
-<router-link path="/login">
+<router-link path="login">
   <button>Go to login page!</button>
 </router-link>
 ```
@@ -236,7 +236,7 @@ The `web-router` works very well with `lit-element`. Check out the example below
 
 ```typescript
 import { LitElement, html, query, PropertyValues } from "lit-element";
-import { RouterSlot } from "router-slot"
+import { RouterSlot } from "router-slot";
 
 const ROUTES = [
  {

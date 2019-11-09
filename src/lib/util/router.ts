@@ -1,6 +1,6 @@
 import { CATCH_ALL_WILDCARD, PARAM_IDENTIFIER, TRAVERSE_FLAG } from "../config";
 import { IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IRouterSlot, ModuleResolver, PageComponent, Params, PathFragment, RouterTree, RoutingInfo } from "../model";
-import { basePath, ensureSlash, path as getPath, queryString, slashify, stripSlash } from "./url";
+import { constructPathWithBasePath, path as getPath, queryString, stripSlash } from "./url";
 
 /**
  * Determines whether the path is active.
@@ -225,10 +225,11 @@ export function constructAbsolutePath<D = any, P = any> (slot: IRouterSlot<D, P>
 		// Grab the fragments and construct the new path, taking the traverse depth into account.
 		// Always subtract at least 1 because we the path is relative to its parent.
 		const fragments = getFragments(tree, depth - 1 - traverseDepth);
-		path = `${basePath()}${fragments.join("/")}${fragments.length > 0 ? "/" : ""}${path}`;
+		path = `${fragments.join("/")}${fragments.length > 0 ? "/" : ""}${path}`;
 	}
 
-	return slashify(path, {end: false});
+	// Add the base path in front of the path. If the path is already absolute, the path wont get the base path added.
+	return constructPathWithBasePath(path, {end: false});
 }
 
 /**

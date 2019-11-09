@@ -4,7 +4,7 @@ import { showDialog } from "weightless";
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "../../../../../lib/config";
 import { Class, IRouterSlot, RoutingInfo } from "../../../../../lib/model";
 import { addListener } from "../../../../../lib/util/events";
-import { path } from "../../../../../lib/util/url";
+import { basePath, path } from "../../../../../lib/util/url";
 import { sharedStyles } from "../../../styles";
 import { data } from "../data";
 
@@ -30,7 +30,7 @@ export default class PasswordComponent extends LitElement {
 					}
 
 					$dialog.addEventListener("close", () => {
-						history.pushState(null, "", "/home/secret/password");
+						history.pushState(null, "", `${basePath()}home/secret/password`);
 						cleanup();
 					});
 
@@ -75,7 +75,7 @@ export default class PasswordComponent extends LitElement {
 			<span>Resolved password: ${data.secretPassword}</span>
 			
 			<router-slot></router-slot>
-			<router-link path="/home/secret/password/dialog">Open dialog with routes</router-link>
+			<router-link path="dialog">Open dialog with routes</router-link>
 			<button @click="${this.openDialogWithoutRouting}">Open dialog WITHOUT routes</button>
 		`;
 	}

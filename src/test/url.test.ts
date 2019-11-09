@@ -32,8 +32,9 @@ describe("url", () => {
 
 	it("[basepath] should return correct base path", () => {
 		const basePaths = [
-			[`/my-path`, `/my-path/`],
-			[`/my-path/`, `/my-path/`]
+			[`/my/path/`, `/my/path/`],
+			[`/my-other-path/index.html`, `/my-other-path/`],
+			[`https://cdpn.io/boomboom/v2/index.html?key=iFrameKey-ca757c8e-dad1-d965-1aed-7cabdaa22462`, `/boomboom/v2/`],
 		];
 
 		for (const [path, expected] of basePaths) {

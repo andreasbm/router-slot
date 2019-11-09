@@ -27,7 +27,7 @@ export function ensureAnchorHistory () {
 		}
 
 		// Remove the origin from the start of the HREF to get the path
-		const path = stripStart(href, location.origin);
+		const path = $anchor.pathname;
 
 		// Prevent the default behavior
 		e.preventDefault();

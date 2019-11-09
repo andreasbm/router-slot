@@ -1,5 +1,7 @@
 import { ISlashOptions, Params, Query } from "../model";
 
+const $anchor = document.createElement("a");
+
 /**
  * The current path of the location.
  * As default slashes are included at the start and end.
@@ -18,13 +20,33 @@ export function pathWithoutBasePath (options: Partial<ISlashOptions> = {}): stri
 }
 
 /**
- * Returns the base path as defined in the <base> tag in the head.
- * As default it will return the base path with slashes in front and at the end.
+ * Returns the base path as defined in the <base> tag in the head in a reliable way.
  * If eg. <base href="/web-router/"> is defined this function will return "/web-router/".
- * @param options
+ *
+ * An alternative would be to use regex on document.baseURI,
+ * but that will be unreliable in some cases because it
+ * doesn't use the built in HTMLHyperlinkElementUtils.
+ *
+ * To make this method more performant we could cache the anchor element.
+ * As default it will return the base path with slashes in front and at the end.
  */
 export function basePath (options: Partial<ISlashOptions> = {}): string {
-	return slashify((document.baseURI || "").substring(location.origin.length), options);
+	return constructPathWithBasePath(".", options);
+}
+
+/**
+ * Creates an URL using the built in HTMLHyperlinkElementUtils.
+ * An alternative would be to use regex on document.baseURI,
+ * but that will be unreliable in some cases because it
+ * doesn't use the built in HTMLHyperlinkElementUtils.
+ *
+ * As default it will return the base path with slashes in front and at the end.
+ * @param path
+ * @param options
+ */
+export function constructPathWithBasePath (path: string, options: Partial<ISlashOptions> = {}) {
+	$anchor.href = path;
+	return slashify($anchor.pathname, options);
 }
 
 /**
