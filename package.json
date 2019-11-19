@@ -50,7 +50,7 @@
 	},
 	"devDependencies": {
 		"@appnest/readme": "^1.2.5",
-		"@appnest/web-config": "0.4.32",
+		"@appnest/web-config": "0.4.33",
 		"lit-element": "^2.2.1",
 		"node-typescript-compiler": "^2.0.0",
 		"weightless": "0.0.37"
