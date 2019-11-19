@@ -266,7 +266,7 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 
 					// Remove the old page by clearing the slot
 					while (this.firstChild != null) {
-						this.firstChild.remove();
+						this.firstChild.parentNode!.removeChild(this.firstChild);
 					}
 
 					// Append the new page
