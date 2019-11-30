@@ -492,7 +492,7 @@ Let's say you have a page where the user has to enter some important data and su
 window.addEventListener("willchangestate", e => {
 
   // Check if we should navigate away from this page
-  if (!confirm("You have unsafed data. Do you wish to discard it?")) {
+  if (!confirm("You have unsaved data. Do you wish to discard it?")) {
     e.preventDefault();
     return;
   }
