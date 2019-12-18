@@ -187,6 +187,15 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	}
 
 	/**
+	 * Clears the children in the DOM.
+	 */
+	protected clearChildren () {
+		while (this.firstChild != null) {
+			this.firstChild.parentNode!.removeChild(this.firstChild);
+		}
+	}
+
+	/**
 	 * Detaches the listeners.
 	 */
 	protected detachListeners (): void {
@@ -215,23 +224,22 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 
 			// Only change route if its a new route.
 			const navigate = shouldNavigate(this.match, match);
-
-			// Store the new route match.
-			const prevMatch = this._routeMatch;
-			this._routeMatch = match;
-
 			if (navigate) {
 
 				// Listen for another push state event. If another push state event happens
 				// while we are about to navigate we have to cancel.
 				let navigationInvalidated = false;
 				const cancelNavigation = () => navigationInvalidated = true;
-				const cleanupChangeListener: EventListenerSubscription = addListener<Event, GlobalRouterEvent>(GLOBAL_ROUTER_EVENTS_TARGET, "changestate", cancelNavigation, {once: true});
+				const removeChangeListener: EventListenerSubscription = addListener<Event, GlobalRouterEvent>(GLOBAL_ROUTER_EVENTS_TARGET, "changestate", cancelNavigation, {once: true});
+
+				// Cleans up the routing by removing listeners and restoring the match from before
+				const cleanup = () => {
+					removeChangeListener();
+				};
 
 				// Cleans up and dispatches a global event that a navigation was cancelled.
 				const cancel: Cancel = () => {
-					this._routeMatch = prevMatch;
-					cleanupChangeListener();
+					cleanup();
 					dispatchGlobalRouterEvent("navigationcancel", info);
 					return false;
 				};
@@ -250,7 +258,7 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 
 				// Redirect if necessary
 				if (isRedirectRoute(route)) {
-					cleanupChangeListener();
+					cleanup();
 					handleRedirect(this, route);
 					return false;
 				}
@@ -275,17 +283,22 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 					}
 
 					// Remove the old page by clearing the slot
-					while (this.firstChild != null) {
-						this.firstChild.parentNode!.removeChild(this.firstChild);
-					}
+					this.clearChildren();
+
+					// Store the new route match before we append the new page to the DOM.
+					// We do this to ensure that we can find the match in the connectedCallback of the page.
+					this._routeMatch = match;
 
 					// Append the new page
 					this.appendChild(page);
 				}
 
 				// Remember to cleanup after the navigation
-				cleanupChangeListener();
+				cleanup();
 			}
+
+			// Store the new route match
+			this._routeMatch = match;
 
 			// Always dispatch the route change event to notify the children that something happened.
 			// This is because the child routes might have to change routes further down the tree.

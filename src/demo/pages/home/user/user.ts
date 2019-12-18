@@ -12,6 +12,14 @@ export default class UserComponent extends LitElement {
 		return queryParentRouterSlot(this)!.match!.params;
 	}
 
+	connectedCallback (): void {
+		super.connectedCallback();
+		const parent = queryParentRouterSlot(this);
+		if (parent != null) {
+			console.log("PARENT!!!!!!!!", {param: parent.params});
+		}
+	}
+
 	firstUpdated (changedProperties: PropertyValues) {
 		super.firstUpdated(changedProperties);
 

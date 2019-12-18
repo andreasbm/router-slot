@@ -130,7 +130,7 @@ export async function resolvePageComponent (route: IComponentRoute, info: IRouti
  * @param route
  */
 export function isRedirectRoute (route: IRoute): route is IRedirectRoute {
-	return (<IRedirectRoute>route).redirectTo != null;
+	return "redirectTo" in route;
 }
 
 /**
@@ -138,7 +138,7 @@ export function isRedirectRoute (route: IRoute): route is IRedirectRoute {
  * @param route
  */
 export function isResolverRoute (route: IRoute): route is IResolverRoute {
-	return (<IResolverRoute>route).resolve != null;
+	return "resolve" in route;
 }
 
 /**
@@ -264,4 +264,3 @@ export function shouldNavigate<D> (currentMatch: IRouteMatch<D> | null, newMatch
 	// Only navigate if the URL consumption is new or if the two routes are no longer the same.
 	return !isSameFragments || !isSameRoute;
 }
-

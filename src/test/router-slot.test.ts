@@ -158,7 +158,7 @@ describe("router-slot", () => {
 
 			waitForNavigation(() => {
 				expect(path()).to.equal(`/two/${param}/leaf-two/`);
-				expect(JSON.stringify($root.$slot.match!.params)).to.equal(JSON.stringify({id: param}));
+				expect(JSON.stringify($root.$slot.params)).to.equal(JSON.stringify({id: param}));
 				done();
 			});
 		});
