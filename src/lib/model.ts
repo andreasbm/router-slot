@@ -2,6 +2,7 @@ export interface IRouterSlot<D = any, P = any> extends HTMLElement {
 	readonly route: IRoute<D> | null;
 	readonly isRoot: boolean;
 	readonly fragments: IPathFragments | null;
+	readonly params: Params | null;
 	readonly match: IRouteMatch<D> | null;
 	routes: IRoute<D>[];
 	add: ((routes: IRoute<D>[], navigate?: boolean) => void);
@@ -12,15 +13,19 @@ export interface IRouterSlot<D = any, P = any> extends HTMLElement {
 	queryParentRouterSlot: (() => IRouterSlot<P> | null);
 }
 
-export type RoutingInfo<D = any, P = any> = {slot: IRouterSlot<D, P>, match: IRouteMatch<D>};
-export type CustomResolver<D = any, P = any> = ((info: RoutingInfo<D>) => boolean | void | Promise<boolean> | Promise<void>);
-export type Guard<D = any, P = any> = ((info: RoutingInfo<D, P>) => boolean | Promise<boolean>);
+export type IRoutingInfo<D = any, P = any> = {
+	slot: IRouterSlot<D, P>,
+	match: IRouteMatch<D>
+};
+
+export type CustomResolver<D = any, P = any> = ((info: IRoutingInfo<D>) => boolean | void | Promise<boolean> | Promise<void>);
+export type Guard<D = any, P = any> = ((info: IRoutingInfo<D, P>) => boolean | Promise<boolean>);
 export type Cancel = (() => boolean);
 
 export type PageComponent = HTMLElement;
 export type ModuleResolver = Promise<{default: any; /*PageComponent*/}>;
 export type Class<T extends PageComponent = PageComponent> = {new (...args: any[]): T;};
-export type Setup<D = any> = ((component: PageComponent, info: RoutingInfo<D>) => void);
+export type Setup<D = any> = ((component: PageComponent, info: IRoutingInfo<D>) => void);
 
 export type RouterTree<D = any, P = any> = {slot: IRouterSlot<D, P>} & {child?: RouterTree} | null | undefined;
 
@@ -94,11 +99,11 @@ export type PushStateEvent = CustomEvent<null>;
 export type ReplaceStateEvent = CustomEvent<null>;
 export type ChangeStateEvent = CustomEvent<null>;
 export type WillChangeStateEvent = CustomEvent<null>;
-export type NavigationStartEvent<D = any> = CustomEvent<RoutingInfo<D>>;
-export type NavigationSuccessEvent<D = any> = CustomEvent<RoutingInfo<D>>;
-export type NavigationCancelEvent<D = any> = CustomEvent<RoutingInfo<D>>;
-export type NavigationErrorEvent<D = any> = CustomEvent<RoutingInfo<D>>;
-export type NavigationEndEvent<D = any> = CustomEvent<RoutingInfo<D>>;
+export type NavigationStartEvent<D = any> = CustomEvent<IRoutingInfo<D>>;
+export type NavigationSuccessEvent<D = any> = CustomEvent<IRoutingInfo<D>>;
+export type NavigationCancelEvent<D = any> = CustomEvent<IRoutingInfo<D>>;
+export type NavigationErrorEvent<D = any> = CustomEvent<IRoutingInfo<D>>;
+export type NavigationEndEvent<D = any> = CustomEvent<IRoutingInfo<D>>;
 
 export type Params = {[key: string]: string};
 export type Query = {[key: string]: string};

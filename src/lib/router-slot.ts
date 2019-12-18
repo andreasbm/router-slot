@@ -1,5 +1,5 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
-import { Cancel, EventListenerSubscription, GlobalRouterEvent, IPathFragments, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterSlotEvent, RoutingInfo } from "./model";
+import { Cancel, EventListenerSubscription, GlobalRouterEvent, IPathFragments, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterSlotEvent, IRoutingInfo, Params } from "./model";
 import { addListener, constructAbsolutePath, constructPathWithBasePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureAnchorHistory, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, path, pathWithoutBasePath, queryParentRouterSlot, removeListeners, resolvePageComponent, shouldNavigate } from "./util";
 
 const template = document.createElement("template");
@@ -53,33 +53,39 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	}
 
 	/**
-	 * The current route.
+	 * Whether the router is a root router.
+	 */
+	get isRoot (): boolean {
+		return this.parent == null;
+	}
+
+	/**
+	 * The current route match.
+	 */
+	private _routeMatch: IRouteMatch<D> | null = null;
+	get match (): IRouteMatch<D> | null {
+		return this._routeMatch;
+	}
+
+	/**
+	 * The current route of the match.
 	 */
 	get route (): IRoute<D> | null {
 		return this.match != null ? this.match.route : null;
 	}
 
 	/**
-	 * The current path fragment.
+	 * The current path fragment of the match
 	 */
 	get fragments (): IPathFragments | null {
 		return this.match != null ? this.match.fragments : null;
 	}
 
 	/**
-	 * The current path routeMatch.
+	 * The current params of the match.
 	 */
-	private _routeMatch: IRouteMatch<D> | null = null;
-
-	get match (): IRouteMatch<D> | null {
-		return this._routeMatch;
-	}
-
-	/**
-	 * Whether the router is a root router.
-	 */
-	get isRoot (): boolean {
-		return this.parent == null;
+	get params (): Params | null {
+		return this.match != null ? this.match.params : null;
 	}
 
 	/**
@@ -148,8 +154,6 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 		this._routes.length = 0;
 	}
 
-	private idasd = Math.random();
-
 	/**
 	 * Each time the path changes, load the new path.
 	 */
@@ -205,23 +209,29 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 		}
 
 		const {route} = match;
-		const info: RoutingInfo<D, P> = {match, slot: this};
+		const info: IRoutingInfo<D, P> = {match, slot: this};
 
 		try {
 
 			// Only change route if its a new route.
 			const navigate = shouldNavigate(this.match, match);
+
+			// Store the new route match.
+			const prevMatch = this._routeMatch;
+			this._routeMatch = match;
+
 			if (navigate) {
 
 				// Listen for another push state event. If another push state event happens
 				// while we are about to navigate we have to cancel.
 				let navigationInvalidated = false;
 				const cancelNavigation = () => navigationInvalidated = true;
-				const cleanup: EventListenerSubscription = addListener<Event, GlobalRouterEvent>(GLOBAL_ROUTER_EVENTS_TARGET, "changestate", cancelNavigation, {once: true});
+				const cleanupChangeListener: EventListenerSubscription = addListener<Event, GlobalRouterEvent>(GLOBAL_ROUTER_EVENTS_TARGET, "changestate", cancelNavigation, {once: true});
 
 				// Cleans up and dispatches a global event that a navigation was cancelled.
 				const cancel: Cancel = () => {
-					cleanup();
+					this._routeMatch = prevMatch;
+					cleanupChangeListener();
 					dispatchGlobalRouterEvent("navigationcancel", info);
 					return false;
 				};
@@ -240,7 +250,7 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 
 				// Redirect if necessary
 				if (isRedirectRoute(route)) {
-					cleanup();
+					cleanupChangeListener();
 					handleRedirect(this, route);
 					return false;
 				}
@@ -274,11 +284,8 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 				}
 
 				// Remember to cleanup after the navigation
-				cleanup();
+				cleanupChangeListener();
 			}
-
-			// Store the new route match.
-			this._routeMatch = match;
 
 			// Always dispatch the route change event to notify the children that something happened.
 			// This is because the child routes might have to change routes further down the tree.

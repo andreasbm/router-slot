@@ -1,7 +1,7 @@
 import { css, LitElement, PropertyValues } from "lit-element";
 import { html, TemplateResult } from "lit-html";
 import "weightless/nav";
-import { basePath, GLOBAL_ROUTER_EVENTS_TARGET, IRoute, isPathActive, PageComponent, query, queryString, RoutingInfo } from "../../../lib";
+import { basePath, GLOBAL_ROUTER_EVENTS_TARGET, IRoute, isPathActive, PageComponent, query, queryString, IRoutingInfo } from "../../../lib";
 import { sharedStyles } from "../styles";
 import "weightless/button";
 
@@ -13,7 +13,7 @@ const ROUTES: IRoute[] = [
 	{
 		path: "user/:user/dashboard/:dashId",
 		component: () => import("./user/user"),
-		setup: (page: PageComponent, info: RoutingInfo) => {
+		setup: (page: PageComponent, info: IRoutingInfo) => {
 			//page.userId = info.match.params.userId;
 			console.log({page, info});
 		}

@@ -1,5 +1,5 @@
 import { CATCH_ALL_WILDCARD, PARAM_IDENTIFIER, TRAVERSE_FLAG } from "../config";
-import { IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IRouterSlot, ModuleResolver, PageComponent, Params, PathFragment, RouterTree, RoutingInfo } from "../model";
+import { IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IRouterSlot, ModuleResolver, PageComponent, Params, PathFragment, RouterTree, IRoutingInfo } from "../model";
 import { constructPathWithBasePath, path as getPath, queryString, stripSlash } from "./url";
 
 /**
@@ -88,7 +88,7 @@ export function matchRoutes<D = any> (routes: IRoute<D>[], path: string | PathFr
  * @param route
  * @param info
  */
-export async function resolvePageComponent (route: IComponentRoute, info: RoutingInfo): Promise<PageComponent> {
+export async function resolvePageComponent (route: IComponentRoute, info: IRoutingInfo): Promise<PageComponent> {
 
 	// Figure out if the component were given as an import or class.
 	let cmp = route.component;

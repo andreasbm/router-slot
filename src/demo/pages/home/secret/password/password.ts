@@ -2,7 +2,7 @@ import { html, LitElement } from "lit-element";
 import { TemplateResult } from "lit-html";
 import { showDialog } from "weightless";
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "../../../../../lib/config";
-import { Class, IRouterSlot, RoutingInfo } from "../../../../../lib/model";
+import { Class, IRouterSlot, IRoutingInfo } from "../../../../../lib/model";
 import { addListener } from "../../../../../lib/util/events";
 import { basePath, path } from "../../../../../lib/util/url";
 import { sharedStyles } from "../../../styles";
@@ -18,7 +18,7 @@ export default class PasswordComponent extends LitElement {
 		$routerSlot.add([
 			{
 				path: "dialog",
-				resolve: (async ({slot, match}: RoutingInfo) => {
+				resolve: (async ({slot, match}: IRoutingInfo) => {
 					const DialogComponent: Class = (await import("../../../../dialog/dialog")).default;
 					const $dialog = new DialogComponent() as {parent: IRouterSlot | null} & HTMLElement;
 					$dialog.parent = slot;

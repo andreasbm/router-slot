@@ -1,6 +1,6 @@
 import { html, LitElement, PropertyValues } from "lit-element";
 import { TemplateResult } from "lit-html";
-import { IRouterSlot, PageComponent, query, RoutingInfo } from "../../../../lib";
+import { IRouterSlot, PageComponent, query, IRoutingInfo } from "../../../../lib";
 import { ROUTER_SLOT_TAG_NAME } from "../../../../lib/config";
 import { sharedStyles } from "../../styles";
 import { data } from "./data";
@@ -26,7 +26,7 @@ export default class SecretComponent extends LitElement {
 			{
 				path: "code",
 				component: () => import("./code/code"),
-				setup: (component: PageComponent, info: RoutingInfo) => {
+				setup: (component: PageComponent, info: IRoutingInfo) => {
 					component.style.color = query()["yellow"] != null ? `yellow` : `blue`;
 				}
 			},
