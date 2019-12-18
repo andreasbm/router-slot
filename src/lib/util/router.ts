@@ -224,7 +224,8 @@ export function constructAbsolutePath<D = any, P = any> (slot: IRouterSlot<D, P>
 
 		// Grab the fragments and construct the new path, taking the traverse depth into account.
 		// Always subtract at least 1 because we the path is relative to its parent.
-		const fragments = getFragments(tree, depth - 1 - traverseDepth);
+		// Filter away the empty fragments from the path.
+		const fragments = getFragments(tree, depth - 1 - traverseDepth).filter(fragment => fragment.length > 0);
 		path = `${fragments.join("/")}${fragments.length > 0 ? "/" : ""}${path}`;
 	}
 
