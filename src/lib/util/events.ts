@@ -44,3 +44,15 @@ export function addListener<T extends Event, eventType extends string> ($elem: E
 export function removeListeners (listeners: EventListenerSubscription[]) {
 	listeners.forEach(unsub => unsub());
 }
+
+/**
+ * Requests a microtask.
+ * @param cb
+ */
+export function requestMicroTask (cb: (() => void)) {
+	if ("queueMicrotask" in window) {
+		window.queueMicrotask(cb);
+	} else {
+		Promise.resolve().then(cb);
+	}
+}

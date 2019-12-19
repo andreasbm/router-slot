@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
 import { Cancel, EventListenerSubscription, GlobalRouterEvent, IPathFragments, IRoute, IRouteMatch, IRouterSlot, IRoutingInfo, Params, PathFragment, RouterSlotEvent } from "./model";
-import { addListener, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureAnchorHistory, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, pathWithoutBasePath, queryParentRouterSlot, removeListeners, resolvePageComponent, shouldNavigate } from "./util";
+import { addListener, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureAnchorHistory, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, pathWithoutBasePath, queryParentRouterSlot, removeListeners, requestMicroTask, resolvePageComponent, shouldNavigate } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -305,10 +305,9 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 			// This is because the child routes might have to change routes further down the tree.
 			// We need to wait a microtask before telling the rest of the world that the router tree has changed.
 			// This is important for ShadyDOM because the mutation observer that makes to call the disconnectedCallback
-			// needs to run before we dispatch a route change event.
-			(window.queueMicrotask || Promise.resolve().then)(() => {
-				// The event is dispatched in an animation frame to allow route children to make the initial
-				// render first and hook up the new router slot.
+			// needs to run before we dispatch a route change event. The event is dispatched in an animation frame to
+			// allow route children to make the initial render first and hook up the new router slot.
+			requestMicroTask(() => {
 				requestAnimationFrame(() => {
 					dispatchRouteChangeEvent(this, info);
 				});
