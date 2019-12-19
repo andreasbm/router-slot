@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
-import { Cancel, EventListenerSubscription, GlobalRouterEvent, IPathFragments, IRoute, IRouteMatch, IRouterSlot, PathFragment, RouterSlotEvent, IRoutingInfo, Params } from "./model";
-import { addListener, constructAbsolutePath, constructPathWithBasePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureAnchorHistory, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, path, pathWithoutBasePath, queryParentRouterSlot, removeListeners, resolvePageComponent, shouldNavigate } from "./util";
+import { Cancel, EventListenerSubscription, GlobalRouterEvent, IPathFragments, IRoute, IRouteMatch, IRouterSlot, IRoutingInfo, Params, PathFragment, RouterSlotEvent } from "./model";
+import { addListener, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureAnchorHistory, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, pathWithoutBasePath, queryParentRouterSlot, removeListeners, resolvePageComponent, shouldNavigate } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -63,6 +63,7 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	 * The current route match.
 	 */
 	private _routeMatch: IRouteMatch<D> | null = null;
+
 	get match (): IRouteMatch<D> | null {
 		return this._routeMatch;
 	}
@@ -104,14 +105,14 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	/**
 	 * Query the parent router slot when the router slot is connected.
 	 */
-	connectedCallback (): void {
+	connectedCallback () {
 		this.parent = this.queryParentRouterSlot();
 	}
 
 	/**
 	 * Tears down the element.
 	 */
-	disconnectedCallback (): void {
+	disconnectedCallback () {
 		this.detachListeners();
 	}
 
@@ -302,10 +303,15 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 
 			// Always dispatch the route change event to notify the children that something happened.
 			// This is because the child routes might have to change routes further down the tree.
-			// The event is dispatched in an animation frame to allow route children to make the initial
-			// render first and hook up the new router slot.
-			requestAnimationFrame(() => {
-				dispatchRouteChangeEvent(this, info);
+			// We need to wait a microtask before telling the rest of the world that the router tree has changed.
+			// This is important for ShadyDOM because the mutation observer that makes to call the disconnectedCallback
+			// needs to run before we dispatch a route change event.
+			(window.queueMicrotask || Promise.resolve().then)(() => {
+				// The event is dispatched in an animation frame to allow route children to make the initial
+				// render first and hook up the new router slot.
+				requestAnimationFrame(() => {
+					dispatchRouteChangeEvent(this, info);
+				});
 			});
 
 			// Dispatch globally that a navigation has ended.
