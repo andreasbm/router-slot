@@ -1,6 +1,16 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
 import { Cancel, EventListenerSubscription, GlobalRouterEvent, IPathFragments, IRoute, IRouteMatch, IRouterSlot, IRoutingInfo, Params, PathFragment, RouterSlotEvent } from "./model";
-import { addListener, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureAnchorHistory, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, pathWithoutBasePath, queryParentRouterSlot, removeListeners, requestMicroTask, resolvePageComponent, shouldNavigate } from "./util";
+import { addListener, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureAnchorHistory, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, pathWithoutBasePath, queryParentRouterSlot, removeListeners, resolvePageComponent, shouldNavigate } from "./util";
+
+/**
+ * Typings required for ShadyCSS.
+ */
+declare global {
+	interface Window {
+		ShadyCSS?: any;
+		ShadyDOM?: any;
+	}
+}
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -194,6 +204,14 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 		while (this.firstChild != null) {
 			this.firstChild.parentNode!.removeChild(this.firstChild);
 		}
+
+		// Flush the children and force the disconnected callbacks.
+		// This is very important to ensure that the children router-slots
+		// from the previous page has removed all event listeners from the
+		// router parent before we dispatch the routeChanged event.
+		if ("ShadyDOM" in window && "flush" in window.ShadyDOM) {
+			window.ShadyDOM.flush();
+		}
 	}
 
 	/**
@@ -303,14 +321,10 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 
 			// Always dispatch the route change event to notify the children that something happened.
 			// This is because the child routes might have to change routes further down the tree.
-			// We need to wait a microtask before telling the rest of the world that the router tree has changed.
-			// This is important for ShadyDOM because the mutation observer that makes to call the disconnectedCallback
-			// needs to run before we dispatch a route change event. The event is dispatched in an animation frame to
-			// allow route children to make the initial render first and hook up the new router slot.
-			requestMicroTask(() => {
-				requestAnimationFrame(() => {
-					dispatchRouteChangeEvent(this, info);
-				});
+			// The event is dispatched in an animation frame to allow route children to make the initial render first
+			// and hook up the new router slot.
+			requestAnimationFrame(() => {
+				dispatchRouteChangeEvent(this, info);
 			});
 
 			// Dispatch globally that a navigation has ended.
