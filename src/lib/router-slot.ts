@@ -2,16 +2,6 @@ import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
 import { Cancel, EventListenerSubscription, GlobalRouterEvent, IPathFragments, IRoute, IRouteMatch, IRouterSlot, IRoutingInfo, Params, PathFragment, RouterSlotEvent } from "./model";
 import { addListener, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureAnchorHistory, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, pathWithoutBasePath, queryParentRouterSlot, removeListeners, resolvePageComponent, shouldNavigate } from "./util";
 
-/**
- * Typings required for ShadyCSS.
- */
-declare global {
-	interface Window {
-		ShadyCSS?: any;
-		ShadyDOM?: any;
-	}
-}
-
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
 
@@ -170,6 +160,15 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	 */
 	async render (): Promise<void> {
 
+		// When using ShadyDOM the disconnectedCallback in the child router slot is called async
+		// in a microtask. This means that when using the ShadyDOM polyfill, sometimes child router slots
+		// would not clear event listeners from the parent router slots and therefore route even though
+		// it was no longer in the DOM. The solution is to check whether the isConnected flag is false
+		// before rendering the path.
+		if (!this.isConnected) {
+			return;
+		}
+
 		// Either choose the parent fragment or the current path if no parent exists.
 		// The root router slot will always use the entire path.
 		const pathFragment = this.parent != null && this.parent.fragments != null
@@ -203,14 +202,6 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	protected clearChildren () {
 		while (this.firstChild != null) {
 			this.firstChild.parentNode!.removeChild(this.firstChild);
-		}
-
-		// Flush the children and force the disconnected callbacks.
-		// This is very important to ensure that the children router-slots
-		// from the previous page has removed all event listeners from the
-		// router parent before we dispatch the routeChanged event.
-		if ("ShadyDOM" in window && "flush" in window.ShadyDOM) {
-			window.ShadyDOM.flush();
 		}
 	}
 
