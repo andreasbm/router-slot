@@ -28,6 +28,7 @@ export type Class<T extends PageComponent = PageComponent> = {new (...args: any[
 export type Setup<D = any> = ((component: PageComponent, info: IRoutingInfo<D>) => void);
 
 export type RouterTree<D = any, P = any> = {slot: IRouterSlot<D, P>} & {child?: RouterTree} | null | undefined;
+export type PathMatch = "prefix" | "suffix" | "full" | "fuzzy";
 
 /**
  * The base route interface.
@@ -44,8 +45,12 @@ export interface IRouteBase<D = any> {
 	// If guard returns false, the navigation is not allowed
 	guards?: Guard[];
 
-	// Whether the match is fuzzy (eg. "name" would not only match "name" or "name/" but also "path/to/name")
-	fuzzy?: boolean;
+	// The type of match.
+	// - If "prefix" router-slot will try to match the first part of the path.
+	// - If "suffix" router-slot will try to match the last part of the path.
+	// - If "full" router-slot will try to match the entire path.
+	// - If "fuzzy" router-slot will try to match an arbitrary part of the path.
+	pathMatch?: PathMatch;
 }
 
 /**

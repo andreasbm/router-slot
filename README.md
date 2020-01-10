@@ -373,14 +373,18 @@ export interface IRouteBase<T = any> {
   // If guard returns false, the navigation is not allowed
   guards?: Guard[];
 
-  // Whether the match is fuzzy (eg. "name" would not only match "name" or "name/" but also "path/to/name")
-  fuzzy?: boolean;
+  // The type of match.
+  // - If "prefix" router-slot will try to match the first part of the path.
+  // - If "suffix" router-slot will try to match the last part of the path.
+  // - If "full" router-slot will try to match the entire path.
+  // - If "fuzzy" router-slot will try to match an arbitrary part of the path.
+  pathMatch?: PathMatch;
 }
 ```
 
 #### Component routes
 
-Component routes resolves a specified component. You can provide the `component` property with either a class that extends HTMLElement (aka a `web component`), a module that exports the `web component` as default or a DOM element. These three different ways of doing it can be done lazily by returning it a function instead.
+Component routes resolves a specified component. You can provide the `component` property with either a [class that extends HTMLElement](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements), a module that exports the `web component` as default or a DOM element. These three different ways of doing it can be done lazily by returning it a function instead.
 
 ```typescript
 export interface IComponentRoute extends IRouteBase {

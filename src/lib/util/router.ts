@@ -1,4 +1,4 @@
-import { CATCH_ALL_WILDCARD, PARAM_IDENTIFIER, TRAVERSE_FLAG } from "../config";
+import { CATCH_ALL_WILDCARD, DEFAULT_PATH_MATCH, PARAM_IDENTIFIER, TRAVERSE_FLAG } from "../config";
 import { IComponentRoute, IRedirectRoute, IResolverRoute, IRoute, IRouteMatch, IRouterSlot, ModuleResolver, PageComponent, Params, PathFragment, RouterTree, IRoutingInfo } from "../model";
 import { constructPathWithBasePath, path as getPath, queryString, stripSlash } from "./url";
 
@@ -25,17 +25,34 @@ export function matchRoute<D = any> (route: IRoute<D>, path: string | PathFragme
 	const paramNames: string[] = [];
 	const routePath = stripSlash(route.path.replace(PARAM_IDENTIFIER, (substring: string, ...args: string[]) => {
 		paramNames.push(args[0]);
-		return "([^\\/]+)";
+		return `([^\/]+)`;
 	}));
 
 	// Construct the regex to match with the path or fragment
-	// If fuzzy we simply need to match the start of the path with the route path.
-	// If not fuzzy we need to match either with the route path and "/" or the route path and the end of the line.
-	// If the path is empty we treat it as a catch all wildcard to ensure it doesn't consume anything
-	const regex = route.path === CATCH_ALL_WILDCARD || route.path === "" ? /^/
-		: route.fuzzy
-			? new RegExp(`^.*?${routePath}(/|$)`)
-			: new RegExp(`^[\/]?${routePath}(\/|$)`);
+	// If path is wildcard:
+	// - We match with /^/ to not consume any characters.
+	// If path is empty and pathmatch is not full
+	// - We match with /^/ to not consume any characters.
+	// If pathmatch is prefix
+	// - We start the match with [/]? to allow a slash in front of the path.
+	// - We end the match with (?:/|$) to make sure the match ends at either the end of the fragment or end of the path.
+	// If pathmatch is suffix:
+	// - We start the match with .*? to allow anything to be in front of what we are trying to match.
+	// - We end the match with $ to make sure the match ends at the end of the path.
+	// If pathmatch is full:
+	// - We end the match with $ to make sure the match ends at the end of the path.
+	// If pathmatch is fuzzy
+	// - We start the match with .*? to allow anything to be in front of what we are trying to match.
+	// - We end the match with .*? to allow anything to be after what we are trying to match.
+	// All matches starts with ^ to make sure the match is done from the beginning of the path.
+	const regex = route.path === CATCH_ALL_WILDCARD || (route.path.length === 0 && route.pathMatch != "full" ) ? /^/ : (() => {
+		switch (route.pathMatch || DEFAULT_PATH_MATCH) {
+			case "full": return new RegExp(`^${routePath}\/?$`);
+			case "suffix": return new RegExp(`^.*?${routePath}\/?$`);
+			case "fuzzy": return new RegExp(`^.*?${routePath}.*?$`);
+			case "prefix": default: return new RegExp(`^[\/]?${routePath}(?:\/|$)`);
+		}
+	})();
 
 	// Check if there's a match
 	const match = path.match(regex);
@@ -62,6 +79,7 @@ export function matchRoute<D = any> (route: IRoute<D>, path: string | PathFragme
 			}
 		};
 	}
+
 
 	return null;
 }

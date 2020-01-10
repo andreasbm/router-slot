@@ -1,4 +1,4 @@
-import { ChangeStateEvent, GLOBAL_ROUTER_EVENTS_TARGET, IRouterSlot, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, path, PushStateEvent, ReplaceStateEvent, RouterSlot } from "../lib";
+import { ChangeStateEvent, GLOBAL_ROUTER_EVENTS_TARGET, IRouterSlot, matchRoute, NavigationCancelEvent, NavigationEndEvent, NavigationErrorEvent, NavigationStartEvent, NavigationSuccessEvent, path, PushStateEvent, ReplaceStateEvent, RouterSlot } from "../lib";
 import { ROUTER_SLOT_TAG_NAME } from "../lib/config";
 
 import "./../lib/router-link";
@@ -87,7 +87,7 @@ customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
 				$slot.add([
 					{
 						path: "route",
-						fuzzy: true,
+						pathMatch: "suffix",
 						component: () => {
 							const $div = document.createElement("div");
 							$div.innerText = `Here's another <div> tag!`;
@@ -110,3 +110,5 @@ customElements.whenDefined(ROUTER_SLOT_TAG_NAME).then(async () => {
 		}
 	]);
 });
+
+//(window as any)["matchRoute"] = matchRoute;
