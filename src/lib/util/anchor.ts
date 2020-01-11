@@ -21,8 +21,8 @@ export function ensureAnchorHistory () {
 		// using the history API. Also, if the target is not this frame we
 		// allow the default behavior (eg. if it should open in a new tab)
 		if (!href.startsWith(location.origin) ||
-			($anchor.target !== "" && $anchor.target !== "_self") ||
-			$anchor.dataset["routerSlot"] === "disable") {
+		   ($anchor.target !== "" && $anchor.target !== "_self") ||
+		   $anchor.dataset["routerSlot"] === "disable") {
 			return;
 		}
 
