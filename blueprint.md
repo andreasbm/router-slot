@@ -115,6 +115,12 @@ Normally an [`anchor element`](https://developer.mozilla.org/en-US/docs/Web/HTML
 
 There are many advantages of using an anchor element, the main one being accessibility.
 
+Alternatively, if you would still like to allow relative links to other parts of your site to navigate as normally, you can opt out of this behavior on a link-by-link basis:
+
+```html
+<a href="/about" data-router-slot="disable">Go to about!</a>
+```
+
 #### `router-link`
 
 With the `router-link` component you add `<router-link>` to your markup and specify a path. Whenever the component is clicked it will navigate to the specified path. Whenever the path of the router link is active the active attribute is set.

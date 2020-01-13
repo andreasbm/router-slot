@@ -22,7 +22,7 @@ export function ensureAnchorHistory () {
 		// allow the default behavior (eg. if it should open in a new tab)
 		if (!href.startsWith(location.origin) ||
 		   ($anchor.target !== "" && $anchor.target !== "_self") ||
-		   $anchor.dataset["routerSlot"] === "disable") {
+		   $anchor.dataset["routerSlot"] === "disabled") {
 			return;
 		}
 
