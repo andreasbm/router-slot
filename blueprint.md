@@ -118,7 +118,7 @@ There are many advantages of using an anchor element, the main one being accessi
 Alternatively, if you would still like to allow relative links to other parts of your site to navigate as normally, you can opt out of this behavior on a link-by-link basis:
 
 ```html
-<a href="/about" data-router-slot="disable">Go to about!</a>
+<a href="/about" data-router-slot="disabled">Go to about!</a>
 ```
 
 #### `router-link`
