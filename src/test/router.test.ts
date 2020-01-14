@@ -192,7 +192,7 @@ const TEST_CASES: {route: IRoute, path: string, expectedMatch: IRouteMatch<any> 
 describe("router", () => {
 	const {expect} = chai;
 
-	it("[matchRoute] should match the correct path", () => {
+	it("[matchRoute] should match the correct route", () => {
 		for (const {route, path, expectedMatch} of TEST_CASES) {
 			const match = matchRoute(route, path);
 			expect(JSON.stringify(match)).to.equal(JSON.stringify(expectedMatch));

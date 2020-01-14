@@ -16,10 +16,10 @@ export function ensureAnchorHistory () {
 		// Get the HREF value from the anchor tag
 		const href = $anchor.href;
 
-		// Make sure the path is relative to the origin or abort
-		// We want to allow links to absolute paths without
-		// using the history API. Also, if the target is not this frame we
-		// allow the default behavior (eg. if it should open in a new tab)
+		// Only handle the anchor tag if the follow holds true:
+		// - The HREF is relative to the origin of the current location.
+		// - The target is targeting the current frame.
+		// - The anchor doesn't have the attribute [data-router-slot]="disabled"
 		if (!href.startsWith(location.origin) ||
 		   ($anchor.target !== "" && $anchor.target !== "_self") ||
 		   $anchor.dataset["routerSlot"] === "disabled") {

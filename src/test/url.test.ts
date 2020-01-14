@@ -1,13 +1,12 @@
 import { basePath, path, query, toQuery, toQueryString } from "../lib/util/url";
-import { clearHistory } from "./test-helpers";
+import { addBaseTag, clearHistory } from "./test-helpers";
 
 describe("url", () => {
 	const {expect} = chai;
 	let $base: HTMLBaseElement;
 
 	before(() => {
-		$base = document.createElement("base");
-		document.head.appendChild($base);
+		$base = addBaseTag();
 	});
 	beforeEach(async () => {
 		$base.href = `/`;
