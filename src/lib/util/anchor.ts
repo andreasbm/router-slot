@@ -2,8 +2,6 @@
  * Hook up a click listener to the window that, for all anchor tags
  * that has a relative HREF, uses the history API instead.
  */
-import { stripStart } from "./url";
-
 export function ensureAnchorHistory () {
 	window.addEventListener("click", (e: MouseEvent) => {
 
@@ -22,7 +20,9 @@ export function ensureAnchorHistory () {
 		// We want to allow links to absolute paths without
 		// using the history API. Also, if the target is not this frame we
 		// allow the default behavior (eg. if it should open in a new tab)
-		if (!href.startsWith(location.origin) || ($anchor.target !== "" && $anchor.target !== "_self")) {
+		if (!href.startsWith(location.origin) ||
+		   ($anchor.target !== "" && $anchor.target !== "_self") ||
+		   $anchor.dataset["routerSlot"] === "disabled") {
 			return;
 		}
 
