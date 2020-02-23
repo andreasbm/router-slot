@@ -6,10 +6,10 @@ export function ensureAnchorHistory () {
 	window.addEventListener("click", (e: MouseEvent) => {
 
 		// Find the target by using the composed path to get the element through the shadow boundaries.
-		const $anchor = ("composedPath" in e as any) ? e.composedPath()[0] : e.target;
+		const $anchor = ("composedPath" in e as any) ? e.composedPath().find($elem => $elem instanceof HTMLAnchorElement) : e.target;
 
 		// Abort if the event is not about the anchor tag
-		if (!($anchor instanceof HTMLAnchorElement)) {
+		if ($anchor == null || !($anchor instanceof HTMLAnchorElement)) {
 			return;
 		}
 
