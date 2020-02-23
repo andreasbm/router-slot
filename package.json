@@ -1,6 +1,6 @@
 {
 	"name": "router-slot",
-	"version": "1.5.1",
+	"version": "1.5.2",
 	"description": "A powerful web component router",
 	"license": "MIT",
 	"author": "Andreas Mehlsen",
