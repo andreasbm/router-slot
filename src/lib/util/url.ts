@@ -21,7 +21,7 @@ export function pathWithoutBasePath (options: Partial<ISlashOptions> = {}): stri
 
 /**
  * Returns the base path as defined in the <base> tag in the head in a reliable way.
- * If eg. <base href="/web-router/"> is defined this function will return "/web-router/".
+ * If eg. <base href="/router-slot/"> is defined this function will return "/router-slot/".
  *
  * An alternative would be to use regex on document.baseURI,
  * but that will be unreliable in some cases because it

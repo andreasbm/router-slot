@@ -50,7 +50,7 @@ The `router-slot` component acts as a placeholder that marks the spot in the tem
 
 ### 4. Configure the router
 
-Routes are added to the router through the `add` function on a `router-slot` component. Specify the parts of the path you want it to match with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. Remember to export the login component as default in the `./pages/login` file like this `export default LoginComponent extends HTMLElement { ... }`. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
+Routes are added to the router through the `add` function on a `router-slot` component. Specify the parts of the path you want it to match with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. Remember to export the login component as default in the `./pages/login` file like this `export default LoginComponent extends HTMLElement { ... }`. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `router-slot`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
 
 ```javascript
 const routerSlot = document.querySelector("router-slot");
@@ -174,7 +174,7 @@ So to recap the above steps, here's how to use the router.
 
 ## `lit-element`
 
-The `web-router` works very well with `lit-element`. Check out the example below to get an idea on how you could use this router in your own `lit-element` based projects.
+The `router-slot` works very well with `lit-element`. Check out the example below to get an idea on how you could use this router in your own `lit-element` based projects.
 
 ```typescript
 import { LitElement, html, query, PropertyValues } from "lit-element";

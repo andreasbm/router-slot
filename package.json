@@ -8,12 +8,12 @@
 	"module": "index.js",
 	"main": "index.js",
 	"bugs": {
-		"url": "https://github.com/andreasbm/web-router/issues"
+		"url": "https://github.com/andreasbm/router-slot/issues"
 	},
-	"homepage": "https://github.com/andreasbm/web-router#readme",
+	"homepage": "https://github.com/andreasbm/router-slot#readme",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/andreasbm/web-router.git"
+		"url": "git+https://github.com/andreasbm/router-slot.git"
 	},
 	"keywords": [
 		"webapp",
@@ -64,7 +64,7 @@
 		{
 			"name": "You?",
 			"img": "https://joeschmoe.io/api/v1/random",
-			"url": "https://github.com/andreasbm/web-router/blob/master/CONTRIBUTING.md"
+			"url": "https://github.com/andreasbm/router-slot/blob/master/CONTRIBUTING.md"
 		}
 	]
 }

@@ -3,15 +3,15 @@
 <p align="center">
 		<a href="https://npmcharts.com/compare/router-slot?minimal=true"><img alt="Downloads per month" src="https://img.shields.io/npm/dm/router-slot.svg" height="20"/></a>
 <a href="https://www.npmjs.com/package/router-slot"><img alt="NPM Version" src="https://img.shields.io/npm/v/router-slot.svg" height="20"/></a>
-<a href="https://david-dm.org/andreasbm/web-router"><img alt="Dependencies" src="https://img.shields.io/david/andreasbm/web-router.svg" height="20"/></a>
-<a href="https://github.com/andreasbm/web-router/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/andreasbm/web-router.svg" height="20"/></a>
+<a href="https://david-dm.org/andreasbm/router-slot"><img alt="Dependencies" src="https://img.shields.io/david/andreasbm/router-slot.svg" height="20"/></a>
+<a href="https://github.com/andreasbm/router-slot/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/andreasbm/router-slot.svg" height="20"/></a>
 <a href="https://www.webcomponents.org/element/router-slot"><img alt="Published on webcomponents.org" src="https://img.shields.io/badge/webcomponents.org-published-blue.svg" height="20"/></a>
 	</p>
 
 
 <p align="center">
   <b>A powerful web component router</b></br>
-  <sub>A router interprets the browser URL and navigates to a specific views based on the configuration. This router is optimized for routing between web components. If you want to play with it yourself, go to <a href='https://codepen.io/andreasbm/pen/XWWZpvM'>the playground</a>. Go here to see a demo <a href="https://appnest-demo.firebaseapp.com/web-router">https://appnest-demo.firebaseapp.com/web-router</a>.<sub>
+  <sub>A router interprets the browser URL and navigates to a specific views based on the configuration. This router is optimized for routing between web components. If you want to play with it yourself, go to <a href='https://codepen.io/andreasbm/pen/XWWZpvM'>the playground</a>. Go here to see a demo <a href="https://appnest-demo.firebaseapp.com/router-slot">https://appnest-demo.firebaseapp.com/router-slot</a>.<sub>
 </p>
 
 <br />
@@ -111,7 +111,7 @@ The `router-slot` component acts as a placeholder that marks the spot in the tem
 
 ### 4. Configure the router
 
-Routes are added to the router through the `add` function on a `router-slot` component. Specify the parts of the path you want it to match with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. Remember to export the login component as default in the `./pages/login` file like this `export default LoginComponent extends HTMLElement { ... }`. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `web-router`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
+Routes are added to the router through the `add` function on a `router-slot` component. Specify the parts of the path you want it to match with or use the `**` wildcard to catch all paths. The router has no routes until you configure it. The example below creates three routes. The first route path matches urls starting with `login` and will lazy load the login component. Remember to export the login component as default in the `./pages/login` file like this `export default LoginComponent extends HTMLElement { ... }`. The second route matches all urls starting with `home` and will stamp the `HomeComponent` in the `router-slot`. The third route matches all paths that the two routes before didn't catch and redirects to home. This can also be useful for displaying "404 - Not Found" pages.
 
 ```javascript
 const routerSlot = document.querySelector("router-slot");
@@ -238,7 +238,7 @@ So to recap the above steps, here's how to use the router.
 
 ## ➤ `lit-element`
 
-The `web-router` works very well with `lit-element`. Check out the example below to get an idea on how you could use this router in your own `lit-element` based projects.
+The `router-slot` works very well with `lit-element`. Check out the example below to get an idea on how you could use this router in your own `lit-element` based projects.
 
 ```typescript
 import { LitElement, html, query, PropertyValues } from "lit-element";
@@ -630,9 +630,9 @@ From my testing I found that Chrome and Safari, when navigating, treat an empty 
 ## ➤ Contributors
 	
 
-| [<img alt="Andreas Mehlsen" src="https://avatars1.githubusercontent.com/u/6267397?s=460&v=4" width="100">](https://twitter.com/andreasmehlsen) | [<img alt="You?" src="https://joeschmoe.io/api/v1/random" width="100">](https://github.com/andreasbm/web-router/blob/master/CONTRIBUTING.md) |
+| [<img alt="Andreas Mehlsen" src="https://avatars1.githubusercontent.com/u/6267397?s=460&v=4" width="100">](https://twitter.com/andreasmehlsen) | [<img alt="You?" src="https://joeschmoe.io/api/v1/random" width="100">](https://github.com/andreasbm/router-slot/blob/master/CONTRIBUTING.md) |
 |:--------------------------------------------------:|:--------------------------------------------------:|
-| [Andreas Mehlsen](https://twitter.com/andreasmehlsen) | [You?](https://github.com/andreasbm/web-router/blob/master/CONTRIBUTING.md) |
+| [Andreas Mehlsen](https://twitter.com/andreasmehlsen) | [You?](https://github.com/andreasbm/router-slot/blob/master/CONTRIBUTING.md) |
 
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#license)
