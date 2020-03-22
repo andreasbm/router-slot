@@ -1,4 +1,4 @@
-<h1 align="center">router-slot</h1>
+<!-- ⚠️ This README has been generated from the file(s) "blueprint.md" ⚠️--><h1 align="center">router-slot</h1>
 
 <p align="center">
 		<a href="https://npmcharts.com/compare/router-slot?minimal=true"><img alt="Downloads per month" src="https://img.shields.io/npm/dm/router-slot.svg" height="20"/></a>
