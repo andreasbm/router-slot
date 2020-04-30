@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET } from "./config";
 import { EventListenerSubscription, GlobalRouterEvent, IRouterSlot, PathFragment } from "./model";
-import { addListener, ensureSlash, isPathActive, queryParentRouterSlot, queryString, removeListeners, slashify } from "./util";
+import { addListener, isPathActive, queryParentRouterSlot, queryString, removeListeners, slashify } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;

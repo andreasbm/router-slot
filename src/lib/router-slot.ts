@@ -251,6 +251,7 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 				const cancel: Cancel = () => {
 					cleanup();
 					dispatchGlobalRouterEvent("navigationcancel", info);
+					dispatchGlobalRouterEvent("navigationend", info);
 					return false;
 				};
 

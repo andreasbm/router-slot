@@ -17,6 +17,9 @@ export function dispatchRouteChangeEvent<D = any> ($elem: HTMLElement, detail: I
  */
 export function dispatchGlobalRouterEvent<D = any> (name: GlobalRouterEvent, detail?: IRoutingInfo<D>) {
 	GLOBAL_ROUTER_EVENTS_TARGET.dispatchEvent(new CustomEvent(name, {detail}));
+	// if ("debugRouterSlot" in window) {
+	// 	console.log(`%c [router-slot]: ${name}`, `color: #286ee0`, detail);
+	// }
 }
 
 /**
