@@ -33,6 +33,14 @@ export class RouterLink extends HTMLElement {
 	}
 
 	/**
+	 * The link target, equivalent of <a target>.
+	 * @attr
+	 */
+	get target(): string | null {
+		return this.getAttribute("target");
+	}
+
+	/**
 	 * Whether the element is disabled or not.
 	 * @attr
 	 */
@@ -196,6 +204,11 @@ export class RouterLink extends HTMLElement {
 
 		const query = this.preserveQuery ? queryString() : "";
 		const destination = `${this.absolutePath}${query}`;
+
+		if (this.target) {
+			window.open(destination, this.target);
+			return;
+		}
 
 		// If user is holding down metaKey when clicking, open in new tab
 		if (e instanceof MouseEvent && (e as MouseEvent).metaKey) {
