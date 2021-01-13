@@ -194,7 +194,16 @@ export class RouterLink extends HTMLElement {
 			return;
 		}
 
-		history.pushState(null, "", `${this.absolutePath}${this.preserveQuery ? queryString() : ""}`);
+		const query = this.preserveQuery ? queryString() : "";
+		const destination = `${this.absolutePath}${query}`;
+
+		// If user is holding down metaKey when clicking, open in new tab
+		if (e instanceof MouseEvent && (e as MouseEvent).metaKey) {
+			window.open(destination, '_blank');
+			return;
+		}
+
+		history.pushState(null, "", destination);
 	}
 }
 
