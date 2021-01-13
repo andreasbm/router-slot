@@ -27,7 +27,7 @@ export function ensureAnchorHistory () {
 		}
 
 		// Remove the origin from the start of the HREF to get the path
-		const path = $anchor.pathname;
+		const path = `${$anchor.pathname}${$anchor.search}`;
 
 		// Prevent the default behavior
 		e.preventDefault();
