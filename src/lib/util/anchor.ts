@@ -12,10 +12,6 @@ export function ensureAnchorHistory () {
 			return;
 		}
 
-		// holding down the metaKey (Command on Mac, Control on Windows)
-		// is used to open a link in a new tab so let the browser handle it
-		if (e.metaKey) return;
-
 		// Get the HREF value from the anchor tag
 		const href = $anchor.href;
 
@@ -26,6 +22,12 @@ export function ensureAnchorHistory () {
 		if (!href.startsWith(location.origin) ||
 		   ($anchor.target !== "" && $anchor.target !== "_self") ||
 		   $anchor.dataset["routerSlot"] === "disabled") {
+			return;
+		}
+
+		// Holding down the metaKey (Command on Mac, Control on Windows)
+		// is used to open a link in a new tab so let the browser handle it
+		if (e.metaKey) {
 			return;
 		}
 
