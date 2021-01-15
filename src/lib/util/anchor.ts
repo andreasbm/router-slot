@@ -1,10 +1,17 @@
-/**
- * Hook up a click listener to the window that, for all anchor tags
- * that has a relative HREF, uses the history API instead.
- */
-export function ensureAnchorHistory () {
-	window.addEventListener("click", (e: MouseEvent) => {
+import { IRouterSlot } from "../model";
 
+/**
+ * The AnchorHandler allows the RouterSlot to observe all anchor clicks
+ * and either handle the click or let the browser handle it.
+ */
+export class AnchorHandler {
+	routerSlot?: IRouterSlot;
+
+	constructor(routerSlot?: IRouterSlot) {
+		this.routerSlot = routerSlot;
+	}
+
+	handleEvent(e: MouseEvent) {
 		// Find the target by using the composed path to get the element through the shadow boundaries.
 		const $anchor = ("composedPath" in e as any) ? e.composedPath().find($elem => $elem instanceof HTMLAnchorElement) : e.target;
 
@@ -13,16 +20,20 @@ export function ensureAnchorHistory () {
 			return;
 		}
 
-		// Get the HREF value from the anchor tag
-		const href = $anchor.href;
-
 		// Only handle the anchor tag if the follow holds true:
-		// - The HREF is relative to the origin of the current location.
-		// - The target is targeting the current frame.
-		// - The anchor doesn't have the attribute [data-router-slot]="disabled"
-		if (!href.startsWith(location.origin) ||
-		   ($anchor.target !== "" && $anchor.target !== "_self") ||
-		   $anchor.dataset["routerSlot"] === "disabled") {
+		// - 1. The HREF is relative to the origin of the current location.
+		const hrefIsRelative = $anchor.href.startsWith(location.origin);
+
+		// - 2. The target is targeting the current frame.
+		const differentFrameTargetted = $anchor.target !== "" && $anchor.target !== "_self";
+
+		// - 3. The anchor doesn't have the attribute [data-router-slot]="disabled"
+		const isDisabled = $anchor.dataset["routerSlot"] === "disabled";
+
+		// - 4. The router can handle the route
+		const routeMatched = this.routerSlot?.getRouteMatch($anchor.pathname);
+
+		if (!hrefIsRelative || differentFrameTargetted || isDisabled || !routeMatched) {
 			return;
 		}
 
@@ -34,5 +45,5 @@ export function ensureAnchorHistory () {
 
 		// Change the history!
 		history.pushState(null, "", path);
-	});
+	}
 }
