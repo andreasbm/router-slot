@@ -1,31 +1,49 @@
-import { ensureAnchorHistory } from "../lib/util/anchor";
+import { AnchorHandler, RouterSlot } from "../lib";
 import { ensureHistoryEvents } from "../lib/util/history";
 import { path } from "../lib/util/url";
 import { addBaseTag, clearHistory } from "./test-helpers";
 
 const testPath = `/about`;
 
-describe("anchor", () => {
+describe("AnchorHandler", () => {
 	const {expect} = chai;
 	let $anchor!: HTMLAnchorElement;
+	let $slot = new RouterSlot();
+	let $anchorHandler = new AnchorHandler($slot);
+
+	const addTestRoute = () => {
+		$slot.add([
+			{
+				path: testPath,
+				pathMatch: "suffix",
+				component: () => document.createElement("div")
+			}
+		])
+	}
 
 	before(() => {
 		ensureHistoryEvents();
-		ensureAnchorHistory();
 		addBaseTag();
+		document.body.appendChild($slot);
+		$anchorHandler.setup();
 	});
 	beforeEach(() => {
 		document.body.innerHTML = `
 			<a id="anchor" href="${testPath}">Anchor</a>
 		`;
-
 		$anchor = document.body.querySelector<HTMLAnchorElement>("#anchor")!;
+	});
+	afterEach(() => {
+		$slot.clear();
 	});
 	after(() => {
 		clearHistory();
+		$anchorHandler.teardown();
 	});
 
-	it("[ensureAnchorHistory] should change anchors to use history API", done => {
+	it("[AnchorHandler] should change anchors to use history API", done => {
+		addTestRoute();
+
 		window.addEventListener("pushstate", () => {
 			expect(path({end: false})).to.equal(testPath);
 			done();
@@ -34,7 +52,9 @@ describe("anchor", () => {
 		$anchor.click();
 	});
 
-	it("[ensureAnchorHistory] should not change anchors with target _blank", done => {
+	it("[AnchorHandler] should not change anchors with target _blank", done => {
+		addTestRoute();
+
 		window.addEventListener("pushstate", () => {
 			expect(true).to.equal(false);
 		});
@@ -44,12 +64,26 @@ describe("anchor", () => {
 		done();
 	});
 
-	it("[ensureAnchorHistory] should not change anchors with [data-router-slot]='disabled'", done => {
+	it("[AnchorHandler] should not change anchors with [data-router-slot]='disabled'", done => {
+		addTestRoute();
+
 		window.addEventListener("pushstate", () => {
 			expect(true).to.equal(false);
 		});
 
 		$anchor.setAttribute("data-router-slot", "disabled");
+		$anchor.click();
+		done();
+	});
+
+	it("[AnchorHandler] should not change anchors that are not supported by the router", done => {
+		// there are no routes added to the $slot in this test
+		// so the router will not attempt to handle it
+
+		window.addEventListener("pushstate", () => {
+			expect(true).to.equal(false);
+		});
+
 		$anchor.click();
 		done();
 	});

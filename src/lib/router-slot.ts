@@ -1,6 +1,6 @@
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "./config";
 import { Cancel, EventListenerSubscription, GlobalRouterEvent, IPathFragments, IRoute, IRouteMatch, IRouterSlot, IRoutingInfo, Params, PathFragment, RouterSlotEvent } from "./model";
-import { addListener, AnchorHandler, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, isRedirectRoute, isResolverRoute, matchRoutes, pathWithoutBasePath, queryParentRouterSlot, removeListeners, resolvePageComponent, shouldNavigate } from "./util";
+import { addListener, AnchorHandler, constructAbsolutePath, dispatchGlobalRouterEvent, dispatchRouteChangeEvent, ensureHistoryEvents, handleRedirect, IAnchorHandler, isRedirectRoute, isResolverRoute, matchRoutes, pathWithoutBasePath, queryParentRouterSlot, removeListeners, resolvePageComponent, shouldNavigate } from "./util";
 
 const template = document.createElement("template");
 template.innerHTML = `<slot></slot>`;
@@ -89,7 +89,7 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	/**
 	 * The anchor link handler for the router slot
 	 */
-	private anchorHandler?: AnchorHandler;
+	private anchorHandler?: IAnchorHandler;
 
 	/**
 	 * Hooks up the element.
@@ -188,19 +188,11 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	 */
 	protected setupAnchorListener(): void {
 		this.anchorHandler = new AnchorHandler(this);
-		window.addEventListener(
-			'click',
-			this.anchorHandler?.handleEvent.bind(this)
-		);
+		this.anchorHandler?.setup();
 	}
 
 	protected detachAnchorListener(): void {
-		if (this.anchorHandler) {
-			window.removeEventListener(
-				'click',
-				this.anchorHandler.handleEvent
-			);
-		}
+		this.anchorHandler?.teardown();
 	}
 
 	/**
