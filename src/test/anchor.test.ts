@@ -10,7 +10,7 @@ describe("AnchorHandler", () => {
 	let $anchor!: HTMLAnchorElement;
 	let $slot = new RouterSlot();
 	let $anchorHandler = new AnchorHandler($slot);
-	let $windowPushstateCallbackHandler: () => void;
+	let $windowPushstateHandler: () => void;
 
 	const addTestRoute = () => {
 		$slot.add([
@@ -35,7 +35,7 @@ describe("AnchorHandler", () => {
 	});
 	afterEach(() => {
 		$slot.clear();
-		window.removeEventListener('pushstate', $windowPushstateCallbackHandler);
+		window.removeEventListener('pushstate', $windowPushstateHandler);
 	});
 	after(() => {
 		clearHistory();
@@ -45,12 +45,12 @@ describe("AnchorHandler", () => {
 	it("[AnchorHandler] should change anchors to use history API", done => {
 		addTestRoute();
 
-		$windowPushstateCallbackHandler = () => {
+		$windowPushstateHandler = () => {
 			expect(path({end: false})).to.equal(testPath);
 			done();
 		};
 
-		window.addEventListener("pushstate", $windowPushstateCallbackHandler);
+		window.addEventListener("pushstate", $windowPushstateHandler);
 
 		$anchor.click();
 	});
@@ -58,11 +58,11 @@ describe("AnchorHandler", () => {
 	it("[AnchorHandler] should not change anchors with target _blank", done => {
 		addTestRoute();
 
-		$windowPushstateCallbackHandler = () => {
+		$windowPushstateHandler = () => {
 			expect(true).to.equal(false);
 		}
 
-		window.addEventListener("pushstate", $windowPushstateCallbackHandler);
+		window.addEventListener("pushstate", $windowPushstateHandler);
 
 		$anchor.target = "_blank";
 		$anchor.click();
@@ -72,11 +72,11 @@ describe("AnchorHandler", () => {
 	it("[AnchorHandler] should not change anchors with [data-router-slot]='disabled'", done => {
 		addTestRoute();
 
-		$windowPushstateCallbackHandler = () => {
+		$windowPushstateHandler = () => {
 			expect(true).to.equal(false);
 		}
 
-		window.addEventListener("pushstate", $windowPushstateCallbackHandler);
+		window.addEventListener("pushstate", $windowPushstateHandler);
 
 		$anchor.setAttribute("data-router-slot", "disabled");
 		$anchor.click();
@@ -87,11 +87,11 @@ describe("AnchorHandler", () => {
 		// there are no routes added to the $slot in this test
 		// so the router will not attempt to handle it
 
-		$windowPushstateCallbackHandler = () => {
+		$windowPushstateHandler = () => {
 			expect(true).to.equal(false);
 		}
 
-		window.addEventListener("pushstate", $windowPushstateCallbackHandler);
+		window.addEventListener("pushstate", $windowPushstateHandler);
 
 		$anchor.click();
 		done();
@@ -105,11 +105,11 @@ describe("AnchorHandler", () => {
 			}
 		]);
 
-		$windowPushstateCallbackHandler = () => {
+		$windowPushstateHandler = () => {
 			expect(path({ end: false })).to.equal(testPath);
 			done();
 		}
-		window.addEventListener("pushstate", $windowPushstateCallbackHandler);
+		window.addEventListener("pushstate", $windowPushstateHandler);
 
 		$anchor.click();
 	});
