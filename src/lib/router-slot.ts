@@ -160,6 +160,15 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	}
 
 	/**
+	 * Return a route match for a given path or null if there's no match
+	 * @param path
+	 */
+	getRouteMatch(path: string | PathFragment): IRouteMatch<D> | null {
+		const match = matchRoutes(this._routes, path);
+		return match;
+	}
+
+	/**
 	 * Each time the path changes, load the new path.
 	 */
 	async render (): Promise<void> {
@@ -226,11 +235,6 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	 */
 	protected detachListeners (): void {
 		removeListeners(this.listeners);
-	}
-
-	getRouteMatch(path: string | PathFragment): IRouteMatch<D> | null {
-		const match = matchRoutes(this._routes, path);
-		return match;
 	}
 
 	/**
