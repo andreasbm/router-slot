@@ -52,7 +52,7 @@ export class AnchorHandler implements IAnchorHandler {
 		// - 4. The router can handle the route
 		const routeMatched = this.routerSlot?.getRouteMatch($anchor.pathname);
 
-		// - 5. User is not holding down metaKey (Command on Mac, Control on Windows)
+		// - 5. User is not holding down the meta key, (Command on Mac, Control on Windows)
 		//      which is typically used to open a new tab.
 		const userIsHoldingMetaKey = e.metaKey;
 
