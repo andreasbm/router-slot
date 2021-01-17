@@ -196,6 +196,10 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	 * Attach the anchor listener
 	 */
 	protected setupAnchorListener(): void {
+		// only bind the AnchorHandler to the root router
+		// otherwise, we get multiple click handlers,
+		// each responding to a different router
+		if (!this.isRoot) return;
 		this.anchorHandler = new AnchorHandler(this);
 		this.anchorHandler?.setup();
 	}
