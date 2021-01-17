@@ -17,20 +17,24 @@ export class AnchorHandler implements IAnchorHandler {
 	}
 
 	setup(): void {
+		// store a reference to the bound event handler so we can unbind later
+		this.boundEventHandler = this.handleEvent.bind(this);
 		window.addEventListener(
 			'click',
-			(e) => this.handleEvent(e)
+			this.boundEventHandler
 		);
 	}
 
 	teardown(): void {
 		window.removeEventListener(
 			'click',
-			(e) => this.handleEvent(e)
+			this.boundEventHandler
 		);
 	}
 
-	private handleEvent(e: MouseEvent) {
+	private boundEventHandler?: any;
+
+	private handleEvent(e: MouseEvent): void {
 		// Find the target by using the composed path to get the element through the shadow boundaries.
 		const $anchor = ("composedPath" in e as any) ? e.composedPath().find($elem => $elem instanceof HTMLAnchorElement) : e.target;
 

@@ -1,4 +1,4 @@
-import { AnchorHandler, RouterSlot } from "../lib";
+import { RouterSlot } from "../lib";
 import { ensureHistoryEvents } from "../lib/util/history";
 import { path } from "../lib/util/url";
 import { addBaseTag, clearHistory } from "./test-helpers";
@@ -9,7 +9,6 @@ describe("AnchorHandler", () => {
 	const {expect} = chai;
 	let $anchor!: HTMLAnchorElement;
 	let $slot = new RouterSlot();
-	let $anchorHandler = new AnchorHandler($slot);
 	let $windowPushstateHandler: () => void;
 
 	const addTestRoute = () => {
@@ -24,22 +23,25 @@ describe("AnchorHandler", () => {
 	before(() => {
 		ensureHistoryEvents();
 		addBaseTag();
+		// we instantiate the AnchorHandler when the router-slot is connected
 		document.body.appendChild($slot);
-		$anchorHandler.setup();
 	});
 	beforeEach(() => {
-		document.body.innerHTML = `
-			<a id="anchor" href="${testPath}">Anchor</a>
-		`;
+		const anchor = document.createElement('a');
+		anchor.id = "anchor";
+		anchor.href = testPath;
+		anchor.innerHTML = "Anchor";
+		document.body.appendChild(anchor);
 		$anchor = document.body.querySelector<HTMLAnchorElement>("#anchor")!;
 	});
 	afterEach(() => {
+		$anchor.remove();
 		$slot.clear();
 		window.removeEventListener('pushstate', $windowPushstateHandler);
 	});
 	after(() => {
 		clearHistory();
-		$anchorHandler.teardown();
+		$slot.remove();
 	});
 
 	it("[AnchorHandler] should change anchors to use history API", done => {
@@ -112,5 +114,30 @@ describe("AnchorHandler", () => {
 		window.addEventListener("pushstate", $windowPushstateHandler);
 
 		$anchor.click();
+	});
+
+	it("[AnchorHandler] removes the listener when `teardown()` called", done => {
+		// the router should be handling this because we have a catch-all, but
+		// we're tearing down the anchorHandler before the click so it shouldn't handle
+		$slot.add([
+			{
+				path: '**',
+				component: () => document.createElement("div")
+			}
+		]);
+
+		// remove the slot, which should tear down the handler
+		$slot.remove();
+
+		$windowPushstateHandler = () => {
+			// should never reach here
+			expect(true).to.equal(false);
+		}
+		window.addEventListener("pushstate", $windowPushstateHandler);
+
+		$anchor.click();
+		done();
+		// set back up for future tests
+		document.body.appendChild($slot);
 	});
 });
