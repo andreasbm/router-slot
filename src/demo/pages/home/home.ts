@@ -1,5 +1,4 @@
-import { css, LitElement, PropertyValues } from "lit-element";
-import { html, TemplateResult } from "lit-html";
+import { css, LitElement, PropertyValues, TemplateResult, html } from "lit";
 import "weightless/nav";
 import { basePath, GLOBAL_ROUTER_EVENTS_TARGET, IRoute, isPathActive, PageComponent, query, queryString, IRoutingInfo } from "../../../lib";
 import { sharedStyles } from "../styles";

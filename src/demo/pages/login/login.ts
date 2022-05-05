@@ -1,5 +1,4 @@
-import { css, html, LitElement } from "lit-element";
-import { TemplateResult } from "lit-html";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { sharedStyles } from "../styles";
 import "weightless/card";
 import "weightless/button";

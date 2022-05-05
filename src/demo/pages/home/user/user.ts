@@ -1,5 +1,4 @@
-import { html, LitElement, PropertyValues } from "lit-element";
-import { TemplateResult } from "lit-html";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { ROUTER_SLOT_TAG_NAME } from "../../../../lib/config";
 import { IRouterSlot, Params } from "../../../../lib/model";
 import { queryParentRouterSlot } from "../../../../lib/util/shadow";

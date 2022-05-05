@@ -172,12 +172,13 @@ So to recap the above steps, here's how to use the router.
 </html>
 ```
 
-## `lit-element`
+## `lit`
 
-The `router-slot` works very well with `lit-element`. Check out the example below to get an idea on how you could use this router in your own `lit-element` based projects.
+The `router-slot` works very well with `lit`. Check out the example below to get an idea on how you could use this router in your own `lit` based projects.
 
 ```typescript
-import { LitElement, html, query, PropertyValues } from "lit-element";
+import { LitElement, html, PropertyValues } from "lit";
+import { query, customElement } from "lit/decorators.js";
 import { RouterSlot } from "router-slot";
 
 const ROUTES = [
@@ -276,7 +277,7 @@ await routerSlot.add([
 Alternatively you can get the params in the `UserComponent` by using the `queryParentRouterSlot(...)` function.
 
 ```typescript
-import { LitElement, html } from "lit-element";
+import { LitElement, html } from "lit";
 import { Params, queryParentRouterSlot } from "router-slot";
 
 export default class UserComponent extends LitElement {

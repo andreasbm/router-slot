@@ -103,7 +103,7 @@ export interface IRouteMatch<D = any> {
 export type PushStateEvent = CustomEvent<null>;
 export type ReplaceStateEvent = CustomEvent<null>;
 export type ChangeStateEvent = CustomEvent<null>;
-export type WillChangeStateEvent = CustomEvent<null>;
+export type WillChangeStateEvent = CustomEvent<{ url?: string | null, eventName: GlobalRouterEvent}>;
 export type NavigationStartEvent<D = any> = CustomEvent<IRoutingInfo<D>>;
 export type NavigationSuccessEvent<D = any> = CustomEvent<IRoutingInfo<D>>;
 export type NavigationCancelEvent<D = any> = CustomEvent<IRoutingInfo<D>>;

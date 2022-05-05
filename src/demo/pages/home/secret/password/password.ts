@@ -1,5 +1,4 @@
-import { html, LitElement } from "lit-element";
-import { TemplateResult } from "lit-html";
+import { html, LitElement, TemplateResult } from "lit";
 import { showDialog } from "weightless";
 import { GLOBAL_ROUTER_EVENTS_TARGET, ROUTER_SLOT_TAG_NAME } from "../../../../../lib/config";
 import { Class, IRouterSlot, IRoutingInfo } from "../../../../../lib/model";
@@ -60,7 +59,7 @@ export default class PasswordComponent extends LitElement {
 			blockScrolling: true,
 			container: document.body,
 			duration: 200,
-			template: html`<p slot="content">This is a dialog with a special path!</p>`
+			template: html`<p slot="content">This is a dialog with a special path!</p>` as any
 		});
 
 		await result;

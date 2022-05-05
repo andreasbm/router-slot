@@ -1,5 +1,5 @@
-import { html, LitElement, property, PropertyValues } from "lit-element";
-import { TemplateResult } from "lit-html";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { property } from "lit/decorators.js";
 import "weightless/dialog";
 import "weightless/title";
 import { ROUTER_SLOT_TAG_NAME } from "../../lib/config";

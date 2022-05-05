@@ -1,4 +1,4 @@
-import { unsafeCSS } from "lit-element";
+import { unsafeCSS } from "lit";
 
 export const sharedStyles = unsafeCSS`
 	:host {
