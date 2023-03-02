@@ -107,6 +107,11 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	 */
 	connectedCallback () {
 		this.parent = this.queryParentRouterSlot();
+		if (this.parent && this.parent.match !== null && this.match === null) {
+			requestAnimationFrame(() => {
+				this.render();
+			});
+		}
 	}
 
 	/**
@@ -213,6 +218,26 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 	}
 
 	/**
+	 * Notify the listeners.
+	 */
+	notifyChildRouters(info) {
+		// This method should be called before routeMatch is being set!
+		// This only work cause we are using a requestAnimationFrame to dispatch the event,
+		// in other words, the routeMatch will be set when the child router receives the event.
+		// Scenario:
+		// When this router came from a route(routeMatch !== null), then:
+		// Dispatch the route change event to notify the children that something happened.
+		// This is because the child routes might have to change routes further down the tree.
+		// The event is dispatched in an animation frame to allow route children to make the initial render first
+		// and hook up the new router slot.
+		if (this._routeMatch !== null) {
+			requestAnimationFrame(() => {
+				dispatchRouteChangeEvent(this, info);
+			});
+		}
+	}
+
+	/**
 	 * Loads a new path based on the routes.
 	 * Returns true if a navigation was made to a new page.
 	 */
@@ -267,6 +292,9 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 					}
 				}
 
+				// We are going to navigate, so we want to notify the child routers:
+				this.notifyChildRouters(info);
+
 				// Redirect if necessary
 				if (isRedirectRoute(route)) {
 					cleanup();
@@ -306,18 +334,13 @@ export class RouterSlot<D = any, P = any> extends HTMLElement implements IRouter
 
 				// Remember to cleanup after the navigation
 				cleanup();
+			} else {
+				// We did not make a new navigation this time, but we want to notify children here:
+				this.notifyChildRouters(info);
 			}
 
 			// Store the new route match
 			this._routeMatch = match;
-
-			// Always dispatch the route change event to notify the children that something happened.
-			// This is because the child routes might have to change routes further down the tree.
-			// The event is dispatched in an animation frame to allow route children to make the initial render first
-			// and hook up the new router slot.
-			requestAnimationFrame(() => {
-				dispatchRouteChangeEvent(this, info);
-			});
 
 			// Dispatch globally that a navigation has ended.
 			if (navigate) {
